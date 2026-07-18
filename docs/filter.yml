@@ -1,0 +1,14 @@
+apiRules:
+- exclude:
+    # 排除 internal 类型
+    hasAttribute:
+      uid: System.Runtime.CompilerServices.InternalsVisibleToAttribute
+- exclude:
+    # 排除编译器生成的类型
+    uidRegex: ^System\.Text\.Json\.*
+- exclude:
+    # 排除 compiler-generated
+    uidRegex: ^<.*>$
+- include:
+    # 包含所有 public API
+    visibility: public
