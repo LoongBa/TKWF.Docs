@@ -1,5 +1,6 @@
 # DocFX output
 docs/_site/
+docs/_site_local/
 docs/api/
 
 # Build artifacts
