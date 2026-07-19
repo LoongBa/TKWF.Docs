@@ -50,7 +50,7 @@
       "_disableBreadcrumb": false,
       "_disableToc": false
     },
-    "template": ["default"],
+    "template": ["default", "modern", "../templates/custom"],
     "postProcess": []
   }
 }

@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+      <title>TKWF — 领域自治框架 | TKWF — 领域自治框架 </title>
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <meta name="title" content="TKWF — 领域自治框架 | TKWF — 领域自治框架 ">
+      
+      
+      <link rel="icon" href="favicon.ico">
+      <link rel="stylesheet" href="public/docfx.min.css">
+      <link rel="stylesheet" href="public/main.css">
+      <meta name="docfx:navrel" content="toc.html">
+      <meta name="docfx:tocrel" content="toc.html">
+      
+      <meta name="docfx:rel" content="">
+      
+      
+      <meta name="docfx:docurl" content="https://github.com/LoongBa/TKWF.Docs/blob/main/docs/index.md/#L1">
+      <meta name="loc:inThisArticle" content="In this article">
+      <meta name="loc:searchResultsCount" content="{count} results for &quot;{query}&quot;">
+      <meta name="loc:searchNoResults" content="No results for &quot;{query}&quot;">
+      <meta name="loc:tocFilter" content="Filter by title">
+      <meta name="loc:nextArticle" content="Next">
+      <meta name="loc:prevArticle" content="Previous">
+      <meta name="loc:themeLight" content="Light">
+      <meta name="loc:themeDark" content="Dark">
+      <meta name="loc:themeAuto" content="Auto">
+      <meta name="loc:changeTheme" content="Change theme">
+      <meta name="loc:copy" content="Copy">
+      <meta name="loc:downloadPdf" content="Download PDF">
+
+      <script type="module" src="./public/docfx.min.js"></script>
+
+      <script>
+        const theme = localStorage.getItem('theme') || 'auto'
+        document.documentElement.setAttribute('data-bs-theme', theme === 'auto' ? (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light') : theme)
+      </script>
+
+  </head>
+
+  <body class="tex2jax_ignore" data-layout="landing" data-yaml-mime="">
+    <header class="bg-body border-bottom">
+      <nav id="autocollapse" class="navbar navbar-expand-md" role="navigation">
+        <div class="container-xxl flex-nowrap">
+          <a class="navbar-brand" href="index.html">
+            <img id="logo" class="svg" src="logo.svg" alt="">
+            
+          </a>
+          <button class="btn btn-lg d-md-none border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navpanel" aria-controls="navpanel" aria-expanded="false" aria-label="Toggle navigation">
+            <i class="bi bi-three-dots"></i>
+          </button>
+          <div class="collapse navbar-collapse" id="navpanel">
+            <div id="navbar">
+              <form class="search" role="search" id="search">
+                <i class="bi bi-search"></i>
+                <input class="form-control" id="search-query" type="search" disabled placeholder="Search" autocomplete="off" aria-label="Search">
+              </form>
+            </div>
+          </div>
+        </div>
+      </nav>
+    </header>
+
+    <main class="container-xxl">
+      <div class="toc-offcanvas">
+        <div class="offcanvas-md offcanvas-start" tabindex="-1" id="tocOffcanvas" aria-labelledby="tocOffcanvasLabel">
+          <div class="offcanvas-header">
+            <h5 class="offcanvas-title" id="tocOffcanvasLabel">Table of Contents</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="offcanvas" data-bs-target="#tocOffcanvas" aria-label="Close"></button>
+          </div>
+          <div class="offcanvas-body">
+            <nav class="toc" id="toc"></nav>
+          </div>
+        </div>
+      </div>
+
+      <div class="content">
+        <div class="actionbar">
+          <button class="btn btn-lg border-0 d-md-none" type="button" data-bs-toggle="offcanvas" data-bs-target="#tocOffcanvas" aria-controls="tocOffcanvas" aria-expanded="false" aria-label="Show table of contents">
+            <i class="bi bi-list"></i>
+          </button>
+
+          <nav id="breadcrumb"></nav>
+        </div>
+
+        <article data-uid="">
+
+<div class="hero-section">
+  <div class="badge-agentic">🤖 为 Agentic Coding 时代而生</div>
+  <h1>TKWF — 领域自治框架</h1>
+  <p class="lead">
+    .NET 10 领域驱动设计框架，专为<strong> AI 结对编程</strong>设计。<br>
+    声明式标注 → 全自动生成 API / 客户端 / AOP 管线。<br>
+    让 AI 写 Service，框架负责剩下的。
+  </p>
+  <p>
+    <a href="articles/getting-started.html" class="btn btn-primary" style="margin-right:0.5rem;">🚀 5 分钟快速开始</a>
+    <a href="articles/intro.html" class="btn btn-outline-light">📖 了解框架概览</a>
+  </p>
+</div>
+<hr>
+<h2 id="为什么-tkwf-适合-agentic-coding">为什么 TKWF 适合 Agentic Coding？</h2>
+<div class="agentic-banner">
+  <div class="banner-icon">🧩</div>
+  <div class="banner-content">
+    <h3>领域自治 — 消除 DI 不确定性</h3>
+    <p>DomainUser 自持实例化，不依赖 DI 容器。<br>AI 生成的代码无需理解复杂的 DI 配置，结果可预测、可验证。</p>
+  </div>
+</div>
+<div class="agentic-banner">
+  <div class="banner-icon">⚡</div>
+  <div class="banner-content">
+    <h3>声明式标注 → 全自动生成</h3>
+    <p><code>[GenerateController]</code> 一个标注，SG 自动生成控制器、接口、Resolver、客户端。<br>AI 只需要写业务逻辑，框架自动完成管道代码。</p>
+  </div>
+</div>
+<div class="agentic-banner">
+  <div class="banner-icon">🪄</div>
+  <div class="banner-content">
+    <h3>编译期 AOP — 零运行时反射</h3>
+    <p>Source Generator 在编译期生成装饰器，没有运行时反射，没有 dynamic invocation。<br>AI 生成的行为与手写代码完全一致，性能无损。</p>
+  </div>
+</div>
+<div class="agentic-banner">
+  <div class="banner-icon">🔌</div>
+  <div class="banner-content">
+    <h3>多协议自动暴露 — 一次编写，三端可用</h3>
+    <p>一份 Service → GraphQL + REST + RPC 三端自动生成端点。<br>AI 只需聚焦领域逻辑，暴露方式由框架决定。</p>
+  </div>
+</div>
+<hr>
+<h2 id="经典场景快速体验">经典场景快速体验</h2>
+<div class="scenario-card">
+  <div class="scenario-card-header">📋 场景一：5 分钟创建 CRUD 服务</div>
+  <div class="scenario-card-body">
+    <p>
+      写一个带 <span class="highlight">DomainUser</span> 的领域服务，标注
+      <span class="highlight">[GenerateController]</span>，框架自动生成
+      GraphQL Resolver 和 REST 端点，无需手写 Controller。
+    </p>
+    <pre><code class="lang-csharp">[GenerateController]
+public class TodoService(DomainUser&lt;AppUserInfo&gt; user)
+    : DomainServiceBase&lt;AppUserInfo&gt;(user)
+{
+    public async Task&lt;Todo&gt; CreateAsync(string title, string content)
+    {
+        var todo = new Todo { Title = title, Content = content, UserId = User.UserId };
+        return await Repository.InsertAsync(todo);
+    }
+}</code></pre>
+    <p><a href="articles/getting-started.html">→ 完整教程</a></p>
+  </div>
+</div>
+<div class="scenario-card">
+  <div class="scenario-card-header">🔐 场景二：给 API 加上权限控制</div>
+  <div class="scenario-card-body">
+    <p>
+      用 <span class="highlight">[AuthorityFilter]</span> 标注方法，
+      框架自动拦截未授权调用。支持 Role-based 和自定义策略。
+    </p>
+    <pre><code class="lang-csharp">[AuthorityFilter(Roles = "Admin")]
+public async Task&lt;Report&gt; GenerateReportAsync() { ... }</code></pre>
+    <p><a href="articles/security/authorization.html">→ 了解安全体系</a></p>
+  </div>
+</div>
+<div class="scenario-card">
+  <div class="scenario-card-header">🌐 场景三：一份 Service → GraphQL + REST + RPC</div>
+  <div class="scenario-card-body">
+    <p>
+      同一个 Service，框架自动生成三种协议的端点。
+      客户端可以按需选择传输方式。
+    </p>
+    <pre><code class="lang-csharp">// 只需配置
+builder.ConfigWebAppDomain&lt;AppUserInfo, AppDomainInitializer&gt;()
+    .UseGraphQLApiService&lt;AppUserInfo&gt;()   // GraphQL
+    .UseRestApiService&lt;AppUserInfo&gt;();      // REST</code></pre>
+    <p><a href="articles/transport/graphql.html">→ 查看传输协议文档</a></p>
+  </div>
+</div>
+<div class="scenario-card">
+  <div class="scenario-card-header">📱 场景四：跨平台移动端集成</div>
+  <div class="scenario-card-body">
+    <p>
+      TKWF.Domain.Maui 让 MAUI 应用无缝集成 DomainUser 体系，
+      客户端调用远程服务如同调用本地方法。
+    </p>
+    <p><a href="articles/integration/maui.html">→ MAUI 集成指南</a></p>
+  </div>
+</div>
+<hr>
+<h2 id="核心特性">核心特性</h2>
+<div class="feature-grid">
+  <div class="feature-card">
+    <div class="card-icon">🧩</div>
+    <h3>领域自治</h3>
+    <p>DomainUser 自持实例化，不依赖 DI 容器，杜绝串号问题。每个请求绑定独立的领域上下文。</p>
+  </div>
+  <div class="feature-card">
+    <div class="card-icon">🪄</div>
+    <h3>AOP 静态拦截</h3>
+    <p>编译期 Source Generator 生成装饰器，零运行时反射。权限、事务、日志等横切关注点声明式处理。</p>
+  </div>
+  <div class="feature-card">
+    <div class="card-icon">🚀</div>
+    <h3>代码生成</h3>
+    <p><code>[GenerateController]</code> 一个标注，SG 自动生成控制器、接口、Resolver、客户端代码。</p>
+  </div>
+  <div class="feature-card">
+    <div class="card-icon">🔌</div>
+    <h3>多协议传输</h3>
+    <p>一份 Service → GraphQL (HotChocolate 16) + REST (Minimal API) + RPC 三端自动暴露。</p>
+  </div>
+  <div class="feature-card">
+    <div class="card-icon">🎯</div>
+    <h3>安全体系</h3>
+    <p>AuthorityFilter + Role-based 授权 + Challenge-Response 登录，开箱即用的安全防护。</p>
+  </div>
+  <div class="feature-card">
+    <div class="card-icon">📦</div>
+    <h3>生态集成</h3>
+    <p>Web / MAUI / Blazor / FreeSql 全方位集成，适配多种应用场景。</p>
+  </div>
+</div>
+<hr>
+<h2 id="分章节阅读">分章节阅读</h2>
+<div class="chapter-grid">
+  <a href="articles/getting-started.html" class="chapter-card">
+    <div class="chapter-icon">🚀</div>
+    <h4>入门指南</h4>
+    <p>5 分钟创建第一个带 AOP 的领域服务，快速上手 TKWF。</p>
+  </a>
+  <a href="articles/intro.html" class="chapter-card">
+    <div class="chapter-icon">🏗️</div>
+    <h4>框架概览</h4>
+    <p>核心概念：DomainUser、AOP 管线、代码生成管线 SG#1~#4。</p>
+  </a>
+  <a href="articles/core-concepts/domain-user.html" class="chapter-card">
+    <div class="chapter-icon">🧩</div>
+    <h4>DomainUser 详解</h4>
+    <p>深入理解领域自治的核心机制与最佳实践。</p>
+  </a>
+  <a href="articles/core-concepts/aop-pipeline.html" class="chapter-card">
+    <div class="chapter-icon">🪄</div>
+    <h4>AOP 管线</h4>
+    <p>AOP 静态拦截的工作原理、自定义 Filter、管线编排。</p>
+  </a>
+  <a href="articles/core-concepts/code-generation.html" class="chapter-card">
+    <div class="chapter-icon">⚙️</div>
+    <h4>代码生成</h4>
+    <p>Source Generator 管线详解：SG#1~#4 的职责与扩展。</p>
+  </a>
+  <a href="articles/security/authentication.html" class="chapter-card">
+    <div class="chapter-icon">🔐</div>
+    <h4>认证与授权</h4>
+    <p>Challenge-Response 登录、AuthorityFilter、Role-based 访问控制。</p>
+  </a>
+  <a href="articles/transport/graphql.html" class="chapter-card">
+    <div class="chapter-icon">🌐</div>
+    <h4>GraphQL 传输</h4>
+    <p>基于 HotChocolate 16 的 GraphQL 端点配置与查询。</p>
+  </a>
+  <a href="articles/transport/rest-minimal-api.html" class="chapter-card">
+    <div class="chapter-icon">🔗</div>
+    <h4>REST 传输</h4>
+    <p>基于 Minimal API 的 REST 端点配置与使用。</p>
+  </a>
+  <a href="articles/transport/rpc.html" class="chapter-card">
+    <div class="chapter-icon">📡</div>
+    <h4>RPC 远程调用</h4>
+    <p>通过 ApiClient 实现远程过程调用。</p>
+  </a>
+  <a href="articles/integration/web.html" class="chapter-card">
+    <div class="chapter-icon">🌍</div>
+    <h4>Web 集成</h4>
+    <p>Session 中间件、HttpContext 适配、Web 环境配置。</p>
+  </a>
+  <a href="articles/integration/blazor.html" class="chapter-card">
+    <div class="chapter-icon">🖥️</div>
+    <h4>Blazor 集成</h4>
+    <p>在 Blazor Server / WASM 中使用 TKWF 领域框架。</p>
+  </a>
+  <a href="articles/integration/freesql.html" class="chapter-card">
+    <div class="chapter-icon">🗄️</div>
+    <h4>FreeSql ORM 适配</h4>
+    <p>FreeSql 作为数据层的配置与使用。</p>
+  </a>
+  <a href="articles/advanced/configuration.html" class="chapter-card">
+    <div class="chapter-icon">⚙️</div>
+    <h4>配置参考</h4>
+    <p>ConfigWebAppDomain 配置项完整说明。</p>
+  </a>
+  <a href="articles/advanced/best-practices.html" class="chapter-card">
+    <div class="chapter-icon">✨</div>
+    <h4>最佳实践</h4>
+    <p>架构设计建议、常见反模式、性能优化。</p>
+  </a>
+</div>
+<hr>
+<h2 id="nuget-包">NuGet 包</h2>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">包名</th>
+<th style="text-align: left;">说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><code>TKWF.Domain</code></td>
+<td style="text-align: left;">领域框架核心（DomainUser、AOP、<code>[GenerateController]</code>）</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>TKWF.Domain.Web</code></td>
+<td style="text-align: left;">Web 集成（Session 中间件、HttpContext 适配）</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>TKWF.Domain.Maui</code></td>
+<td style="text-align: left;">MAUI 集成</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>TKWF.Domain.Blazor</code></td>
+<td style="text-align: left;">Blazor 集成</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>TKWF.Domain.FreeSql</code></td>
+<td style="text-align: left;">FreeSql ORM 适配</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>TKWF.Domain.ApiService.HotChocolate</code></td>
+<td style="text-align: left;">GraphQL 传输层（HotChocolate 16）</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>TKWF.Domain.ApiService.MinimalApi</code></td>
+<td style="text-align: left;">REST 传输层（Minimal API）</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>TKWF.Domain.ApiClient</code></td>
+<td style="text-align: left;">RPC 客户端核心</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>TKWF.Domain.ApiClient.GraphQL</code></td>
+<td style="text-align: left;">GraphQL 客户端</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>TKWF.Domain.ApiClient.Rest</code></td>
+<td style="text-align: left;">REST 客户端</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>TKWF.Cryptography</code></td>
+<td style="text-align: left;">密码学工具</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>TKWF.Core</code></td>
+<td style="text-align: left;">核心基础设施</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>TKWF.Abstractions</code></td>
+<td style="text-align: left;">共享抽象层</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h2 id="链接">链接</h2>
+<ul>
+<li>GitHub: <a href="https://github.com/LoongBa/TKW.Framework">LoongBa/TKW.Framework</a></li>
+<li>许可证: MIT</li>
+<li>构建状态: <a href="https://github.com/LoongBa/TKWF.Docs/actions/workflows/docfx.yml"><img src="https://github.com/LoongBa/TKWF.Docs/actions/workflows/docfx.yml/badge.svg" alt="Build and Deploy Docs"></a></li>
+</ul>
+
+</article>
+
+        <div class="contribution d-print-none">
+          <a href="https://github.com/LoongBa/TKWF.Docs/blob/main/docs/index.md/#L1" class="edit-link">Edit this page</a>
+        </div>
+
+        <div class="next-article d-print-none border-top" id="nextArticle"></div>
+
+      </div>
+
+      <div class="affix">
+        <nav id="affix"></nav>
+      </div>
+    </main>
+
+    <div class="container-xxl search-results" id="search-results"></div>
+
+    <footer class="border-top text-secondary">
+      <div class="container-xxl">
+        <div class="flex-fill">
+          <span>© LoongBa.cn 2026. Powered by DocFX</span>
+        </div>
+      </div>
+    </footer>
+  </body>
+</html>

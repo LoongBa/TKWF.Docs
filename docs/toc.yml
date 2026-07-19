@@ -1,7 +1,63 @@
-- name: 📖 入门指南
+- name: 🚀 入门指南
   href: articles/getting-started.md
 - name: 🏗️ 框架概览
   href: articles/intro.md
+- name: 🧩 核心概念
+  href: articles/core-concepts/domain-user.md
+  items:
+    - name: DomainUser 详解
+      href: articles/core-concepts/domain-user.md
+    - name: AOP 管线
+      href: articles/core-concepts/aop-pipeline.md
+    - name: 代码生成
+      href: articles/core-concepts/code-generation.md
+- name: 🔐 安全
+  href: articles/security/authentication.md
+  items:
+    - name: 认证
+      href: articles/security/authentication.md
+    - name: 授权
+      href: articles/security/authorization.md
+    - name: Session 管理
+      href: articles/security/session.md
+- name: 🌐 传输协议
+  href: articles/transport/graphql.md
+  items:
+    - name: GraphQL
+      href: articles/transport/graphql.md
+    - name: REST
+      href: articles/transport/rest-minimal-api.md
+    - name: RPC
+      href: articles/transport/rpc.md
+- name: 🔌 集成
+  href: articles/integration/web.md
+  items:
+    - name: Web
+      href: articles/integration/web.md
+    - name: Blazor
+      href: articles/integration/blazor.md
+    - name: MAUI
+      href: articles/integration/maui.md
+    - name: FreeSql
+      href: articles/integration/freesql.md
+- name: 📦 客户端
+  href: articles/client/api-client.md
+  items:
+    - name: ApiClient 核心
+      href: articles/client/api-client.md
+    - name: GraphQL 客户端
+      href: articles/client/graphql-client.md
+    - name: REST 客户端
+      href: articles/client/rest-client.md
+- name: ⚙️ 进阶
+  href: articles/advanced/configuration.md
+  items:
+    - name: 配置参考
+      href: articles/advanced/configuration.md
+    - name: 异常处理
+      href: articles/advanced/error-handling.md
+    - name: 最佳实践
+      href: articles/advanced/best-practices.md
 - name: 📚 API 参考
   href: api/
   homepage: api/TKWF.Domain.yml

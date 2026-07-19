@@ -1,0 +1,252 @@
+{
+  "source_base_path": "F:/LoongBa_Git/_TKWF.Docs/docs",
+  "xrefmap": "xrefmap.yml",
+  "files": [
+    {
+      "type": "Resource",
+      "output": {
+        "resource": {
+          "relative_path": "index.json"
+        }
+      }
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "articles/advanced/best-practices.md",
+      "output": {
+        ".html": {
+          "relative_path": "articles/advanced/best-practices.html"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "articles/advanced/configuration.md",
+      "output": {
+        ".html": {
+          "relative_path": "articles/advanced/configuration.html"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "articles/advanced/error-handling.md",
+      "output": {
+        ".html": {
+          "relative_path": "articles/advanced/error-handling.html"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "articles/client/api-client.md",
+      "output": {
+        ".html": {
+          "relative_path": "articles/client/api-client.html"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "articles/client/graphql-client.md",
+      "output": {
+        ".html": {
+          "relative_path": "articles/client/graphql-client.html"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "articles/client/rest-client.md",
+      "output": {
+        ".html": {
+          "relative_path": "articles/client/rest-client.html"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "articles/core-concepts/aop-pipeline.md",
+      "output": {
+        ".html": {
+          "relative_path": "articles/core-concepts/aop-pipeline.html"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "articles/core-concepts/code-generation.md",
+      "output": {
+        ".html": {
+          "relative_path": "articles/core-concepts/code-generation.html"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "articles/core-concepts/domain-user.md",
+      "output": {
+        ".html": {
+          "relative_path": "articles/core-concepts/domain-user.html"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "articles/getting-started.md",
+      "output": {
+        ".html": {
+          "relative_path": "articles/getting-started.html"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "articles/integration/blazor.md",
+      "output": {
+        ".html": {
+          "relative_path": "articles/integration/blazor.html"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "articles/integration/freesql.md",
+      "output": {
+        ".html": {
+          "relative_path": "articles/integration/freesql.html"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "articles/integration/maui.md",
+      "output": {
+        ".html": {
+          "relative_path": "articles/integration/maui.html"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "articles/integration/web.md",
+      "output": {
+        ".html": {
+          "relative_path": "articles/integration/web.html"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "articles/intro.md",
+      "output": {
+        ".html": {
+          "relative_path": "articles/intro.html"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "articles/security/authentication.md",
+      "output": {
+        ".html": {
+          "relative_path": "articles/security/authentication.html"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "articles/security/authorization.md",
+      "output": {
+        ".html": {
+          "relative_path": "articles/security/authorization.html"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "articles/security/session.md",
+      "output": {
+        ".html": {
+          "relative_path": "articles/security/session.html"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "articles/transport/graphql.md",
+      "output": {
+        ".html": {
+          "relative_path": "articles/transport/graphql.html"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "articles/transport/rest-minimal-api.md",
+      "output": {
+        ".html": {
+          "relative_path": "articles/transport/rest-minimal-api.html"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "articles/transport/rpc.md",
+      "output": {
+        ".html": {
+          "relative_path": "articles/transport/rpc.html"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "index.md",
+      "output": {
+        ".html": {
+          "relative_path": "index.html"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Toc",
+      "source_relative_path": "toc.yml",
+      "output": {
+        ".html": {
+          "relative_path": "toc.html"
+        },
+        ".json": {
+          "relative_path": "toc.json"
+        }
+      },
+      "version": ""
+    }
+  ],
+  "groups": [
+    {
+      "xrefmap": "xrefmap.yml"
+    }
+  ]
+}

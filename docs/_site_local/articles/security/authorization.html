@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+      <title>授权 | TKWF — 领域自治框架 </title>
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <meta name="title" content="授权 | TKWF — 领域自治框架 ">
+      
+      
+      <link rel="icon" href="../../favicon.ico">
+      <link rel="stylesheet" href="../../public/docfx.min.css">
+      <link rel="stylesheet" href="../../public/main.css">
+      <meta name="docfx:navrel" content="../../toc.html">
+      <meta name="docfx:tocrel" content="../../toc.html">
+      
+      <meta name="docfx:rel" content="../../">
+      
+      
+      <meta name="docfx:docurl" content="https://github.com/LoongBa/TKWF.Docs/blob/main/docs/articles/security/authorization.md/#L1">
+      <meta name="loc:inThisArticle" content="In this article">
+      <meta name="loc:searchResultsCount" content="{count} results for &quot;{query}&quot;">
+      <meta name="loc:searchNoResults" content="No results for &quot;{query}&quot;">
+      <meta name="loc:tocFilter" content="Filter by title">
+      <meta name="loc:nextArticle" content="Next">
+      <meta name="loc:prevArticle" content="Previous">
+      <meta name="loc:themeLight" content="Light">
+      <meta name="loc:themeDark" content="Dark">
+      <meta name="loc:themeAuto" content="Auto">
+      <meta name="loc:changeTheme" content="Change theme">
+      <meta name="loc:copy" content="Copy">
+      <meta name="loc:downloadPdf" content="Download PDF">
+
+      <script type="module" src="./../../public/docfx.min.js"></script>
+
+      <script>
+        const theme = localStorage.getItem('theme') || 'auto'
+        document.documentElement.setAttribute('data-bs-theme', theme === 'auto' ? (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light') : theme)
+      </script>
+
+  </head>
+
+  <body class="tex2jax_ignore" data-layout="" data-yaml-mime="">
+    <header class="bg-body border-bottom">
+      <nav id="autocollapse" class="navbar navbar-expand-md" role="navigation">
+        <div class="container-xxl flex-nowrap">
+          <a class="navbar-brand" href="../../index.html">
+            <img id="logo" class="svg" src="../../logo.svg" alt="">
+            
+          </a>
+          <button class="btn btn-lg d-md-none border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navpanel" aria-controls="navpanel" aria-expanded="false" aria-label="Toggle navigation">
+            <i class="bi bi-three-dots"></i>
+          </button>
+          <div class="collapse navbar-collapse" id="navpanel">
+            <div id="navbar">
+              <form class="search" role="search" id="search">
+                <i class="bi bi-search"></i>
+                <input class="form-control" id="search-query" type="search" disabled placeholder="Search" autocomplete="off" aria-label="Search">
+              </form>
+            </div>
+          </div>
+        </div>
+      </nav>
+    </header>
+
+    <main class="container-xxl">
+      <div class="toc-offcanvas">
+        <div class="offcanvas-md offcanvas-start" tabindex="-1" id="tocOffcanvas" aria-labelledby="tocOffcanvasLabel">
+          <div class="offcanvas-header">
+            <h5 class="offcanvas-title" id="tocOffcanvasLabel">Table of Contents</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="offcanvas" data-bs-target="#tocOffcanvas" aria-label="Close"></button>
+          </div>
+          <div class="offcanvas-body">
+            <nav class="toc" id="toc"></nav>
+          </div>
+        </div>
+      </div>
+
+      <div class="content">
+        <div class="actionbar">
+          <button class="btn btn-lg border-0 d-md-none" type="button" data-bs-toggle="offcanvas" data-bs-target="#tocOffcanvas" aria-controls="tocOffcanvas" aria-expanded="false" aria-label="Show table of contents">
+            <i class="bi bi-list"></i>
+          </button>
+
+          <nav id="breadcrumb"></nav>
+        </div>
+
+        <article data-uid="">
+<h1 id="授权">授权</h1>
+
+<p>TKWF 通过 <code>[AuthorityFilter]</code> 提供声明式方法级授权，支持 Role-based 和 Policy-based 两种模式。</p>
+<hr>
+<h2 id="authorityfilter">AuthorityFilter</h2>
+<h3 id="基本用法">基本用法</h3>
+<pre><code class="lang-csharp">[AuthorityFilter(Roles = &quot;Admin&quot;)]
+public async Task&lt;Report&gt; GenerateReportAsync() { ... }
+</code></pre>
+<p>当用户不包含 <code>Admin</code> 角色时，调用将抛出 <code>UnauthorizedAccessException</code>。</p>
+<h3 id="多角色or-逻辑">多角色（OR 逻辑）</h3>
+<pre><code class="lang-csharp">// 满足任一角色即可
+[AuthorityFilter(Roles = &quot;Admin,Manager&quot;)]
+public async Task ApproveAsync(long id) { ... }
+</code></pre>
+<h3 id="策略模式">策略模式</h3>
+<pre><code class="lang-csharp">[AuthorityFilter(Policy = &quot;OrderApproval&quot;)]
+public async Task ApproveOrderAsync(long orderId) { ... }
+</code></pre>
+<h2 id="自定义策略">自定义策略</h2>
+<p>实现 <code>IAuthorizationPolicy</code> 接口：</p>
+<pre><code class="lang-csharp">public class OrderApprovalPolicy : IAuthorizationPolicy
+{
+    public async Task&lt;bool&gt; AuthorizeAsync(AuthorizationContext context)
+    {
+        var user = context.User;
+        // 管理员直接通过
+        if (user.Roles.Contains(&quot;Admin&quot;)) return true;
+
+        // 普通用户需要检查权限
+        return user.Roles.Contains(&quot;OrderApprover&quot;);
+    }
+}
+</code></pre>
+<p>注册自定义策略：</p>
+<pre><code class="lang-csharp">builder.ConfigWebAppDomain&lt;AppUserInfo, AppDomainInitializer&gt;(options =&gt;
+{
+    options.Authorization.Policies.Add(&quot;OrderApproval&quot;,
+        new OrderApprovalPolicy());
+});
+</code></pre>
+<h2 id="在-controller-中使用">在 Controller 中使用</h2>
+<pre><code class="lang-csharp">// 路径 A：契约先行
+public class AuthController&lt;TUserInfo&gt; : ControllerBase&lt;TUserInfo&gt;
+    where TUserInfo : IUserInfo
+{
+    [AuthorityFilter(Roles = &quot;Admin&quot;)]
+    public async Task&lt;DashboardData&gt; GetDashboardAsync()
+    {
+        // 只有 Admin 可以访问
+    }
+}
+
+// 路径 B：标注驱动
+[GenerateController]
+public class AdminService(DomainUser&lt;AppUserInfo&gt; user)
+    : DomainServiceBase&lt;AppUserInfo&gt;(user)
+{
+    [AuthorityFilter(Roles = &quot;Admin&quot;)]
+    public async Task&lt;Log&gt; GetSystemLogAsync() { ... }
+}
+</code></pre>
+<h2 id="最佳实践">最佳实践</h2>
+<ol>
+<li><strong>最小权限原则</strong> — 默认不加 <code>[AuthorityFilter]</code>，只在需要权限的方法上加</li>
+<li><strong>角色命名规范</strong> — 统一使用 <code>Admin</code>、<code>Manager</code>、<code>User</code>、<code>Guest</code> 等标准角色名</li>
+<li><strong>策略复用</strong> — 多个方法共享相同权限逻辑时，使用 Policy 模式而非重复写 Roles</li>
+<li><strong>测试覆盖</strong> — 为每个策略编写单元测试</li>
+</ol>
+<h2 id="参考">参考</h2>
+<ul>
+<li><a href="authentication.html">认证</a></li>
+<li><a href="../core-concepts/aop-pipeline.html">AOP 管线</a></li>
+<li><a href="../advanced/best-practices.html">最佳实践</a></li>
+</ul>
+
+</article>
+
+        <div class="contribution d-print-none">
+          <a href="https://github.com/LoongBa/TKWF.Docs/blob/main/docs/articles/security/authorization.md/#L1" class="edit-link">Edit this page</a>
+        </div>
+
+        <div class="next-article d-print-none border-top" id="nextArticle"></div>
+
+      </div>
+
+      <div class="affix">
+        <nav id="affix"></nav>
+      </div>
+    </main>
+
+    <div class="container-xxl search-results" id="search-results"></div>
+
+    <footer class="border-top text-secondary">
+      <div class="container-xxl">
+        <div class="flex-fill">
+          <span>© LoongBa.cn 2026. Powered by DocFX</span>
+        </div>
+      </div>
+    </footer>
+  </body>
+</html>
