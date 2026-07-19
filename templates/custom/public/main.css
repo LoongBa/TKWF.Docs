@@ -65,13 +65,22 @@
   border: 1px solid var(--bs-border-color, #e2e8f0);
   border-radius: 10px;
   padding: 1.5rem;
-  background: var(--bs-card-bg, #fff);
+  background: #fff;
   transition: transform 0.15s ease, box-shadow 0.15s ease;
 }
 
 .feature-card:hover {
   transform: translateY(-2px);
   box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+}
+
+[data-bs-theme="dark"] .feature-card {
+  background: #1e293b;
+  border-color: #334155;
+}
+
+[data-bs-theme="dark"] .feature-card:hover {
+  box-shadow: 0 4px 12px rgba(0,0,0,0.3);
 }
 
 .feature-card .card-icon {
@@ -98,7 +107,12 @@
   border-radius: 10px;
   overflow: hidden;
   margin-bottom: 1.5rem;
-  background: var(--bs-card-bg, #fff);
+  background: #fff;
+}
+
+[data-bs-theme="dark"] .scenario-card {
+  background: #1e293b;
+  border-color: #334155;
 }
 
 .scenario-card-header {
@@ -166,6 +180,10 @@
   background: rgba(37, 99, 235, 0.04);
 }
 
+[data-bs-theme="dark"] .package-table tr:hover td {
+  background: rgba(59, 130, 246, 0.1);
+}
+
 /* --- Chapter Card --- */
 .chapter-grid {
   display: grid;
@@ -181,12 +199,22 @@
   padding: 1.25rem;
   text-decoration: none !important;
   color: inherit;
+  background: #fff;
   transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+[data-bs-theme="dark"] .chapter-card {
+  background: #1e293b;
+  border-color: #334155;
 }
 
 .chapter-card:hover {
   border-color: var(--tkwf-primary-light, #3b82f6);
   box-shadow: 0 2px 8px rgba(37, 99, 235, 0.1);
+}
+
+[data-bs-theme="dark"] .chapter-card:hover {
+  box-shadow: 0 2px 12px rgba(37, 99, 235, 0.2);
 }
 
 .chapter-card .chapter-icon {
