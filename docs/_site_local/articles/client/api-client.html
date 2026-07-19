@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+      <title>ApiClient 核心 | TKWF — 领域自治框架 </title>
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <meta name="title" content="ApiClient 核心 | TKWF — 领域自治框架 ">
+      
+      
+      <link rel="icon" href="../../favicon.ico">
+      <link rel="stylesheet" href="../../public/docfx.min.css">
+      <link rel="stylesheet" href="../../public/main.css">
+      <meta name="docfx:navrel" content="../../toc.html">
+      <meta name="docfx:tocrel" content="../../toc.html">
+      
+      <meta name="docfx:rel" content="../../">
+      
+      
+      <meta name="docfx:docurl" content="https://github.com/LoongBa/TKWF.Docs/blob/main/docs/articles/client/api-client.md/#L1">
+      <meta name="loc:inThisArticle" content="In this article">
+      <meta name="loc:searchResultsCount" content="{count} results for &quot;{query}&quot;">
+      <meta name="loc:searchNoResults" content="No results for &quot;{query}&quot;">
+      <meta name="loc:tocFilter" content="Filter by title">
+      <meta name="loc:nextArticle" content="Next">
+      <meta name="loc:prevArticle" content="Previous">
+      <meta name="loc:themeLight" content="Light">
+      <meta name="loc:themeDark" content="Dark">
+      <meta name="loc:themeAuto" content="Auto">
+      <meta name="loc:changeTheme" content="Change theme">
+      <meta name="loc:copy" content="Copy">
+      <meta name="loc:downloadPdf" content="Download PDF">
+
+      <script type="module" src="./../../public/docfx.min.js"></script>
+
+      <script>
+        const theme = localStorage.getItem('theme') || 'auto'
+        document.documentElement.setAttribute('data-bs-theme', theme === 'auto' ? (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light') : theme)
+      </script>
+
+  </head>
+
+  <body class="tex2jax_ignore" data-layout="" data-yaml-mime="">
+    <header class="bg-body border-bottom">
+      <nav id="autocollapse" class="navbar navbar-expand-md" role="navigation">
+        <div class="container-xxl flex-nowrap">
+          <a class="navbar-brand" href="../../index.html">
+            <img id="logo" class="svg" src="../../logo.svg" alt="">
+            
+          </a>
+          <button class="btn btn-lg d-md-none border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navpanel" aria-controls="navpanel" aria-expanded="false" aria-label="Toggle navigation">
+            <i class="bi bi-three-dots"></i>
+          </button>
+          <div class="collapse navbar-collapse" id="navpanel">
+            <div id="navbar">
+              <form class="search" role="search" id="search">
+                <i class="bi bi-search"></i>
+                <input class="form-control" id="search-query" type="search" disabled placeholder="Search" autocomplete="off" aria-label="Search">
+              </form>
+            </div>
+          </div>
+        </div>
+      </nav>
+    </header>
+
+    <main class="container-xxl">
+      <div class="toc-offcanvas">
+        <div class="offcanvas-md offcanvas-start" tabindex="-1" id="tocOffcanvas" aria-labelledby="tocOffcanvasLabel">
+          <div class="offcanvas-header">
+            <h5 class="offcanvas-title" id="tocOffcanvasLabel">Table of Contents</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="offcanvas" data-bs-target="#tocOffcanvas" aria-label="Close"></button>
+          </div>
+          <div class="offcanvas-body">
+            <nav class="toc" id="toc"></nav>
+          </div>
+        </div>
+      </div>
+
+      <div class="content">
+        <div class="actionbar">
+          <button class="btn btn-lg border-0 d-md-none" type="button" data-bs-toggle="offcanvas" data-bs-target="#tocOffcanvas" aria-controls="tocOffcanvas" aria-expanded="false" aria-label="Show table of contents">
+            <i class="bi bi-list"></i>
+          </button>
+
+          <nav id="breadcrumb"></nav>
+        </div>
+
+        <article data-uid="">
+<h1 id="apiclient-核心">ApiClient 核心</h1>
+
+<p><code>TKWF.Domain.ApiClient</code> 提供强类型的 RPC 客户端基础设施。</p>
+<hr>
+<h2 id="安装">安装</h2>
+<pre><code class="lang-shell">dotnet add package TKWF.Domain.ApiClient
+</code></pre>
+<h2 id="客户端生成">客户端生成</h2>
+<p>SG#3 自动为每个 Controller 生成对应的客户端代理：</p>
+<pre><code class="lang-csharp">// 源码：服务器端 Service
+[GenerateController]
+public class GreetingService(DomainUser&lt;AppUserInfo&gt; user)
+    : DomainServiceBase&lt;AppUserInfo&gt;(user)
+{
+    public async Task&lt;string&gt; SayHelloAsync(string name) { ... }
+}
+
+// 自动生成：客户端代理
+// 客户端使用
+public class MyViewModel
+{
+    private readonly GreetingServiceClient _client;
+
+    public MyViewModel(GreetingServiceClient client)
+    {
+        _client = client;
+    }
+
+    public async Task LoadAsync()
+    {
+        var result = await _client.SayHelloAsync(&quot;World&quot;);
+    }
+}
+</code></pre>
+<h2 id="配置">配置</h2>
+<pre><code class="lang-csharp">builder.Services.AddApiClient&lt;AppUserInfo&gt;(options =&gt;
+{
+    options.BaseUrl = &quot;https://api.example.com&quot;;
+    options.Transport = TransportType.GraphQL;  // 或 Rest
+    options.Timeout = TimeSpan.FromSeconds(30);
+    options.TokenProvider = new TokenProvider();
+});
+</code></pre>
+<h2 id="自定义-token-提供器">自定义 Token 提供器</h2>
+<pre><code class="lang-csharp">public class TokenProvider : ITokenProvider
+{
+    public async Task&lt;string?&gt; GetTokenAsync()
+    {
+        // 从 SecureStorage 或本地缓存获取 Token
+        return await SecureStorage.GetAsync(&quot;session_token&quot;);
+    }
+}
+</code></pre>
+<h2 id="错误处理">错误处理</h2>
+<pre><code class="lang-csharp">try
+{
+    var result = await _client.SayHelloAsync(&quot;World&quot;);
+}
+catch (ApiClientException ex) when (ex.StatusCode == 401)
+{
+    // 未授权，重新登录
+}
+catch (ApiClientException ex) when (ex.StatusCode == 422)
+{
+    // 参数验证失败
+}
+</code></pre>
+<h2 id="参考">参考</h2>
+<ul>
+<li><a href="graphql-client.html">GraphQL 客户端</a></li>
+<li><a href="rest-client.html">REST 客户端</a></li>
+<li><a href="../transport/rpc.html">RPC 传输</a></li>
+</ul>
+
+</article>
+
+        <div class="contribution d-print-none">
+          <a href="https://github.com/LoongBa/TKWF.Docs/blob/main/docs/articles/client/api-client.md/#L1" class="edit-link">Edit this page</a>
+        </div>
+
+        <div class="next-article d-print-none border-top" id="nextArticle"></div>
+
+      </div>
+
+      <div class="affix">
+        <nav id="affix"></nav>
+      </div>
+    </main>
+
+    <div class="container-xxl search-results" id="search-results"></div>
+
+    <footer class="border-top text-secondary">
+      <div class="container-xxl">
+        <div class="flex-fill">
+          <span>© LoongBa.cn 2026. Powered by DocFX</span>
+        </div>
+      </div>
+    </footer>
+  </body>
+</html>

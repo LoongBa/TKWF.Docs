@@ -1,5 +1,9 @@
 # 5 分钟入门
 
+本指南带你从零创建一个带 AOP 拦截、GraphQL 暴露的领域服务。
+
+---
+
 ## 前置条件
 
 - .NET 10 SDK
@@ -43,6 +47,8 @@ public class GreetingService(
 }
 ```
 
+> `[GenerateController]` 只需一个标注，SG 自动生成控制器、接口、Resolver。无需手写 Controller。
+
 ## 第四步：配置主机
 
 ```csharp
@@ -73,8 +79,17 @@ query {
 }
 ```
 
+## 你刚刚完成了什么？
+
+| 步骤 | 自动生成的内容 |
+|:-----|:--------------|
+| `[GenerateController]` | AOP 控制器接口 + 装饰器 |
+| 主机配置 | Session 中间件 + GraphQL 端点 |
+| 客户端使用 | 自动生成 Resolver，无需手写 |
+
 ## 下一步
 
-- 添加 `[AuthorityFilter]` 保护方法
-- 使用 `[Transactional]` 包裹多步写入
-- 探索 RPC 远程过程调用
+- 添加 `[AuthorityFilter]` 保护方法 → [授权指南](security/authorization.md)
+- 使用 `[Transactional]` 包裹多步写入 → [AOP 管线](core-concepts/aop-pipeline.md)
+- 探索 RPC 远程过程调用 → [RPC 传输](transport/rpc.md)
+- 完整配置选项 → [配置参考](advanced/configuration.md)

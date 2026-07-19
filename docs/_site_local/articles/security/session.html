@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+      <title>Session 管理 | TKWF — 领域自治框架 </title>
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <meta name="title" content="Session 管理 | TKWF — 领域自治框架 ">
+      
+      
+      <link rel="icon" href="../../favicon.ico">
+      <link rel="stylesheet" href="../../public/docfx.min.css">
+      <link rel="stylesheet" href="../../public/main.css">
+      <meta name="docfx:navrel" content="../../toc.html">
+      <meta name="docfx:tocrel" content="../../toc.html">
+      
+      <meta name="docfx:rel" content="../../">
+      
+      
+      <meta name="docfx:docurl" content="https://github.com/LoongBa/TKWF.Docs/blob/main/docs/articles/security/session.md/#L1">
+      <meta name="loc:inThisArticle" content="In this article">
+      <meta name="loc:searchResultsCount" content="{count} results for &quot;{query}&quot;">
+      <meta name="loc:searchNoResults" content="No results for &quot;{query}&quot;">
+      <meta name="loc:tocFilter" content="Filter by title">
+      <meta name="loc:nextArticle" content="Next">
+      <meta name="loc:prevArticle" content="Previous">
+      <meta name="loc:themeLight" content="Light">
+      <meta name="loc:themeDark" content="Dark">
+      <meta name="loc:themeAuto" content="Auto">
+      <meta name="loc:changeTheme" content="Change theme">
+      <meta name="loc:copy" content="Copy">
+      <meta name="loc:downloadPdf" content="Download PDF">
+
+      <script type="module" src="./../../public/docfx.min.js"></script>
+
+      <script>
+        const theme = localStorage.getItem('theme') || 'auto'
+        document.documentElement.setAttribute('data-bs-theme', theme === 'auto' ? (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light') : theme)
+      </script>
+
+  </head>
+
+  <body class="tex2jax_ignore" data-layout="" data-yaml-mime="">
+    <header class="bg-body border-bottom">
+      <nav id="autocollapse" class="navbar navbar-expand-md" role="navigation">
+        <div class="container-xxl flex-nowrap">
+          <a class="navbar-brand" href="../../index.html">
+            <img id="logo" class="svg" src="../../logo.svg" alt="">
+            
+          </a>
+          <button class="btn btn-lg d-md-none border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navpanel" aria-controls="navpanel" aria-expanded="false" aria-label="Toggle navigation">
+            <i class="bi bi-three-dots"></i>
+          </button>
+          <div class="collapse navbar-collapse" id="navpanel">
+            <div id="navbar">
+              <form class="search" role="search" id="search">
+                <i class="bi bi-search"></i>
+                <input class="form-control" id="search-query" type="search" disabled placeholder="Search" autocomplete="off" aria-label="Search">
+              </form>
+            </div>
+          </div>
+        </div>
+      </nav>
+    </header>
+
+    <main class="container-xxl">
+      <div class="toc-offcanvas">
+        <div class="offcanvas-md offcanvas-start" tabindex="-1" id="tocOffcanvas" aria-labelledby="tocOffcanvasLabel">
+          <div class="offcanvas-header">
+            <h5 class="offcanvas-title" id="tocOffcanvasLabel">Table of Contents</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="offcanvas" data-bs-target="#tocOffcanvas" aria-label="Close"></button>
+          </div>
+          <div class="offcanvas-body">
+            <nav class="toc" id="toc"></nav>
+          </div>
+        </div>
+      </div>
+
+      <div class="content">
+        <div class="actionbar">
+          <button class="btn btn-lg border-0 d-md-none" type="button" data-bs-toggle="offcanvas" data-bs-target="#tocOffcanvas" aria-controls="tocOffcanvas" aria-expanded="false" aria-label="Show table of contents">
+            <i class="bi bi-list"></i>
+          </button>
+
+          <nav id="breadcrumb"></nav>
+        </div>
+
+        <article data-uid="">
+<h1 id="session-管理">Session 管理</h1>
+
+<p>TKWF 通过 Session 中间件管理用户会话，自动将认证后的用户绑定到 <code>DomainUser</code>。</p>
+<hr>
+<h2 id="session-中间件">Session 中间件</h2>
+<pre><code class="lang-csharp">// Program.cs
+builder.ConfigWebAppDomain&lt;AppUserInfo, AppDomainInitializer&gt;()
+    .UseWebSession()  // ← 启用 Session 中间件
+    .Build();
+</code></pre>
+<p>启用后，中间件自动：</p>
+<ol>
+<li>从 HTTP 请求中提取 Token（Header / Cookie）</li>
+<li>验证 Token 有效性</li>
+<li>创建 <code>DomainUser&lt;TUserInfo&gt;</code> 并绑定到请求上下文</li>
+<li>请求结束时清理</li>
+</ol>
+<h2 id="token-传输方式">Token 传输方式</h2>
+<h3 id="header-模式">Header 模式</h3>
+<pre><code class="lang-http">Authorization: Bearer eyJhbGciOiJIUzI1NiIs...
+</code></pre>
+<h3 id="cookie-模式">Cookie 模式</h3>
+<pre><code class="lang-http">Cookie: tkws_session=eyJhbGciOiJIUzI1NiIs...
+</code></pre>
+<p>配置方式：</p>
+<pre><code class="lang-csharp">options.Session.TokenSource = TokenSource.BearerHeader;  // Header 模式
+// 或
+options.Session.TokenSource = TokenSource.Cookie;         // Cookie 模式
+</code></pre>
+<h2 id="session-配置">Session 配置</h2>
+<pre><code class="lang-csharp">builder.ConfigWebAppDomain&lt;AppUserInfo, AppDomainInitializer&gt;(options =&gt;
+{
+    options.Session = new SessionOptions
+    {
+        Expiration = TimeSpan.FromHours(8),       // Session 有效期
+        RefreshOnActivity = true,                  // 活跃时自动续期
+        SlidingExpiration = TimeSpan.FromHours(1), // 滑动过期窗口
+        TokenSource = TokenSource.BearerHeader,    // Token 来源
+    };
+});
+</code></pre>
+<h2 id="自定义-session-存储">自定义 Session 存储</h2>
+<p>默认 Session 存储在内存中。实现 <code>ISessionStore&lt;TUserInfo&gt;</code> 使用自定义存储：</p>
+<pre><code class="lang-csharp">public class RedisSessionStore : ISessionStore&lt;AppUserInfo&gt;
+{
+    public async Task&lt;Session&lt;AppUserInfo&gt;?&gt; GetAsync(string sessionId)
+    {
+        // 从 Redis 获取 Session
+    }
+
+    public async Task SaveAsync(Session&lt;AppUserInfo&gt; session)
+    {
+        // 保存到 Redis
+    }
+
+    public async Task RemoveAsync(string sessionId)
+    {
+        // 从 Redis 删除
+    }
+}
+</code></pre>
+<p>注册：</p>
+<pre><code class="lang-csharp">options.Session.Store = new RedisSessionStore(redisConnection);
+</code></pre>
+<h2 id="session-状态">Session 状态</h2>
+<pre><code>┌─────────────┐     ┌──────────────┐     ┌───────────────┐
+│  未认证      │ ──→ │  已认证       │ ──→ │  Session 过期  │
+│  (Anonymous) │     │  (Authenticated) │     │  (Expired)     │
+└─────────────┘     └──────────────┘     └───────────────┘
+       │                    │                      │
+       │ 登录               │ 访问受保护资源        │ 重新认证
+       └────────────────────┘                      │
+                                                    │
+       ┌──────────────┐                             │
+       │  注销         │ ←─────────────────────────┘
+       │  (LoggedOut)  │
+       └──────────────┘
+</code></pre>
+<h2 id="参考">参考</h2>
+<ul>
+<li><a href="authentication.html">认证</a></li>
+<li><a href="authorization.html">授权</a></li>
+<li><a href="../integration/web.html">Web 集成</a></li>
+</ul>
+
+</article>
+
+        <div class="contribution d-print-none">
+          <a href="https://github.com/LoongBa/TKWF.Docs/blob/main/docs/articles/security/session.md/#L1" class="edit-link">Edit this page</a>
+        </div>
+
+        <div class="next-article d-print-none border-top" id="nextArticle"></div>
+
+      </div>
+
+      <div class="affix">
+        <nav id="affix"></nav>
+      </div>
+    </main>
+
+    <div class="container-xxl search-results" id="search-results"></div>
+
+    <footer class="border-top text-secondary">
+      <div class="container-xxl">
+        <div class="flex-fill">
+          <span>© LoongBa.cn 2026. Powered by DocFX</span>
+        </div>
+      </div>
+    </footer>
+  </body>
+</html>

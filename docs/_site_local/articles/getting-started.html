@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+      <title>5 分钟入门 | TKWF — 领域自治框架 </title>
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <meta name="title" content="5 分钟入门 | TKWF — 领域自治框架 ">
+      
+      
+      <link rel="icon" href="../favicon.ico">
+      <link rel="stylesheet" href="../public/docfx.min.css">
+      <link rel="stylesheet" href="../public/main.css">
+      <meta name="docfx:navrel" content="../toc.html">
+      <meta name="docfx:tocrel" content="../toc.html">
+      
+      <meta name="docfx:rel" content="../">
+      
+      
+      <meta name="docfx:docurl" content="https://github.com/LoongBa/TKWF.Docs/blob/main/docs/articles/getting-started.md/#L1">
+      <meta name="loc:inThisArticle" content="In this article">
+      <meta name="loc:searchResultsCount" content="{count} results for &quot;{query}&quot;">
+      <meta name="loc:searchNoResults" content="No results for &quot;{query}&quot;">
+      <meta name="loc:tocFilter" content="Filter by title">
+      <meta name="loc:nextArticle" content="Next">
+      <meta name="loc:prevArticle" content="Previous">
+      <meta name="loc:themeLight" content="Light">
+      <meta name="loc:themeDark" content="Dark">
+      <meta name="loc:themeAuto" content="Auto">
+      <meta name="loc:changeTheme" content="Change theme">
+      <meta name="loc:copy" content="Copy">
+      <meta name="loc:downloadPdf" content="Download PDF">
+
+      <script type="module" src="./../public/docfx.min.js"></script>
+
+      <script>
+        const theme = localStorage.getItem('theme') || 'auto'
+        document.documentElement.setAttribute('data-bs-theme', theme === 'auto' ? (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light') : theme)
+      </script>
+
+  </head>
+
+  <body class="tex2jax_ignore" data-layout="" data-yaml-mime="">
+    <header class="bg-body border-bottom">
+      <nav id="autocollapse" class="navbar navbar-expand-md" role="navigation">
+        <div class="container-xxl flex-nowrap">
+          <a class="navbar-brand" href="../index.html">
+            <img id="logo" class="svg" src="../logo.svg" alt="">
+            
+          </a>
+          <button class="btn btn-lg d-md-none border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navpanel" aria-controls="navpanel" aria-expanded="false" aria-label="Toggle navigation">
+            <i class="bi bi-three-dots"></i>
+          </button>
+          <div class="collapse navbar-collapse" id="navpanel">
+            <div id="navbar">
+              <form class="search" role="search" id="search">
+                <i class="bi bi-search"></i>
+                <input class="form-control" id="search-query" type="search" disabled placeholder="Search" autocomplete="off" aria-label="Search">
+              </form>
+            </div>
+          </div>
+        </div>
+      </nav>
+    </header>
+
+    <main class="container-xxl">
+      <div class="toc-offcanvas">
+        <div class="offcanvas-md offcanvas-start" tabindex="-1" id="tocOffcanvas" aria-labelledby="tocOffcanvasLabel">
+          <div class="offcanvas-header">
+            <h5 class="offcanvas-title" id="tocOffcanvasLabel">Table of Contents</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="offcanvas" data-bs-target="#tocOffcanvas" aria-label="Close"></button>
+          </div>
+          <div class="offcanvas-body">
+            <nav class="toc" id="toc"></nav>
+          </div>
+        </div>
+      </div>
+
+      <div class="content">
+        <div class="actionbar">
+          <button class="btn btn-lg border-0 d-md-none" type="button" data-bs-toggle="offcanvas" data-bs-target="#tocOffcanvas" aria-controls="tocOffcanvas" aria-expanded="false" aria-label="Show table of contents">
+            <i class="bi bi-list"></i>
+          </button>
+
+          <nav id="breadcrumb"></nav>
+        </div>
+
+        <article data-uid="">
+<h1 id="5-分钟入门">5 分钟入门</h1>
+
+<p>本指南带你从零创建一个带 AOP 拦截、GraphQL 暴露的领域服务。</p>
+<hr>
+<h2 id="前置条件">前置条件</h2>
+<ul>
+<li>.NET 10 SDK</li>
+<li>NuGet 包引用 <code>TKWF.Domain</code> + 对应传输层包</li>
+</ul>
+<h2 id="第一步安装-nuget-包">第一步：安装 NuGet 包</h2>
+<pre><code class="lang-shell">dotnet add package TKWF.Domain
+dotnet add package TKWF.Domain.ApiService.HotChocolate  # GraphQL
+dotnet add package TKWF.Domain.Web                      # Web 集成
+</code></pre>
+<h2 id="第二步实现用户信息">第二步：实现用户信息</h2>
+<pre><code class="lang-csharp">// Domain/AppUserInfo.cs
+public class AppUserInfo : IUserInfo
+{
+    public string UserName { get; set; } = &quot;&quot;;
+    public string DisplayName { get; set; } = &quot;&quot;;
+    public string? Email { get; set; }
+    public List&lt;string&gt; Roles { get; set; } = new();
+}
+</code></pre>
+<h2 id="第三步编写领域服务">第三步：编写领域服务</h2>
+<pre><code class="lang-csharp">// Domain/Services/GreetingService.cs
+[GenerateController]                     // ← 触发 SG#4 代码生成
+public class GreetingService(
+    DomainUser&lt;AppUserInfo&gt; user)        // ← DomainUser 自持实例化
+    : DomainServiceBase&lt;AppUserInfo&gt;(user)
+{
+    public async Task&lt;string&gt; SayHelloAsync(string name)
+    {
+        var currentUser = User.UserInfo.UserName;
+        return $&quot;Hello {name}! (from {currentUser})&quot;;
+    }
+}
+</code></pre>
+<blockquote>
+<p><code>[GenerateController]</code> 只需一个标注，SG 自动生成控制器、接口、Resolver。无需手写 Controller。</p>
+</blockquote>
+<h2 id="第四步配置主机">第四步：配置主机</h2>
+<pre><code class="lang-csharp">// Program.cs
+builder.ConfigWebAppDomain&lt;AppUserInfo, AppDomainInitializer&gt;()
+    .UseWebSession()
+    .UseGraphQLApiService&lt;AppUserInfo&gt;()
+    .Build();
+
+app.Run();
+</code></pre>
+<h2 id="第五步查询">第五步：查询</h2>
+<pre><code class="lang-graphql">query {
+  sayHello(name: &quot;World&quot;)
+}
+</code></pre>
+<p>返回：</p>
+<pre><code class="lang-json">{
+  &quot;data&quot;: {
+    &quot;sayHello&quot;: &quot;Hello World! (from admin)&quot;
+  }
+}
+</code></pre>
+<h2 id="你刚刚完成了什么">你刚刚完成了什么？</h2>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">步骤</th>
+<th style="text-align: left;">自动生成的内容</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><code>[GenerateController]</code></td>
+<td style="text-align: left;">AOP 控制器接口 + 装饰器</td>
+</tr>
+<tr>
+<td style="text-align: left;">主机配置</td>
+<td style="text-align: left;">Session 中间件 + GraphQL 端点</td>
+</tr>
+<tr>
+<td style="text-align: left;">客户端使用</td>
+<td style="text-align: left;">自动生成 Resolver，无需手写</td>
+</tr>
+</tbody>
+</table>
+<h2 id="下一步">下一步</h2>
+<ul>
+<li>添加 <code>[AuthorityFilter]</code> 保护方法 → <a href="security/authorization.html">授权指南</a></li>
+<li>使用 <code>[Transactional]</code> 包裹多步写入 → <a href="core-concepts/aop-pipeline.html">AOP 管线</a></li>
+<li>探索 RPC 远程过程调用 → <a href="transport/rpc.html">RPC 传输</a></li>
+<li>完整配置选项 → <a href="advanced/configuration.html">配置参考</a></li>
+</ul>
+
+</article>
+
+        <div class="contribution d-print-none">
+          <a href="https://github.com/LoongBa/TKWF.Docs/blob/main/docs/articles/getting-started.md/#L1" class="edit-link">Edit this page</a>
+        </div>
+
+        <div class="next-article d-print-none border-top" id="nextArticle"></div>
+
+      </div>
+
+      <div class="affix">
+        <nav id="affix"></nav>
+      </div>
+    </main>
+
+    <div class="container-xxl search-results" id="search-results"></div>
+
+    <footer class="border-top text-secondary">
+      <div class="container-xxl">
+        <div class="flex-fill">
+          <span>© LoongBa.cn 2026. Powered by DocFX</span>
+        </div>
+      </div>
+    </footer>
+  </body>
+</html>

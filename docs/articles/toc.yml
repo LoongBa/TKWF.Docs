@@ -2,3 +2,59 @@
   href: getting-started.md
 - name: 🏗️ 框架概览
   href: intro.md
+- name: 🧩 核心概念
+  href: core-concepts/domain-user.md
+  items:
+    - name: DomainUser 详解
+      href: core-concepts/domain-user.md
+    - name: AOP 管线
+      href: core-concepts/aop-pipeline.md
+    - name: 代码生成
+      href: core-concepts/code-generation.md
+- name: 🔐 安全
+  href: security/authentication.md
+  items:
+    - name: 认证
+      href: security/authentication.md
+    - name: 授权
+      href: security/authorization.md
+    - name: Session 管理
+      href: security/session.md
+- name: 🌐 传输协议
+  href: transport/graphql.md
+  items:
+    - name: GraphQL
+      href: transport/graphql.md
+    - name: REST
+      href: transport/rest-minimal-api.md
+    - name: RPC
+      href: transport/rpc.md
+- name: 🔌 集成
+  href: integration/web.md
+  items:
+    - name: Web
+      href: integration/web.md
+    - name: Blazor
+      href: integration/blazor.md
+    - name: MAUI
+      href: integration/maui.md
+    - name: FreeSql
+      href: integration/freesql.md
+- name: 📦 客户端
+  href: client/api-client.md
+  items:
+    - name: ApiClient 核心
+      href: client/api-client.md
+    - name: GraphQL 客户端
+      href: client/graphql-client.md
+    - name: REST 客户端
+      href: client/rest-client.md
+- name: ⚙️ 进阶
+  href: advanced/configuration.md
+  items:
+    - name: 配置参考
+      href: advanced/configuration.md
+    - name: 异常处理
+      href: advanced/error-handling.md
+    - name: 最佳实践
+      href: advanced/best-practices.md

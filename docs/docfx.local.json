@@ -1,0 +1,26 @@
+{
+  "$schema": "https://raw.githubusercontent.com/dotnet/docfx/main/src/docfx.schema.json",
+  "metadata": [],
+  "build": {
+    "content": [
+      { "files": ["articles/**/*.md"], "src": ".", "dest": "." },
+      { "files": ["toc.yml"], "src": ".", "dest": "." },
+      { "files": ["index.md"], "src": ".", "dest": "." }
+    ],
+    "resource": [
+      { "files": ["**/*.png", "**/*.jpg", "**/*.svg", "**/*.gif"] }
+    ],
+    "overwrite": [],
+    "dest": "_site_local",
+    "globalMetadata": {
+      "_appTitle": "TKWF — 领域自治框架",
+      "_appFooter": "<span>© LoongBa.cn 2026. Powered by DocFX</span>",
+      "_enableSearch": true,
+      "_disableNavbar": false,
+      "_disableBreadcrumb": false,
+      "_disableToc": false
+    },
+    "template": ["default", "modern", "../templates/custom"],
+    "postProcess": []
+  }
+}

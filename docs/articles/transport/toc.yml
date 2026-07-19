@@ -1,0 +1,6 @@
+- name: 🌐 GraphQL
+  href: graphql.md
+- name: 🔗 REST
+  href: rest-minimal-api.md
+- name: 📡 RPC
+  href: rpc.md

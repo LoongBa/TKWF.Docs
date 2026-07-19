@@ -1,0 +1,253 @@
+/* ============================================================
+   TKWF Docs — Custom Theme Overrides
+   ============================================================ */
+
+/* --- Brand Colors --- */
+:root {
+  --tkwf-primary: #2563eb;
+  --tkwf-primary-light: #3b82f6;
+  --tkwf-accent: #06b6d4;
+  --tkwf-accent-cyan: #22d3ee;
+  --tkwf-dark: #0f172a;
+  --tkwf-slate: #334155;
+  --tkwf-success: #10b981;
+  --tkwf-warning: #f59e0b;
+  --tkwf-gradient: linear-gradient(135deg, #2563eb 0%, #06b6d4 100%);
+}
+
+/* --- Hero Section --- */
+.hero-section {
+  text-align: center;
+  padding: 3rem 1rem 2rem;
+  background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+  border-radius: 12px;
+  margin-bottom: 2rem;
+  color: #f1f5f9;
+}
+
+.hero-section h1 {
+  font-size: 2.5rem;
+  font-weight: 800;
+  margin-bottom: 0.5rem;
+  background: linear-gradient(135deg, #60a5fa 0%, #22d3ee 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.hero-section .lead {
+  font-size: 1.2rem;
+  color: #94a3b8;
+  max-width: 720px;
+  margin: 0 auto 1.5rem;
+}
+
+.hero-section .badge-agentic {
+  display: inline-block;
+  background: linear-gradient(135deg, #2563eb, #06b6d4);
+  color: #fff;
+  padding: 0.35rem 1rem;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+}
+
+/* --- Feature Cards --- */
+.feature-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 1.25rem;
+  margin: 1.5rem 0;
+}
+
+.feature-card {
+  border: 1px solid var(--bs-border-color, #e2e8f0);
+  border-radius: 10px;
+  padding: 1.5rem;
+  background: var(--bs-card-bg, #fff);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.feature-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+}
+
+.feature-card .card-icon {
+  font-size: 1.8rem;
+  margin-bottom: 0.5rem;
+}
+
+.feature-card h3 {
+  font-size: 1.1rem;
+  font-weight: 700;
+  margin-bottom: 0.4rem;
+}
+
+.feature-card p {
+  font-size: 0.9rem;
+  color: var(--bs-secondary-color, #64748b);
+  margin-bottom: 0;
+  line-height: 1.5;
+}
+
+/* --- Scenario Cards --- */
+.scenario-card {
+  border: 1px solid var(--bs-border-color, #e2e8f0);
+  border-radius: 10px;
+  overflow: hidden;
+  margin-bottom: 1.5rem;
+  background: var(--bs-card-bg, #fff);
+}
+
+.scenario-card-header {
+  background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+  color: #f1f5f9;
+  padding: 1rem 1.5rem;
+  font-weight: 700;
+  font-size: 1rem;
+}
+
+.scenario-card-body {
+  padding: 1.5rem;
+}
+
+.scenario-card-body p {
+  line-height: 1.6;
+  margin-bottom: 0.75rem;
+}
+
+.scenario-card-body .highlight {
+  display: inline-block;
+  background: #dbeafe;
+  color: #1d4ed8;
+  padding: 0.15rem 0.5rem;
+  border-radius: 4px;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+[data-bs-theme="dark"] .scenario-card-body .highlight {
+  background: #1e3a5f;
+  color: #60a5fa;
+}
+
+.scenario-card-body pre {
+  margin: 0.5rem 0;
+  border-radius: 6px;
+}
+
+/* --- Package Table --- */
+.package-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 1rem 0;
+}
+
+.package-table th {
+  text-align: left;
+  padding: 0.6rem 0.8rem;
+  border-bottom: 2px solid var(--bs-border-color, #e2e8f0);
+  font-weight: 700;
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  color: var(--bs-secondary-color, #64748b);
+}
+
+.package-table td {
+  padding: 0.5rem 0.8rem;
+  border-bottom: 1px solid var(--bs-border-color, #e2e8f0);
+  font-size: 0.9rem;
+}
+
+.package-table tr:hover td {
+  background: rgba(37, 99, 235, 0.04);
+}
+
+/* --- Chapter Card --- */
+.chapter-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1rem;
+  margin: 1.5rem 0;
+}
+
+.chapter-card {
+  display: block;
+  border: 1px solid var(--bs-border-color, #e2e8f0);
+  border-radius: 8px;
+  padding: 1.25rem;
+  text-decoration: none !important;
+  color: inherit;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.chapter-card:hover {
+  border-color: var(--tkwf-primary-light, #3b82f6);
+  box-shadow: 0 2px 8px rgba(37, 99, 235, 0.1);
+}
+
+.chapter-card .chapter-icon {
+  font-size: 1.5rem;
+  margin-bottom: 0.3rem;
+}
+
+.chapter-card h4 {
+  font-size: 1rem;
+  font-weight: 700;
+  margin-bottom: 0.3rem;
+}
+
+.chapter-card p {
+  font-size: 0.85rem;
+  color: var(--bs-secondary-color, #64748b);
+  margin-bottom: 0;
+  line-height: 1.4;
+}
+
+/* --- Agentic Coding Banner --- */
+.agentic-banner {
+  background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+  border-radius: 10px;
+  padding: 1.5rem 2rem;
+  margin: 1.5rem 0;
+  color: #f1f5f9;
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+}
+
+.agentic-banner .banner-icon {
+  font-size: 2.5rem;
+  flex-shrink: 0;
+}
+
+.agentic-banner .banner-content {
+  flex: 1;
+  min-width: 200px;
+}
+
+.agentic-banner .banner-content h3 {
+  font-size: 1.1rem;
+  font-weight: 700;
+  margin-bottom: 0.3rem;
+  color: #60a5fa;
+}
+
+.agentic-banner .banner-content p {
+  margin-bottom: 0;
+  font-size: 0.9rem;
+  color: #94a3b8;
+  line-height: 1.5;
+}
+
+/* --- Responsive --- */
+@media (max-width: 768px) {
+  .hero-section h1 { font-size: 1.8rem; }
+  .hero-section { padding: 2rem 1rem 1.5rem; }
+  .feature-grid { grid-template-columns: 1fr; }
+  .chapter-grid { grid-template-columns: 1fr; }
+}

@@ -1,0 +1,8 @@
+- name: 🌍 Web
+  href: web.md
+- name: 🖥️ Blazor
+  href: blazor.md
+- name: 📱 MAUI
+  href: maui.md
+- name: 🗄️ FreeSql
+  href: freesql.md
