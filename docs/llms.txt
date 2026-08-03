@@ -1,0 +1,67 @@
+> 本框架为 Agentic Coding 设计，人类与 AI 是开发团队的两个成员——人定意图、AI 写实现、框架管生成。
+
+## 框架简介
+
+**TKWF.Domain** 是一个面向 Agentic Coding 的 .NET 10 领域自治框架，双核定位：
+
+- **人机协同**：人类定义业务意图（Service + 标注），AI 辅助编写实现，框架自动生成管道代码
+- **低模型门槛**：框架解决依赖注入、AOP、传输层等基础设施，降低 AI 生成代码的复杂度
+
+## 核心概念
+
+- **领域自治**：DomainUser 自持实例化，不依赖 DI 容器，Service 通过 User.UseNoAop<T>() 或 User.Use<T>() 显式消费，杜绝串号
+- **编译期 AOP**：Source Generator 在编译时生成 AOP 装饰器，零运行时反射，性能开销接近零
+- **代码生成**：[GenerateController] 标注 Service → SG 自动生成控制器、GraphQL Resolver、强类型客户端
+- **多协议**：一份 Service 定义 → GraphQL + REST + RPC 三端自动暴露
+- **安全体系**：AuthorityFilter + Role-based 授权 + Challenge-Response 登录 + SystemActor 角色
+- **SystemActor**：系统级角色体系，scope.System 系统作用域 API，[DenySystemActor] 限制访问
+
+## 关键 API 速查
+
+| API | 说明 |
+|:----|:------|
+| DomainUser | 领域用户基类，自持实例化，所有 Service 的入口 |
+| GenerateController | 标注在 Service 上，触发 SG 生成控制器与端点 |
+| AuthorityFilter | 标注在方法上，要求调用方具备指定角色/权限 |
+| Transactional | 标注在方法上，自动开启数据库事务 |
+| DenySystemActor | 标注在方法/类上，禁止 SystemActor 调用 |
+| fields 投影 | REST 查询参数 ?fields=User.Name 实现嵌套属性树形裁剪 |
+| Conditions | 查询条件构造器，支持动态过滤 |
+
+## NuGet 包
+
+- TKWF.Domain — 核心框架
+- TKWF.Domain.ApiService.HotChocolate — GraphQL 传输层
+- TKWF.Domain.Web — Web 集成
+- TKWF.Domain.Transport.GraphQL — GraphQL 传输协议
+- TKWF.Domain.Transport.Rest — REST 传输协议
+- TKWF.Domain.Transport.Rpc — RPC 远程调用
+
+## 快速开始
+
+1. 安装 NuGet 包：`dotnet add package TKWF.Domain`
+2. 编写 Service 类，继承自 DomainUser 或实现领域服务接口
+3. 标注 `[GenerateController]` 在 Service 上
+4. 编译项目 → SG 自动生成 GraphQL Resolver + REST 端点 + 强类型客户端
+5. 客户端调用：通过生成的 ApiClient 或直接调用 GraphQL/REST 端点
+
+## 文档链接
+
+- [入门指南](/articles/getting-started.html)
+- [框架概览](/articles/intro.html)
+- [DomainUser 详解](/articles/core-concepts/domain-user.html)
+- [AOP 管线](/articles/core-concepts/aop-pipeline.html)
+- [代码生成](/articles/core-concepts/code-generation.html)
+- [认证与授权](/articles/security/authentication.html)
+- [GraphQL 传输](/articles/transport/graphql.html)
+- [REST 传输](/articles/transport/rest-minimal-api.html)
+- [RPC 远程调用](/articles/transport/rpc.html)
+- [客户端 SDK](/articles/client/api-client.html)
+- [配置参考](/articles/advanced/configuration.html)
+- [最佳实践](/articles/advanced/best-practices.html)
+- [API 参考](/api/TKWF.Domain.yml)
+
+## 版本信息
+
+- 当前同步版本：V4.9.12
+- 完整变更历史：[TKWF CHANGELOG](https://github.com/LoongBa/TKW.Framework/blob/master/docs/CHANGELOG.md)
