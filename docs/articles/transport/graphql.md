@@ -1,3 +1,7 @@
+﻿---
+title: GraphQL 传输
+description: GraphQL 传输：基于 HotChocolate 16 的 GraphQL 端点配置与查询
+---
 # GraphQL 传输
 
 基于 HotChocolate 16，TKWF 自动为所有 Controller 生成 GraphQL Resolver，

@@ -1,3 +1,7 @@
+﻿---
+title: Blazor 集成
+description: Blazor 集成：在 Blazor Server/WASM 中使用 TKWF 领域框架
+---
 # Blazor 集成
 
 `TKWF.Domain.Blazor` 让 Blazor Server / WASM 应用无缝集成 TKWF 领域框架。

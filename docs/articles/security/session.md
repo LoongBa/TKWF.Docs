@@ -1,3 +1,7 @@
+﻿---
+title: Session 管理
+description: Session 管理：会话生命周期、LoginAsAsync/Logout 操作、用户信息获取
+---
 # Session 管理
 
 TKWF 通过 Session 中间件管理用户会话，自动将认证后的用户绑定到 `DomainUser`。

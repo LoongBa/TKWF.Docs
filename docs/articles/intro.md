@@ -1,3 +1,7 @@
+﻿---
+title: 框架概览
+description: TKWF.Domain 框架概览：领域自治、编译期 AOP、代码生成管线、多协议传输等核心概念
+---
 # 框架概览
 
 TKWF.Domain 是一个面向 **Agentic Coding** 时代的 .NET 10 领域驱动设计框架。

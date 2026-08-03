@@ -1,3 +1,7 @@
+﻿---
+title: GraphQL 客户端
+description: GraphQL 客户端：GraphQL 客户端配置与查询
+---
 # GraphQL 客户端
 
 `TKWF.Domain.ApiClient.GraphQL` 提供基于 GraphQL 的 RPC 客户端实现。

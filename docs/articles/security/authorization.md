@@ -1,3 +1,7 @@
+﻿---
+title: 授权
+description: 授权：AuthorityFilter 角色授权、策略授权、AllowAnonymousFlag 豁免
+---
 # 授权
 
 TKWF 通过 `[AuthorityFilter]` 提供声明式方法级授权，支持 Role-based 和 Policy-based 两种模式。

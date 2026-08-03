@@ -1,3 +1,7 @@
+﻿---
+title: REST 传输
+description: REST 传输：基于 Minimal API 的 REST 端点配置与使用，含 ?fields 投影
+---
 # REST 传输
 
 基于 ASP.NET Minimal API，TKWF 自动为所有 Controller 生成 REST 端点。

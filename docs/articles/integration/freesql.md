@@ -1,3 +1,7 @@
+﻿---
+title: FreeSql ORM 适配
+description: FreeSql ORM 适配：数据层配置与使用
+---
 # FreeSql ORM 适配
 
 `TKWF.Domain.FreeSql` 提供 FreeSql 作为 TKWF 框架的数据层实现。

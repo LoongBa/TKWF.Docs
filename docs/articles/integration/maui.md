@@ -1,3 +1,7 @@
+﻿---
+title: MAUI 集成
+description: MAUI 集成：跨平台客户端集成 DomainUser 体系
+---
 # MAUI 集成
 
 `TKWF.Domain.Maui` 让 MAUI 应用集成 TKWF 领域框架，支持离线场景和远程调用。
