@@ -1,6 +1,7 @@
-# tag.ps1 — 同步文档站版本到 TKWF 最新 tag
+# tag.ps1 — 内容对齐：同步文档站版本到 TKWF 最新 tag
 # 用法: pwsh scripts/tag.ps1
 # 自动从 _TKWF 取最新版本 tag，同步到文档站
+# 配套 AGENTS.md §2.3 内容对齐流程：更新内容 → 审核记录 → 运行本脚本
 
 $ErrorActionPreference = "Stop"
 $root = $PSScriptRoot | Split-Path -Parent
