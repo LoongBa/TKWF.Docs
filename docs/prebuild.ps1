@@ -46,14 +46,14 @@ if ($currentVer) {
     $null = $entries.Add(@{Ver=$currentVer; Date=$currentDate; Desc=$currentDesc.Trim()})
 }
 
-# 取最新 3 版本
-$latest = $entries | Select-Object -Last 3
+# 取最新 3 版本（按日期排序，取最新的 3 个）
+$latest = $entries | Sort-Object { [DateTime]::ParseExact($_.Date, "yyyy-MM-dd", $null) } -Descending | Select-Object -First 3
 if ($latest.Count -eq 0) {
     Write-Warning "CHANGELOG 中未解析到版本条目"
     exit 0
 }
 
-$newestVer = $latest[-1].Ver
+$newestVer = $latest[0].Ver
 Write-Host "当前最新版本: V$newestVer"
 
 # ---- 2. 更新 llms.txt ----
@@ -71,8 +71,8 @@ if (Test-Path $index) {
     $indexContent = Get-Content $index -Raw
 
     $tableRows = ""
-    # 从新到旧排列
-    for ($i = $latest.Count - 1; $i -ge 0; $i--) {
+    # 从新到旧排列（$latest[0] 最新）
+    for ($i = 0; $i -lt $latest.Count; $i++) {
         $e = $latest[$i]
         $shortDesc = $e.Desc
         if ($shortDesc.Length -gt 80) { $shortDesc = $shortDesc.Substring(0, 80) + "…" }
