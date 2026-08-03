@@ -125,7 +125,7 @@ _TKWF（源码 + docs/ 源文档）  ←——— 唯一事实来源 ———  
 - 本地执行：`pwsh docs/prebuild.ps1`
 - CI 集成：GitHub Actions workflow 中在 `docfx build` 前添加 `- run: pwsh docs/prebuild.ps1`
 
-**打 tag 一句话**：`pwsh scripts/tag.ps1 V4.9.13`（同步版本 → 构建验证 → 提交 → tag → 推送，一步完成）
+**打 tag 一句话**：`pwsh scripts/tag.ps1`（自动取 TKWF 最新 tag → 同步版本 → 提交 → tag → 推送）
 
 ### 2.3 版本号维护清单（每次打 tag 前检查）
 

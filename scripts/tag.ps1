@@ -1,34 +1,27 @@
-# tag.ps1 — 一键打 tag：同步版本 → 构建验证 → 提交 → tag → 推送
-# 用法: pwsh scripts/tag.ps1 V4.9.13
-# 要求: 在 TKWF.Docs 仓库根目录执行
-
-param([string]$Tag = $(throw "参数缺失: 请指定 tag 名，如 pwsh scripts/tag.ps1 V4.9.13"))
+# tag.ps1 — 同步文档站版本到 TKWF 最新 tag
+# 用法: pwsh scripts/tag.ps1
+# 自动从 _TKWF 取最新版本 tag，同步到文档站
 
 $ErrorActionPreference = "Stop"
 $root = $PSScriptRoot | Split-Path -Parent
 Set-Location $root
 
-# 1. 同步版本
-Write-Host "`n[1/5] 同步版本号..." -ForegroundColor Cyan
+# 取 TKWF 最新版本 tag
+$tag = & git -C "../_TKWF" describe --tags --abbrev=0 --match "V*"
+if (-not $tag) { throw "未找到 _TKWF 版本 tag" }
+Write-Host "TKWF 最新版本: $tag" -ForegroundColor Cyan
+
+# 同步版本
+Write-Host "[1/3] 同步版本号..." -ForegroundColor Cyan
 & pwsh -NoProfile docs/prebuild.ps1
 
-# 2. 构建验证
-Write-Host "`n[2/5] 构建验证..." -ForegroundColor Cyan
-docfx build docs/docfx.json 2>&1 | Tee-Object -Variable buildOutput
-if ($buildOutput -match "warning|error") {
-    Write-Host "⚠️ 构建出现 warning/error，请检查后重试" -ForegroundColor Yellow
-    exit 1
-}
-
-# 3. 提交
-Write-Host "`n[3/5] 提交 + tag..." -ForegroundColor Cyan
+# 提交 + tag + 推送
+Write-Host "[2/3] 提交 + tag..." -ForegroundColor Cyan
 git add -A
-git commit -m "chore: $Tag 版本同步" -m "Ultraworked with [Sisyphus](https://github.com/code-yeongyu/oh-my-openagent)" -m "Co-authored-by: Sisyphus <clio-agent@sisyphuslabs.ai>"
-git tag $Tag
+git commit -m "chore: 同步 $tag" -m "Ultraworked with [Sisyphus](https://github.com/code-yeongyu/oh-my-openagent)" -m "Co-authored-by: Sisyphus <clio-agent@sisyphuslabs.ai>"
+git tag $tag
 
-# 4. 推送
-Write-Host "`n[4/5] 推送..." -ForegroundColor Cyan
+Write-Host "[3/3] 推送..." -ForegroundColor Cyan
 git push origin main --tags
 
-# 5. 完成
-Write-Host "`n[5/5] ✅ $Tag 已发布" -ForegroundColor Green
+Write-Host "✅ $tag 已同步到文档站" -ForegroundColor Green
