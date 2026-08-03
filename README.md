@@ -4,7 +4,20 @@
 
 [![Build and Deploy Docs](https://github.com/LoongBa/TKWF.Docs/actions/workflows/docfx.yml/badge.svg)](https://github.com/LoongBa/TKWF.Docs/actions/workflows/docfx.yml)
 
+**当前同步版本：V4.9.12**（文档与框架 [LoongBa/TKW.Framework](https://github.com/LoongBa/TKW.Framework) 保持同步）
+
 ---
+
+## 最近版本动态
+
+| 版本 | 日期 | 核心内容 |
+|:-----|:-----|:---------|
+| **4.9.12** | 2026-08-04 | 投影内部优化：嵌套属性 `?fields=User.Name` 树形裁剪（FieldPathNode Trie）、ViewSql 列名校验（ViewSqlColumnValidator）、SQL 级投影激活验证 |
+| **4.9.11** | 2026-08-03 | 投影收尾 + 框架清理：前端 selection→`?fields` 验证、SystemActor 服务解析 API、废弃代码清理、字段签名一致性 |
+| **4.9.10** | 2026-08-01 | 系统作用域 API 完善：`scope.System`/`scope.IsSystem`、`[DenySystemActor]`、`NoSessionManager` 瞬态会话 |
+| **4.9.9** | 2026-07-31 | 系统角色 SystemActor 体系落地 |
+
+> 完整变更历史见 [TKWF CHANGELOG](https://github.com/LoongBa/TKW.Framework/blob/master/docs/CHANGELOG.md)。
 
 ## 关于 TKWF
 
@@ -14,7 +27,9 @@
 - **AOP 静态拦截** — 编译期 Source Generator 生成装饰器，零运行时反射
 - **代码生成** — `[GenerateController]` → SG 自动生成控制器/接口/Resolver
 - **多协议** — 一份 Service → GraphQL + REST + RPC 三端自动暴露
+- **REST 投影** — `?fields=User.Name` 嵌套属性选择，返回树形原结构（V4.9.12+）
 - **安全体系** — AuthorityFilter + Role-based + Challenge-Response 登录
+- **系统角色** — SystemActor 体系 + `scope.System` 系统作用域 API（V4.9.9+）
 
 ## 文档站点
 
