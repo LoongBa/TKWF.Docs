@@ -2,24 +2,76 @@
 _layout: landing
 ---
 
+<!-- ===== 区块 1: Hero ===== -->
 <div class="hero-section">
-  <div class="badge-agentic">🤖 为 Agentic Coding 时代而生</div>
-  <h1>TKWF — 领域自治框架</h1>
+  <div class="hero-badges">
+    <img src="https://img.shields.io/badge/.NET-10-blue" alt=".NET 10" />
+    <img src="https://img.shields.io/badge/version-4.9.12-green" alt="Version 4.9.12" />
+    <img src="https://img.shields.io/badge/AI-Agentic_Ready-purple" alt="AI-Agentic Ready" />
+  </div>
+  <h1>TKWF.Domain — 让 AI 写 Service，框架负责剩下的</h1>
   <p class="lead">
-    .NET 10 领域驱动设计框架，专为<strong> AI 结对编程</strong>设计。<br>
-    声明式标注 → 全自动生成 API / 客户端 / AOP 管线。<br>
-    让 AI 写 Service，框架负责剩下的。
+    .NET 10 领域自治框架。标注 <code>[GenerateController]</code>，
+    编译期自动生成 Controller + AOP 装饰器 + GraphQL/REST 端点 + 客户端代理。<br>
+    零运行时反射，零 DI 串号，代码行为对 AI 完全可预测。
   </p>
-  <p>
-    <a href="articles/getting-started.md" class="btn btn-primary" style="margin-right:0.5rem;">🚀 5 分钟快速开始</a>
-    <a href="articles/intro.md" class="btn btn-outline-light">📖 了解框架概览</a>
-  </p>
+  <div class="hero-cta">
+    <a href="articles/getting-started.md" class="btn btn-primary">🚀 5 分钟快速开始</a>
+    <a href="articles/intro.md" class="btn btn-outline-light">📖 框架概览</a>
+    <a href="articles/agentic/quick-start-for-ai.md" class="btn btn-outline-light">🤖 AI 快速上手</a>
+  </div>
 </div>
 
 ---
 
-## 为什么 TKWF 适合 Agentic Coding？
+<!-- ===== 区块 2: 对比表 ===== -->
+## 为什么 TKWF？
 
+<table class="comparison-table">
+  <thead>
+    <tr>
+      <th>维度</th>
+      <th>传统 DI 框架</th>
+      <th>TKWF.Domain</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>AOP 实现</td>
+      <td>运行时动态代理（反射 + IL Emit）</td>
+      <td>编译期 SG 生成装饰器，零运行时反射</td>
+    </tr>
+    <tr>
+      <td>DI 依赖</td>
+      <td>Service 依赖容器注入 DomainUser，存在串号风险</td>
+      <td>DomainUser 自持实例化，<code>User.Use&lt;T&gt;()</code> 显式传递，物理隔离</td>
+    </tr>
+    <tr>
+      <td>API 暴露</td>
+      <td>手写 Controller + 手动注册路由</td>
+      <td><code>[GenerateController]</code> 一标注，SG 自动生成 GraphQL + REST 端点</td>
+    </tr>
+    <tr>
+      <td>客户端生成</td>
+      <td>手写或用 NSwag / Swagger 生成</td>
+      <td>SG#3 编译期生成强类型客户端代理，与服务端同源</td>
+    </tr>
+    <tr>
+      <td>AI 可预测性</td>
+      <td>DI 生命周期、动态代理行为难以预测</td>
+      <td>编译期生成，代码可见可调试，AI 生成结果与手写一致</td>
+    </tr>
+    <tr>
+      <td>带宽优化</td>
+      <td>需手写 DTO 或 GraphQL field selection</td>
+      <td>REST <code>?fields=User.Name</code> 原生投影 + GraphQL selection 自动裁剪</td>
+    </tr>
+  </tbody>
+</table>
+
+---
+
+<!-- ===== 区块 3: Agentic Banner ===== -->
 <div class="agentic-banner">
   <div class="banner-icon">🧩</div>
   <div class="banner-content">
@@ -54,6 +106,35 @@ _layout: landing
 
 ---
 
+<!-- ===== 区块 4: 路径卡片 ===== -->
+## 从这里开始
+
+<div class="path-grid">
+  <a href="articles/getting-started.md" class="path-card">
+    <h3>🚀 快速探索</h3>
+    <p><strong>5 分钟感受"标注即生成"</strong></p>
+    <p>安装 NuGet → 写 Service → 标注 → 编译即得 GraphQL + REST 端点</p>
+  </a>
+  <a href="articles/tutorials/30-min-todo-part1.md" class="path-card">
+    <h3>📋 实战学习</h3>
+    <p><strong>30 分钟构建完整 CRUD</strong></p>
+    <p>从 Entity 到数据层、认证授权、多协议暴露，跟着教程走一遍</p>
+  </a>
+  <a href="articles/explanation/why-domain-autonomy.md" class="path-card">
+    <h3>🔬 深度理解</h3>
+    <p><strong>为什么这样设计？</strong></p>
+    <p>领域自治 vs DI 容器、编译期 AOP 原理、三层 SG 管线解剖</p>
+  </a>
+  <a href="articles/decision-guides/choose-transport.md" class="path-card">
+    <h3>🧭 决策指南</h3>
+    <p><strong>该怎么选？</strong></p>
+    <p>GraphQL vs REST vs RPC、Path A vs Path B、Web vs Blazor vs MAUI</p>
+  </a>
+</div>
+
+---
+
+<!-- ===== 区块 5: 场景卡片 ===== -->
 ## 经典场景快速体验
 
 <div class="scenario-card">
@@ -119,6 +200,7 @@ builder.ConfigWebAppDomain&lt;AppUserInfo, AppDomainInitializer&gt;()
 
 ---
 
+<!-- ===== 区块 6: 核心特性 ===== -->
 ## 核心特性
 
 <div class="feature-grid">
@@ -156,83 +238,20 @@ builder.ConfigWebAppDomain&lt;AppUserInfo, AppDomainInitializer&gt;()
 
 ---
 
-## 分章节阅读
+<!-- ===== 区块 7: 版本动态 ===== -->
+## 最近版本动态
 
-<div class="chapter-grid">
-  <a href="articles/getting-started.md" class="chapter-card">
-    <div class="chapter-icon">🚀</div>
-    <h4>入门指南</h4>
-    <p>5 分钟创建第一个带 AOP 的领域服务，快速上手 TKWF。</p>
-  </a>
-  <a href="articles/intro.md" class="chapter-card">
-    <div class="chapter-icon">🏗️</div>
-    <h4>框架概览</h4>
-    <p>核心概念：DomainUser、AOP 管线、代码生成管线 SG#1~#4。</p>
-  </a>
-  <a href="articles/core-concepts/domain-user.md" class="chapter-card">
-    <div class="chapter-icon">🧩</div>
-    <h4>DomainUser 详解</h4>
-    <p>深入理解领域自治的核心机制与最佳实践。</p>
-  </a>
-  <a href="articles/core-concepts/aop-pipeline.md" class="chapter-card">
-    <div class="chapter-icon">🪄</div>
-    <h4>AOP 管线</h4>
-    <p>AOP 静态拦截的工作原理、自定义 Filter、管线编排。</p>
-  </a>
-  <a href="articles/core-concepts/code-generation.md" class="chapter-card">
-    <div class="chapter-icon">⚙️</div>
-    <h4>代码生成</h4>
-    <p>Source Generator 管线详解：SG#1~#4 的职责与扩展。</p>
-  </a>
-  <a href="articles/security/authentication.md" class="chapter-card">
-    <div class="chapter-icon">🔐</div>
-    <h4>认证与授权</h4>
-    <p>Challenge-Response 登录、AuthorityFilter、Role-based 访问控制。</p>
-  </a>
-  <a href="articles/transport/graphql.md" class="chapter-card">
-    <div class="chapter-icon">🌐</div>
-    <h4>GraphQL 传输</h4>
-    <p>基于 HotChocolate 16 的 GraphQL 端点配置与查询。</p>
-  </a>
-  <a href="articles/transport/rest-minimal-api.md" class="chapter-card">
-    <div class="chapter-icon">🔗</div>
-    <h4>REST 传输</h4>
-    <p>基于 Minimal API 的 REST 端点配置与使用。</p>
-  </a>
-  <a href="articles/transport/rpc.md" class="chapter-card">
-    <div class="chapter-icon">📡</div>
-    <h4>RPC 远程调用</h4>
-    <p>通过 ApiClient 实现远程过程调用。</p>
-  </a>
-  <a href="articles/integration/web.md" class="chapter-card">
-    <div class="chapter-icon">🌍</div>
-    <h4>Web 集成</h4>
-    <p>Session 中间件、HttpContext 适配、Web 环境配置。</p>
-  </a>
-  <a href="articles/integration/blazor.md" class="chapter-card">
-    <div class="chapter-icon">🖥️</div>
-    <h4>Blazor 集成</h4>
-    <p>在 Blazor Server / WASM 中使用 TKWF 领域框架。</p>
-  </a>
-  <a href="articles/integration/freesql.md" class="chapter-card">
-    <div class="chapter-icon">🗄️</div>
-    <h4>FreeSql ORM 适配</h4>
-    <p>FreeSql 作为数据层的配置与使用。</p>
-  </a>
-  <a href="articles/advanced/configuration.md" class="chapter-card">
-    <div class="chapter-icon">⚙️</div>
-    <h4>配置参考</h4>
-    <p>ConfigWebAppDomain 配置项完整说明。</p>
-  </a>
-  <a href="articles/advanced/best-practices.md" class="chapter-card">
-    <div class="chapter-icon">✨</div>
-    <h4>最佳实践</h4>
-    <p>架构设计建议、常见反模式、性能优化。</p>
-  </a>
-</div>
+| 版本 | 日期 | 核心内容 |
+|:-----|:-----|:---------|
+| **4.9.12** | 2026-08-04 | 投影内部优化：嵌套属性 `?fields=User.Name` 树形裁剪（FieldPathNode Trie）、ViewSql 列名校验 |
+| **4.9.11** | 2026-08-03 | 投影收尾 + 框架清理：前端 selection→`?fields` 验证、SystemActor 服务解析 API、废弃代码清理 |
+| **4.9.10** | 2026-08-01 | 系统作用域 API 完善：`scope.System`/`scope.IsSystem`、`[DenySystemActor]`、`NoSessionManager` 瞬态会话 |
+
+> 完整变更历史见 [TKWF CHANGELOG](https://github.com/LoongBa/TKW.Framework/blob/master/docs/CHANGELOG.md)
 
 ---
 
+<!-- ===== 区块 8: NuGet 包 ===== -->
 ## NuGet 包
 
 | 包名 | 说明 |
@@ -253,6 +272,7 @@ builder.ConfigWebAppDomain&lt;AppUserInfo, AppDomainInitializer&gt;()
 
 ---
 
+<!-- ===== 区块 9: 链接 ===== -->
 ## 链接
 
 - GitHub: [LoongBa/TKW.Framework](https://github.com/LoongBa/TKW.Framework)
