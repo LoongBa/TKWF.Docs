@@ -6,8 +6,8 @@ $ErrorActionPreference = "Stop"
 $root = $PSScriptRoot | Split-Path -Parent
 Set-Location $root
 
-# 取 TKWF 最新版本 tag
-$tag = & git -C "../_TKWF" describe --tags --abbrev=0 --match "V*"
+# 取 TKWF 最新框架版本 tag（小写 v*，如 v4.9.12）
+$tag = & git -C "../_TKWF" describe --tags --abbrev=0 --match "v*"
 if (-not $tag) { throw "未找到 _TKWF 版本 tag" }
 Write-Host "TKWF 最新版本: $tag" -ForegroundColor Cyan
 
