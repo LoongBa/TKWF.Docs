@@ -1,5 +1,16 @@
-- name: 🚀 入门指南
+- name: 📚 学习路径
   href: articles/getting-started.md
+  items:
+    - name: 5 分钟快速开始
+      href: articles/getting-started.md
+    - name: 30 分钟实战教程
+      href: tutorials/30-min-todo-part1.md
+    - name: 60 分钟进阶教程
+      href: tutorials/60-min-advanced-part1.md
+    - name: 深度理解系列
+      href: explanation/why-domain-autonomy.md
+    - name: 决策指南
+      href: decision-guides/choose-transport.md
 - name: 🏗️ 框架概览
   href: articles/intro.md
 - name: 🧩 核心概念
@@ -58,6 +69,8 @@
       href: articles/advanced/error-handling.md
     - name: 最佳实践
       href: articles/advanced/best-practices.md
+- name: 🤖 Agentic 专题
+  href: articles/agentic/quick-start-for-ai.md
 - name: 📚 API 参考
   href: api/
   homepage: api/TKWF.Domain.yml

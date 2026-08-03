@@ -38,9 +38,23 @@
       { "files": ["index.md"], "src": ".", "dest": "." }
     ],
     "resource": [
-      { "files": ["**/*.png", "**/*.jpg", "**/*.svg", "**/*.gif"] }
+      { "files": ["404.md", "robots.txt", "llms.txt", "**/*.png", "**/*.jpg", "**/*.svg", "**/*.gif"] }
     ],
     "overwrite": [],
+    "sitemap": {
+      "baseUrl": "https://loongba.github.io/TKWF.Docs",
+      "fileOptions": {
+        "articles/**/*.md": { "priority": "0.5" },
+        "index.md": { "priority": "1.0" }
+      }
+    },
+    "xref": ["https://learn.microsoft.com/en-us/dotnet/.xrefmap.json"],
+    "markdownEngineProperties": {
+      "alerts": [
+        { "name": "AGENTIC", "type": "tip" },
+        { "name": "VERSION", "type": "important" }
+      ]
+    },
     "dest": "_site",
     "globalMetadata": {
       "_appTitle": "TKWF — 领域自治框架",

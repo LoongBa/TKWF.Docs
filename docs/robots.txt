@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://loongba.github.io/TKWF.Docs/sitemap.xml

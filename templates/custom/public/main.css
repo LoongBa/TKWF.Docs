@@ -279,3 +279,102 @@
   .feature-grid { grid-template-columns: 1fr; }
   .chapter-grid { grid-template-columns: 1fr; }
 }
+
+/* --- Hero Badges --- */
+.hero-badges {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px;
+  margin: 1rem 0;
+}
+
+/* --- Hero CTA Buttons --- */
+.hero-cta {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 12px;
+  margin: 1.5rem 0;
+}
+
+/* --- Path Grid (4-col → 1-col responsive) --- */
+.path-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1.25rem;
+  margin: 1.5rem 0;
+}
+
+@media (max-width: 992px) {
+  .path-grid { grid-template-columns: repeat(2, 1fr); }
+}
+
+@media (max-width: 576px) {
+  .path-grid { grid-template-columns: 1fr; }
+}
+
+/* --- Path Card with hover float --- */
+.path-card {
+  border: 1px solid var(--bs-border-color, #e2e8f0);
+  border-radius: 10px;
+  padding: 1.5rem;
+  background: #fff;
+  text-decoration: none !important;
+  color: inherit;
+  display: block;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+[data-bs-theme="dark"] .path-card {
+  background: #1e293b;
+  border-color: #334155;
+}
+
+.path-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+}
+
+[data-bs-theme="dark"] .path-card:hover {
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+}
+
+/* --- Comparison Table --- */
+.comparison-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 1rem 0;
+}
+
+.comparison-table th {
+  background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+  color: #f1f5f9;
+  padding: 0.7rem 1rem;
+  text-align: left;
+  font-weight: 700;
+  font-size: 0.9rem;
+}
+
+.comparison-table td {
+  padding: 0.6rem 1rem;
+  border-bottom: 1px solid var(--bs-border-color, #e2e8f0);
+  font-size: 0.9rem;
+}
+
+.comparison-table td:first-child {
+  font-weight: 700;
+  color: var(--tkwf-primary, #2563eb);
+}
+
+.comparison-table tr:hover td {
+  background: rgba(37, 99, 235, 0.04);
+}
+
+[data-bs-theme="dark"] .comparison-table tr:hover td {
+  background: rgba(59, 130, 246, 0.1);
+}
+
+[data-bs-theme="dark"] .comparison-table td:first-child {
+  color: var(--tkwf-primary-light, #3b82f6);
+}
