@@ -15,6 +15,7 @@
 | **版本命名** | `TKW.Framework-文档站设计方案-V{大}.{小}.{修订}.md` |
 | **变更记录命名** | `V{大}.{小}.{修订}-变更记录.md` |
 | **对齐 TKWF 版本** | 主文档与变更记录**开头**均须标注对齐的 TKWF 版本号 + 日期（如 `对齐 TKWF：V4.9.12 · 2026-08-04`），以 `_TKWF/docs/CHANGELOG.md` 为准 |
+| **文档站 tag** | 与 TKWF 框架版本对齐（如 `v4.9.12`），`pwsh scripts/tag.ps1` 自动取 `_TKWF` 最新 `v*` tag 创建 |
 
 > **为什么存在 `../_TKWF/` 而不是本仓库？**
 > - TKWF.Docs 是 **public 仓库**（GitHub Pages 站点），提交即公开
@@ -125,7 +126,7 @@ _TKWF（源码 + docs/ 源文档）  ←——— 唯一事实来源 ———  
 - 本地执行：`pwsh docs/prebuild.ps1`
 - CI 集成：GitHub Actions workflow 中在 `docfx build` 前添加 `- run: pwsh docs/prebuild.ps1`
 
-**打 tag 一句话**：`pwsh scripts/tag.ps1`（自动取 TKWF 最新 tag → 同步版本 → 提交 → tag → 推送）
+**打 tag 一句话**：`pwsh scripts/tag.ps1`（自动取 TKWF 最新 v* tag → 同步版本 → 提交 → tag → 推送）
 
 ### 2.3 版本号维护清单（每次打 tag 前检查）
 
