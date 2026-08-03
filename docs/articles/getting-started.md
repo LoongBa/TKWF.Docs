@@ -1,3 +1,7 @@
+﻿---
+title: 5 分钟快速开始
+description: 5 分钟快速开始：从 NuGet 安装到 [GenerateController] 标注生成 GraphQL+REST 双端点的完整闭环
+---
 # 5 分钟入门
 
 本指南带你从零创建一个带 AOP 拦截、GraphQL 暴露的领域服务。

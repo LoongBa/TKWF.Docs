@@ -1,3 +1,7 @@
+﻿---
+title: DomainUser 详解
+description: DomainUser 详解：领域自治核心机制、User.Use 域内调用、会话上下文管理
+---
 # DomainUser 详解
 
 `DomainUser<TUserInfo>` 是 TKWF 框架的核心抽象——它代表"当前操作的用户"，

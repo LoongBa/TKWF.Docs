@@ -1,3 +1,7 @@
+﻿---
+title: 认证
+description: 认证：Challenge-Response 登录、AuthController 接口、安全注册与登录流程
+---
 # 认证
 
 TKWF 使用 **Challenge-Response** 认证协议，在不传输密码明文的前提下验证用户身份。

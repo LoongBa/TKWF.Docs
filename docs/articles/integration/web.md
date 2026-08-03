@@ -1,3 +1,7 @@
+﻿---
+title: Web 集成
+description: Web 集成：Session 中间件、HttpContext 适配、Web 环境配置
+---
 # Web 集成
 
 `TKWF.Domain.Web` 提供 Session 中间件、HttpContext 适配等 Web 环境集成。

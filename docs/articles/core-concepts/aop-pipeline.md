@@ -1,3 +1,7 @@
+﻿---
+title: AOP 管线详解
+description: AOP 管线详解：静态拦截原理、自定义 Filter、管线编排
+---
 # AOP 管线详解
 
 TKWF 的 AOP（面向切面编程）在编译期通过 Source Generator 生成装饰器实现，

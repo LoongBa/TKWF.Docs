@@ -1,3 +1,7 @@
+﻿---
+title: 配置参考
+description: 配置参考：ConfigWebAppDomain 配置项完整说明
+---
 # 配置参考
 
 TKWF 通过 `ConfigWebAppDomain` 方法提供统一的配置入口。

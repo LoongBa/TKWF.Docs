@@ -1,3 +1,7 @@
+﻿---
+title: 代码生成管线
+description: 代码生成管线详解：SG#1~#4 四层 Source Generator 的职责与扩展
+---
 # 代码生成管线
 
 TKWF 内置 4 个 Source Generator（SG#1~#4），在编译期自动生成 API 表面、
