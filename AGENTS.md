@@ -111,6 +111,30 @@ _TKWF（源码 + docs/ 源文档）  ←——— 唯一事实来源 ———  
 - 文档站内容修改（articles、toc、首页）提交到本 public 仓库前需确认无敏感信息
 - 部署：推送 `main` 触发 GitHub Actions 自动构建到 GitHub Pages
 
+### 2.2 版本同步机制（prebuild 脚本）
+
+> 维护 3 处版本号同步点，避免手动更新遗漏。
+
+**Pre-build 脚本**：`docs/prebuild.ps1`
+
+- 在 `docfx build` 前执行，自动从 `_TKWF/docs/CHANGELOG.md` 提取最新 3 版本
+- 同步 3 处维护点：
+  1. `docs/llms.txt` — 当前同步版本号
+  2. `docs/index.md` — 版本动态区块（最近 3 版本表格）
+  3. `docs/articles/agentic/source-doc-map.md` — 对齐 TKWF 版本号
+- 本地执行：`pwsh docs/prebuild.ps1`
+- CI 集成：GitHub Actions workflow 中在 `docfx build` 前添加 `- run: pwsh docs/prebuild.ps1`
+
+**打 tag 时自动执行**：每次创建版本 tag（如 `V4.9.13`）前，必须先运行 `prebuild.ps1` 同步版本号，再进行构建与提交。
+
+### 2.3 版本号维护清单（每次打 tag 前检查）
+
+- [ ] 运行 `pwsh docs/prebuild.ps1` 同步 3 处版本号
+- [ ] 检查 `README.md` 的"当前同步版本"是否与 `_TKWF` CHANGELOG 一致
+- [ ] 检查 `docs/articles/` 下文章中的版本引用是否过时
+- [ ] 检查 `docs/404.md` / `docs/robots.txt` 中的版本/链接引用
+- [ ] 构建验证：`docfx build docs/docfx.json` 零 warning
+
 ---
 
 ## 三、通用工作规则
