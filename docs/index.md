@@ -6,7 +6,7 @@ _layout: landing
 <div class="hero-section">
   <div class="hero-badges">
     <img src="https://img.shields.io/badge/.NET-10-blue" alt=".NET 10" />
-    <img src="https://img.shields.io/badge/version-4.9.21-green" alt="Version 4.9.21" />
+    <img src="https://img.shields.io/badge/version-4.9.22-green" alt="Version 4.9.22" />
     <img src="https://img.shields.io/badge/AI-Agentic_Ready-purple" alt="AI-Agentic Ready" />
   </div>
   <h1>TKWF.Domain — 让 AI 写 Service，框架负责剩下的</h1>
@@ -243,9 +243,9 @@ builder.ConfigWebAppDomain&lt;AppUserInfo, AppDomainInitializer&gt;()
 
 | 版本 | 日期 | 核心内容 |
 |:-----|:-----|:---------|
+| **4.9.22** | 2026-08-10 | xCodeGen 文档模板修复 + AGENTS.cshtml 移除。 |
 | **4.9.21** | 2026-08-10 | 初始化器优化（D04 v1.3 实施）：钩子收敛 12→9、`IDatabaseInitializer` 直接移除、上下文提取内置能力、`SetExcluded… |
 | **4.9.20** | 2026-08-09 | V4.9.20 — ts-domain-client 查询构建器 QueryBuilder。 为 IQueryable 实体查询提供链式 LINQ 风格 API… |
-| **4.9.19** | 2026-08-09 | V4.9.19 — SG2 REST 生成：GET + 复杂 DTO 参数自动 `[FromBody]`。 修复 DMP-Lite 项目组反馈的 `System… |
 
 
 > 完整变更历史见 [TKWF CHANGELOG](https://github.com/LoongBa/TKW.Framework/blob/master/docs/CHANGELOG.md)
@@ -279,4 +279,6 @@ builder.ConfigWebAppDomain&lt;AppUserInfo, AppDomainInitializer&gt;()
 - GitHub: [LoongBa/TKW.Framework](https://github.com/LoongBa/TKW.Framework)
 - 许可证: MIT
 - 构建状态: [![Build and Deploy Docs](https://github.com/LoongBa/TKWF.Docs/actions/workflows/docfx.yml/badge.svg)](https://github.com/LoongBa/TKWF.Docs/actions/workflows/docfx.yml)
+
+
 
