@@ -4,7 +4,7 @@
 
 [![Build and Deploy Docs](https://github.com/LoongBa/TKWF.Docs/actions/workflows/docfx.yml/badge.svg)](https://github.com/LoongBa/TKWF.Docs/actions/workflows/docfx.yml)
 
-**当前同步版本：V4.9.12**（文档与框架 [LoongBa/TKW.Framework](https://github.com/LoongBa/TKW.Framework) 保持同步）
+**当前同步版本：V4.9.21**（文档与框架 [LoongBa/TKW.Framework](https://github.com/LoongBa/TKW.Framework) 保持同步）
 
 ---
 
@@ -12,10 +12,10 @@
 
 | 版本 | 日期 | 核心内容 |
 |:-----|:-----|:---------|
-| **4.9.12** | 2026-08-04 | 投影内部优化：嵌套属性 `?fields=User.Name` 树形裁剪（FieldPathNode Trie）、ViewSql 列名校验（ViewSqlColumnValidator）、SQL 级投影激活验证 |
-| **4.9.11** | 2026-08-03 | 投影收尾 + 框架清理：前端 selection→`?fields` 验证、SystemActor 服务解析 API、废弃代码清理、字段签名一致性 |
-| **4.9.10** | 2026-08-01 | 系统作用域 API 完善：`scope.System`/`scope.IsSystem`、`[DenySystemActor]`、`NoSessionManager` 瞬态会话 |
-| **4.9.9** | 2026-07-31 | 系统角色 SystemActor 体系落地 |
+| **4.9.21** | 2026-08-10 | 初始化器优化：钩子收敛 12→9、`IDatabaseInitializer` 移除、上下文提取内置能力、`SetExcludedPathPrefixes` 生命线前缀 |
+| **4.9.20** | 2026-08-09 | ts-domain-client QueryBuilder 链式查询 + `executeRawGraphQL` |
+| **4.9.19** | 2026-08-09 | SG2 GET+`[FromBody]` + ts-domain-client GET+body 支持 |
+| **4.9.18** | 2026-08-08 | 表同步框架化 + xCodeGen 部署路径统一 + SG1b 嵌套 DTO 阻断 |
 
 > 完整变更历史见 [TKWF CHANGELOG](https://github.com/LoongBa/TKW.Framework/blob/master/docs/CHANGELOG.md)。
 
