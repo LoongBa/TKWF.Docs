@@ -6,7 +6,7 @@
 
 param(
     [string]$TkwfRoot = "../_TKWF",
-    [string]$DocsRoot = "."
+    [string]$DocsRoot = "docs"
 )
 
 $ErrorActionPreference = "Stop"
@@ -79,8 +79,8 @@ if (Test-Path $index) {
         $tableRows += "| **$($e.Ver)** | $($e.Date) | $shortDesc |`n"
     }
 
-    # 替换版本动态区块中的表格（从 "| **4.9.12**" 到下一个空行前的 CHANGELOG 链接）
-    $tablePattern = '(?<=<!-- ===== 区块 7: 版本动态 ===== -->\n## 最近版本动态\n\n).*?(?=> 完整变更历史)'
+    # 替换版本动态区块中的表格（从 header 后到 CHANGELOG 链接前的表格内容）
+    $tablePattern = '(?s)(?<=<!-- ===== 区块 7: 版本动态 ===== -->\n## 最近版本动态\n\n).*?(?=\n> 完整变更历史)'
     if ($indexContent -match $tablePattern) {
         $newBlock = "| 版本 | 日期 | 核心内容 |`n|:-----|:-----|:---------|`n$tableRows`n"
         $indexContent = $indexContent -replace $tablePattern, $newBlock
