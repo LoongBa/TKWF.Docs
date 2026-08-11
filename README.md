@@ -4,7 +4,7 @@
 
 [![Build and Deploy Docs](https://github.com/LoongBa/TKWF.Docs/actions/workflows/docfx.yml/badge.svg)](https://github.com/LoongBa/TKWF.Docs/actions/workflows/docfx.yml)
 
-**当前同步版本：V4.9.21**（文档与框架 [LoongBa/TKW.Framework](https://github.com/LoongBa/TKW.Framework) 保持同步）
+**当前同步版本：V4.9.26**（文档与框架 [LoongBa/TKW.Framework](https://github.com/LoongBa/TKW.Framework) 保持同步）
 
 ---
 
@@ -12,10 +12,10 @@
 
 | 版本 | 日期 | 核心内容 |
 |:-----|:-----|:---------|
-| **4.9.21** | 2026-08-10 | 初始化器优化：钩子收敛 12→9、`IDatabaseInitializer` 移除、上下文提取内置能力、`SetExcludedPathPrefixes` 生命线前缀 |
-| **4.9.20** | 2026-08-09 | ts-domain-client QueryBuilder 链式查询 + `executeRawGraphQL` |
-| **4.9.19** | 2026-08-09 | SG2 GET+`[FromBody]` + ts-domain-client GET+body 支持 |
-| **4.9.18** | 2026-08-08 | 表同步框架化 + xCodeGen 部署路径统一 + SG1b 嵌套 DTO 阻断 |
+| **4.9.26** | 2026-08-11 | 限流器适配 System.Threading.RateLimiting：退役自定义 IRateLimiter 抽象层，采用官方 PartitionedRateLimiter + EnforceAsync<TKey> |
+| **4.9.25** | 2026-08-11 | 认证扩展点重构：GetSaltAsync/GetStoredBlobAsync 改 protected internal virtual、移除约定式反射、签名升级 (DomainUser<TUserInfo> user) + GetClientIp 机制回归 |
+| **4.9.24** | 2026-08-11 | 认证重构：authType 路由基座 + 6 子虚方法 + 约定式 SecurePassword + NullCredentialProtector + 四轮加固（H1-H4） |
+| **4.9.23** | 2026-08-11 | cfg 强契约加固：IEntityDACInfrastructureRegistrar 取代静态委托 + 测试覆盖 + IVT 收敛 + 上下文提取默认启用 |
 
 > 完整变更历史见 [TKWF CHANGELOG](https://github.com/LoongBa/TKW.Framework/blob/master/docs/CHANGELOG.md)。
 
