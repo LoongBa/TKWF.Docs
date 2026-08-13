@@ -26,6 +26,7 @@ description: TKWF 源文档 D/G/T/xCodeGen 系列与公开文章的完整映射�
 | 源文档 | 公开文章 | 说明 |
 |:-------|:---------|:-----|
 | `D07A-RPC-远程过程调用-设计方案V2.md` | [RPC 传输](../transport/rpc.md) | RPC 远程调用 |
+| `D07M-RPC-前端客户端-ts-client-mock-设计方案.md` | — | ts-client mock 设计方案 v2.0.1（Transport 注入/内存数据库/策略化工厂/录制回放/HTTP server） |
 | `G07F-RPC-前端客户端-ts-client-使用指南.md` | — | TypeScript 客户端（独立仓库 tkwf-tsclient，V1.0.4：Tkwf 门面工厂入口，移除 Call()/ChainableBuilder） |
 | `G07M-RPC-前端客户端-ts-client-mock-使用指南.md` | — | ts-client mock 运行时（独立仓库 tkwf-tsclient-mock，v1.9.0：MockTransport 注入、createMockDb、场景切换、录制回放） |
 | `D02-多形态客户端认证架构.md` | [认证与授权](../security/authentication.md) | 客户端认证架构总览（V4.9.26 起拆分：D02A 进程内 Console/CLI/后台/测试、D02B 进程内 WebServer/BlazorServer/MAUI、D02C 进程外 Wasm/BlazorWasm、D02D 进程外 ts-client/React/Vue/小程序） |
