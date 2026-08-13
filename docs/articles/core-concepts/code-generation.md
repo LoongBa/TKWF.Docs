@@ -38,6 +38,23 @@ TKWF 内置 4 个 Source Generator（SG#1~#4），在编译期自动生成 API �
 - 提取方法签名、参数、返回类型
 - 为后续 SG 提供元数据输入
 
+### 方法提取规则（V4.9.28+）
+
+SG1b（ControllerGenerator）的方法提取由 `ServiceMethodExtractor` 统一执行，**所有提取路径都汇聚到同一套过滤链**。规则如下（按优先级）：
+
+| 优先级 | 规则 | 行为 |
+|--------|------|------|
+| 1 | 非 public / static / override / 非普通方法 | 跳过 |
+| 2 | 泛型方法 | 跳过——生成的控制器/接口无法声明泛型类型参数 |
+| 3 | 框架级排除名（`get_`/`set_`/`GetType`/`Equals`/`ToString` 等） | 跳过 |
+| 4 | 用户 `ExcludeMethods` 通配符 | 跳过 |
+| 5 | `GetGraphQLQueryable` | 跳过（DataService 内部方法，由 EntityQueryRoot 统一处理） |
+| 6 | **含 `Expression<Func<...>>` 参数**（V4.9.28 硬过滤） | 跳过——**即使被 IncludeMethods / `[GenerateControllerMethod]` 显式包含也强制跳过**。HC GraphQL / REST 无法序列化 `Expression`，此类通用查询方法只能通过**业务方法封装**暴露 |
+| 7 | `whiteList` 白名单（调用方传入时） | 仅提取匹配的方法 |
+| 8 | `methodPredicate` 自定义谓词 | 按属性/方法名过滤 |
+
+> **硬过滤语义**（优先级 6）：Expression 参数过滤是**参数类型级**的绝对约束，与方法名/特性控制正交。`IncludeMethods`、`ExcludeMethods`、`[GenerateControllerMethod]`、白名单全部基于方法名操作，无法绕过参数类型过滤。远程契约（HC GraphQL / REST）只能暴露可序列化的业务化方法，通用查询能力留在领域层内部。
+
 ## SG#2 — 传输层端点生成
 
 为所有 Controller 生成 GraphQL Resolver 和 REST 端点。
