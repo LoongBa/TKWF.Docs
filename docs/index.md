@@ -243,7 +243,7 @@ builder.ConfigWebAppDomain&lt;AppUserInfo, AppDomainInitializer&gt;()
 
 | 版本 | 日期 | 核心内容 |
 |:-----|:-----|:---------|
-| **4.9.26** | 2026-08-11 | 限流器适配 System.Threading.RateLimiting：退役自定义 `IRateLimiter` 抽象层（接口 + 手写滑动窗口实现），直接采用… |
+| **4.9.27** | 2026-08-12 | 修正 xCodeGen 模板问题：Domain_Api.md 无公开方法根因（SG1b 未序列化方法列表）、DOMAIN_MAP 表格格式混乱（RazorLig… |
 | **4.9.24** | 2026-08-11 | 认证重构：authType 路由提取 + SecurePassword 加固（含第二轮加固：客户端 IP 提取、token 零污染、hex 容错）。 背景：V4… |
 | **4.9.23** | 2026-08-11 | cfg 强契约加固：静态委托重构（`IEntityDACInfrastructureRegistrar`）+ 测试覆盖 + `InternalsVisibleT… |
 
@@ -279,6 +279,7 @@ builder.ConfigWebAppDomain&lt;AppUserInfo, AppDomainInitializer&gt;()
 - GitHub: [LoongBa/TKW.Framework](https://github.com/LoongBa/TKW.Framework)
 - 许可证: MIT
 - 构建状态: [![Build and Deploy Docs](https://github.com/LoongBa/TKWF.Docs/actions/workflows/docfx.yml/badge.svg)](https://github.com/LoongBa/TKWF.Docs/actions/workflows/docfx.yml)
+
 
 
 
