@@ -87,10 +87,9 @@ if (Test-Path $index) {
         Write-Host "  ✅ index.md  → V$newestVer 及前 2 版本"
     }
 
-    # 同步 Hero 区版本 badge + lead 版本文本（区块 1）
+    # 同步 Hero 区版本 badge（区块 1）
     $indexContent = $indexContent -replace 'badge/version-[\d\.]+-green', "badge/version-$newestVer-green"
     $indexContent = $indexContent -replace 'alt="Version [\d\.]+"', "alt=`"Version $newestVer`""
-    $indexContent = $indexContent -replace '当前版本 <strong>V[\d\.]+</strong>', "当前版本 <strong>V$newestVer</strong>"
 
     Set-Content $index -Value $indexContent -Encoding UTF8
     Write-Host "  ✅ index.md Hero badge → V$newestVer"
