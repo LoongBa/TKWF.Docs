@@ -9,9 +9,9 @@ _layout: landing
     <img src="https://img.shields.io/badge/version-4.9.28-green" alt="Version 4.9.28" />
     <img src="https://img.shields.io/badge/Agentic-Engineering-purple" alt="Agentic Engineering" />
   </div>
-  <h1>TKW.Framework — .NET 时代的 Agentic Engineering</h1>
+<h1>TKW.Framework — 让 Agentic Engineering 更可控、更可靠的软件开发框架</h1>
   <p class="lead">
-    人声明意图，Agent 写 Service，框架编译期生成全部管道代码（当前版本 <strong>V4.9.28</strong>）。<br>
+    人声明意图，Agent 写 Service，框架编译期生成全部管道代码。<br>
     标注 <code>[GenerateController]</code> → 编译期产出 Controller + AOP 装饰器 + GraphQL/REST 端点 + 客户端代理。<br>
     编译期约束让 AI 生成代码天然可靠——不合规直接报错，不用运行才发现。
   </p>
@@ -340,6 +340,7 @@ var service = User.Use&lt;OrderService&gt;();
 - GitHub: [LoongBa/TKW.Framework](https://github.com/LoongBa/TKW.Framework)
 - 许可证: MIT
 - 构建状态: [![Build and Deploy Docs](https://github.com/LoongBa/TKWF.Docs/actions/workflows/docfx.yml/badge.svg)](https://github.com/LoongBa/TKWF.Docs/actions/workflows/docfx.yml)
+
 
 
 
