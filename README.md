@@ -12,6 +12,8 @@
 
 | 版本 | 日期 | 核心内容 |
 |:-----|:-----|:---------|
+| **4.9.28** | 2026-08-14 | SG2 调试构建修复：SDK 引用模式下 reference assembly 剥离控制器 private 字段，新增 DataService 名逆映射推导路径修复 + Expression 参数硬过滤 |
+| **4.9.27** | 2026-08-12 | xCodeGen 模板修复：Domain_Api 无公开方法根因、DataService 基类链遍历、ExcludeMethods 批量排除、DOMAIN_MAP 表格修复 |
 | **4.9.26** | 2026-08-11 | 限流器适配 System.Threading.RateLimiting：退役自定义 IRateLimiter 抽象层，采用官方 PartitionedRateLimiter + EnforceAsync<TKey> |
 | **4.9.25** | 2026-08-11 | 认证扩展点重构：GetSaltAsync/GetStoredBlobAsync 改 protected internal virtual、移除约定式反射、签名升级 (DomainUser<TUserInfo> user) + GetClientIp 机制回归 |
 | **4.9.24** | 2026-08-11 | 认证重构：authType 路由基座 + 6 子虚方法 + 约定式 SecurePassword + NullCredentialProtector + 四轮加固（H1-H4） |
