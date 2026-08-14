@@ -7,13 +7,13 @@ _layout: landing
   <div class="hero-badges">
     <img src="https://img.shields.io/badge/.NET-10-blue" alt=".NET 10" />
     <img src="https://img.shields.io/badge/version-4.9.28-green" alt="Version 4.9.28" />
-    <img src="https://img.shields.io/badge/AI-Agentic_Ready-purple" alt="AI-Agentic Ready" />
+    <img src="https://img.shields.io/badge/Agentic-Engineering-purple" alt="Agentic Engineering" />
   </div>
-  <h1>TKWF.Domain — 让 AI 写 Service，框架负责剩下的</h1>
+  <h1>TKW.Framework — .NET 时代的 Agentic Engineering</h1>
   <p class="lead">
-    .NET 10 领域自治框架。标注 <code>[GenerateController]</code>，
-    编译期自动生成 Controller + AOP 装饰器 + GraphQL/REST 端点 + 客户端代理。<br>
-    零运行时反射，零 DI 串号，代码行为对 AI 完全可预测。
+    人声明意图，Agent 写 Service，框架编译期生成全部管道代码（当前版本 <strong>V4.9.28</strong>）。<br>
+    标注 <code>[GenerateController]</code> → 编译期产出 Controller + AOP 装饰器 + GraphQL/REST 端点 + 客户端代理。<br>
+    编译期约束让 AI 生成代码天然可靠——不合规直接报错，不用运行才发现。
   </p>
   <div class="hero-cta">
     <a href="articles/getting-started.md" class="btn btn-primary">🚀 5 分钟快速开始</a>
@@ -24,89 +24,140 @@ _layout: landing
 
 ---
 
-<!-- ===== 区块 2: 对比表 ===== -->
-## 为什么 TKWF？
+<!-- ===== 区块 2: Agentic Engineering 三方分工 ===== -->
+## Agentic Engineering：三方分工，各司其职
+
+> **Agentic Engineering** — 你不直接写代码 99% 的时间，你在编排 Agent 并充当监督者。
+> —— Andrej Karpathy, 2026
+
+传统开发中，人包揽意图、业务、管道代码。TKWF 把这三件事拆开：
+
+```
+  你（人）              AI Agent             TKW.Framework
+  ────────             ──────────           ──────────────
+  声明意图       →     写 Service      →     编译期生成
+  [GenerateController]   业务逻辑              Controller + AOP 装饰器
+  [AuthorityFilter]      领域规则              GraphQL Resolver
+  [Transactional]        状态流转              REST 端点
+                                               客户端代理
+  ────────             ──────────           ──────────────
+  你只写标注             Agent 只写业务        框架管全部管道
+```
+
+**你写的**：一个 `[GenerateController]` 标注 + Service 业务方法。
+**框架生成的**：Controller 接口、AOP 装饰器、GraphQL Resolver、REST 端点、强类型客户端代理。
+**Agent 写的**：Service 里的业务逻辑——无需理解 DI 配置、路由注册、序列化细节。
+
+```csharp
+// 你 + Agent 只写这一份
+[GenerateController]
+public class OrderService(DomainUser<AppUserInfo> user)
+    : DomainServiceBase<AppUserInfo>(user)
+{
+    [AuthorityFilter(Roles = "Admin")]
+    [Transactional]
+    public async Task<Order> CreateAsync(string title) { ... }
+}
+
+// 编译期自动产出 5 份（你不用写，Agent 也不用写）：
+// → IOrderServiceController.g.cs         (契约接口)
+// → OrderServiceControllerDecorator.g.cs  (AOP 装饰器)
+// → OrderServiceResolver.g.cs            (GraphQL Resolver)
+// → OrderServiceEndpoints.g.cs           (REST 端点)
+// → OrderServiceClient.g.cs              (客户端代理)
+```
+
+---
+
+<!-- ===== 区块 3: AI-Assisted vs Agentic Engineering ===== -->
+## 为什么不是 AI-Assisted？
+
+> Gartner 预测：到 2028 年，Agentic 工作流将提升团队生产力 30%-50%，远超 AI-Assisted 的 0%-20%。
+
+AI-Assisted（Copilot 模式）和 Agentic Engineering 是两种完全不同的范式：
 
 <table class="comparison-table">
   <thead>
     <tr>
       <th>维度</th>
-      <th>传统 DI 框架</th>
-      <th>TKWF.Domain</th>
+      <th>AI-Assisted（Copilot 模式）</th>
+      <th>Agentic Engineering（TKWF）</th>
     </tr>
   </thead>
   <tbody>
     <tr>
-      <td>AOP 实现</td>
-      <td>运行时动态代理（反射 + IL Emit）</td>
-      <td>编译期 SG 生成装饰器，零运行时反射</td>
+      <td>人类角色</td>
+      <td>驾驶员，逐行审查补全建议</td>
+      <td><strong>委派者 + 验证者</strong>，声明意图后由 Agent 写业务</td>
     </tr>
     <tr>
-      <td>DI 依赖</td>
-      <td>Service 依赖容器注入 DomainUser，存在串号风险</td>
-      <td>DomainUser 自持实例化，<code>User.Use&lt;T&gt;()</code> 显式传递，物理隔离</td>
+      <td>Agent 自主性</td>
+      <td>被动响应，只补全当前光标处</td>
+      <td><strong>端到端写 Service</strong>，从 Entity 到业务规则</td>
     </tr>
     <tr>
-      <td>API 暴露</td>
-      <td>手写 Controller + 手动注册路由</td>
-      <td><code>[GenerateController]</code> 一标注，SG 自动生成 GraphQL + REST 端点</td>
+      <td>代码生成</td>
+      <td>IDE 内补全片段</td>
+      <td><strong>编译期 SG 全自动生成</strong> Controller/端点/客户端</td>
     </tr>
     <tr>
-      <td>客户端生成</td>
-      <td>手写或用 NSwag / Swagger 生成</td>
-      <td>SG#3 编译期生成强类型客户端代理，与服务端同源</td>
+      <td>约束机制</td>
+      <td>人工审查每行 diff</td>
+      <td><strong>编译期硬约束</strong>——不合规代码直接报错</td>
     </tr>
     <tr>
-      <td>AI 可预测性</td>
-      <td>DI 生命周期、动态代理行为难以预测</td>
-      <td>编译期生成，代码可见可调试，AI 生成结果与手写一致</td>
+      <td>协议暴露</td>
+      <td>手写 Controller + 路由注册</td>
+      <td>一份 Service → <strong>GraphQL + REST + RPC 三端自动暴露</strong></td>
     </tr>
     <tr>
-      <td>带宽优化</td>
-      <td>需手写 DTO 或 GraphQL field selection</td>
-      <td>REST <code>?fields=User.Name</code> 原生投影 + GraphQL selection 自动裁剪</td>
+      <td>AI 门槛</td>
+      <td>需顶级模型长上下文推理整个架构</td>
+      <td><strong>粒度细分管线</strong>，轻量模型（DeepSeek V4 Flash 级）即可胜任</td>
     </tr>
   </tbody>
 </table>
 
 ---
 
-<!-- ===== 区块 3: Agentic Banner ===== -->
+<!-- ===== 区块 4: 四大设计支柱 ===== -->
+## 为什么 TKWF 让 Agentic Engineering 可靠？
+
+<div class="agentic-banner">
+  <div class="banner-icon">⚙️</div>
+  <div class="banner-content">
+    <h3>编译期静态装配 — AI 生成代码与手写行为一致</h3>
+    <p>V4 从 Autofac 动态代理迁移到 SG + 装饰器。AOP 拦截在编译期完成，零运行时反射、零 IL Emit。<br>AI 生成的代码可见、可调试、可预测——不存在"运行时才暴露的惊喜"。</p>
+  </div>
+</div>
+
+<div class="agentic-banner">
+  <div class="banner-icon">📐</div>
+  <div class="banner-content">
+    <h3>零歧义契约 — 标注即 Spec，编译期验证</h3>
+    <p><code>[GenerateController]</code> 标注就是完整契约——不只是一个标记，而是一份可执行的规范。<br>AI 生成的不合规代码<strong>编译期直接报错</strong>，不需要运行才发现。这是 Spec-Driven Development 在 .NET 上的落地。</p>
+  </div>
+</div>
+
 <div class="agentic-banner">
   <div class="banner-icon">🧩</div>
   <div class="banner-content">
-    <h3>领域自治 — 消除 DI 不确定性</h3>
-    <p>DomainUser 自持实例化，不依赖 DI 容器。<br>AI 生成的代码无需理解复杂的 DI 配置，结果可预测、可验证。</p>
+    <h3>领域自治 — 结构上不可能串号</h3>
+    <p>DomainUser 不进 DI 容器，<code>Use&lt;T&gt;()</code> 显式传递。调用方的 User 就是 Service 的 User，物理隔离。<br>AI 生成的代码无需理解 DI 生命周期——结构本身就消灭了整类缺陷。</p>
   </div>
 </div>
 
 <div class="agentic-banner">
-  <div class="banner-icon">⚡</div>
+  <div class="banner-icon">🔬</div>
   <div class="banner-content">
-    <h3>声明式标注 → 全自动生成</h3>
-    <p><code>[GenerateController]</code> 一个标注，SG 自动生成控制器、接口、Resolver、客户端。<br>AI 只需要写业务逻辑，框架自动完成管道代码。</p>
-  </div>
-</div>
-
-<div class="agentic-banner">
-  <div class="banner-icon">🪄</div>
-  <div class="banner-content">
-    <h3>编译期 AOP — 零运行时反射</h3>
-    <p>Source Generator 在编译期生成装饰器，没有运行时反射，没有 dynamic invocation。<br>AI 生成的行为与手写代码完全一致，性能无损。</p>
-  </div>
-</div>
-
-<div class="agentic-banner">
-  <div class="banner-icon">🔌</div>
-  <div class="banner-content">
-    <h3>多协议自动暴露 — 一次编写，三端可用</h3>
-    <p>一份 Service → GraphQL + REST + RPC 三端自动生成端点。<br>AI 只需聚焦领域逻辑，暴露方式由框架决定。</p>
+    <h3>粒度细分管线 — Agent 无需理解全局架构</h3>
+    <p>SG1（元数据提取）→ SG2（服务端生成）→ SG3（客户端生成），三层各司其职。<br>Agent 只需知道自己的输出会被下一步消费，不需要推理整个框架内部。粒度细分 = 更低 Token 消耗 = 轻量模型可用。</p>
   </div>
 </div>
 
 ---
 
-<!-- ===== 区块 4: 路径卡片 ===== -->
+<!-- ===== 区块 5: 路径卡片 ===== -->
 ## 从这里开始
 
 <div class="path-grid">
@@ -115,37 +166,39 @@ _layout: landing
     <p><strong>5 分钟感受"标注即生成"</strong></p>
     <p>安装 NuGet → 写 Service → 标注 → 编译即得 GraphQL + REST 端点</p>
   </a>
-  <a href="articles/tutorials/30-min-todo-part1.md" class="path-card">
-    <h3>📋 实战学习</h3>
-    <p><strong>30 分钟构建完整 CRUD</strong></p>
-    <p>从 Entity 到数据层、认证授权、多协议暴露，跟着教程走一遍</p>
+  <a href="articles/intro.md" class="path-card">
+    <h3>📖 框架概览</h3>
+    <p><strong>Agentic Engineering 全景</strong></p>
+    <p>三方分工、代码生成管线、多协议暴露、安全体系——每段都带代码示例</p>
   </a>
   <a href="articles/explanation/why-domain-autonomy.md" class="path-card">
     <h3>🔬 深度理解</h3>
     <p><strong>为什么这样设计？</strong></p>
     <p>领域自治 vs DI 容器、编译期 AOP 原理、三层 SG 管线解剖</p>
   </a>
-  <a href="articles/decision-guides/choose-transport.md" class="path-card">
-    <h3>🧭 决策指南</h3>
-    <p><strong>该怎么选？</strong></p>
-    <p>GraphQL vs REST vs RPC、Path A vs Path B、Web vs Blazor vs MAUI</p>
+  <a href="articles/agentic/quick-start-for-ai.md" class="path-card">
+    <h3>🤖 AI 快速上手</h3>
+    <p><strong>给 Agent 的速查卡</strong></p>
+    <p>框架规则、Prompt 模板、源文档映射表——让 AI 高质量生成 Service</p>
   </a>
 </div>
 
 ---
 
-<!-- ===== 区块 5: 场景卡片 ===== -->
+<!-- ===== 区块 6: 场景卡片 ===== -->
 ## 经典场景快速体验
 
 <div class="scenario-card">
-  <div class="scenario-card-header">📋 场景一：5 分钟创建 CRUD 服务</div>
+  <div class="scenario-card-header">🤖 场景一：Agentic Engineering 完整闭环</div>
   <div class="scenario-card-body">
     <p>
-      写一个带 <span class="highlight">DomainUser</span> 的领域服务，标注
-      <span class="highlight">[GenerateController]</span>，框架自动生成
-      GraphQL Resolver 和 REST 端点，无需手写 Controller。
+      人标注 <span class="highlight">[GenerateController]</span>，Agent 写 Service 业务逻辑，
+      框架编译期生成 Controller + AOP + GraphQL/REST 端点 + 客户端代理。
+      <strong>三方分工，一个编译期完成。</strong>
     </p>
-    <pre><code class="lang-csharp">[GenerateController]
+    <pre><code class="lang-csharp">// 人：标注意图
+[GenerateController]
+// Agent：写业务逻辑
 public class TodoService(DomainUser&lt;AppUserInfo&gt; user)
     : DomainServiceBase&lt;AppUserInfo&gt;(user)
 {
@@ -154,70 +207,78 @@ public class TodoService(DomainUser&lt;AppUserInfo&gt; user)
         var todo = new Todo { Title = title, Content = content, UserId = User.UserId };
         return await Repository.InsertAsync(todo);
     }
-}</code></pre>
+}
+// 框架：编译期生成 5 份代码（你不用写，Agent 也不用写）</code></pre>
     <p><a href="articles/getting-started.md">→ 完整教程</a></p>
   </div>
 </div>
 
 <div class="scenario-card">
-  <div class="scenario-card-header">🔐 场景二：给 API 加上权限控制</div>
+  <div class="scenario-card-header">🔐 场景二：声明式权限 + 事务控制</div>
   <div class="scenario-card-body">
     <p>
-      用 <span class="highlight">[AuthorityFilter]</span> 标注方法，
-      框架自动拦截未授权调用。支持 Role-based 和自定义策略。
+      用 <span class="highlight">[AuthorityFilter]</span> + <span class="highlight">[Transactional]</span>
+      声明横切关注点，AOP 管线编译期织入。不写一行 <code>if</code> 判断。
     </p>
-    <pre><code class="lang-csharp">[AuthorityFilter(Roles = "Admin")]
+    <pre><code class="lang-csharp">[AuthorityFilter(Roles = "Admin")]    // ← 声明式权限
+[Transactional]                        // ← 声明式事务
 public async Task&lt;Report&gt; GenerateReportAsync() { ... }</code></pre>
     <p><a href="articles/security/authorization.md">→ 了解安全体系</a></p>
   </div>
 </div>
 
 <div class="scenario-card">
-  <div class="scenario-card-header">🌐 场景三：一份 Service → GraphQL + REST + RPC</div>
+  <div class="scenario-card-header">🌐 场景三：一份 Service → GraphQL + REST</div>
   <div class="scenario-card-body">
     <p>
-      同一个 Service，框架自动生成三种协议的端点。
-      客户端可以按需选择传输方式。
+      同一个 Service，框架自动生成 GraphQL 和 REST 双协议端点。
+      REST 原生支持 <code>?fields=</code> 投影——嵌套属性树形裁剪。
     </p>
-    <pre><code class="lang-csharp">// 只需配置
+    <pre><code class="lang-csharp">// 只需配置宿主
 builder.ConfigWebAppDomain&lt;AppUserInfo, AppDomainInitializer&gt;()
-    .UseGraphQLApiService&lt;AppUserInfo&gt;()   // GraphQL
-    .UseRestApiService&lt;AppUserInfo&gt;();      // REST</code></pre>
+    .UseGraphQLApiService&lt;AppUserInfo&gt;()   // GraphQL 自动暴露
+    .UseRestApiService&lt;AppUserInfo&gt;();      // REST 自动暴露</code></pre>
     <p><a href="articles/transport/graphql.md">→ 查看传输协议文档</a></p>
   </div>
 </div>
 
 <div class="scenario-card">
-  <div class="scenario-card-header">📱 场景四：跨平台移动端集成</div>
+  <div class="scenario-card-header">🧩 场景四：领域自治 — 不可能串号</div>
   <div class="scenario-card-body">
     <p>
-      TKWF.Domain.Maui 让 MAUI 应用无缝集成 DomainUser 体系，
-      客户端调用远程服务如同调用本地方法。
+      DomainUser 不进 DI 容器，<code>Use&lt;T&gt;()</code> 显式传递。
+      请求 A 的 User 和请求 B 的 User <strong>物理隔离</strong>，结构上消灭整类串号缺陷。
     </p>
-    <p><a href="articles/integration/maui.md">→ MAUI 集成指南</a></p>
+    <pre><code class="lang-csharp">// 请求 A：User.UserId = "Alice"
+// 请求 B：User.UserId = "Bob"
+// 两个请求的 Service 完全隔离，不可能串号
+
+var service = User.Use&lt;OrderService&gt;();
+// service 的 User 就是当前请求的 User，确定性的</code></pre>
+    <p><a href="articles/core-concepts/domain-user.md">→ DomainUser 详解</a></p>
   </div>
 </div>
 
 ---
 
-<!-- ===== 区块 6: 核心特性 ===== -->
+<!-- ===== 区块 7: 核心特性 ===== -->
 ## 核心特性
 
 <div class="feature-grid">
   <div class="feature-card">
+    <div class="card-icon">⚙️</div>
+    <h3>编译期 AOP</h3>
+    <p>Source Generator 编译期生成装饰器，零运行时反射。权限、事务、缓存声明式标注。</p>
+  </div>
+  <div class="feature-card">
+    <div class="card-icon">📐</div>
+    <h3>声明式标注</h3>
+    <p><code>[GenerateController]</code> 一标注，SG 自动生成 Controller、接口、Resolver、客户端代理。</p>
+  </div>
+  <div class="feature-card">
     <div class="card-icon">🧩</div>
     <h3>领域自治</h3>
-    <p>DomainUser 自持实例化，不依赖 DI 容器，杜绝串号问题。每个请求绑定独立的领域上下文。</p>
-  </div>
-  <div class="feature-card">
-    <div class="card-icon">🪄</div>
-    <h3>AOP 静态拦截</h3>
-    <p>编译期 Source Generator 生成装饰器，零运行时反射。权限、事务、日志等横切关注点声明式处理。</p>
-  </div>
-  <div class="feature-card">
-    <div class="card-icon">🚀</div>
-    <h3>代码生成</h3>
-    <p><code>[GenerateController]</code> 一个标注，SG 自动生成控制器、接口、Resolver、客户端代码。</p>
+    <p>DomainUser 自持实例化，不依赖 DI 容器，物理隔离，杜绝串号。</p>
   </div>
   <div class="feature-card">
     <div class="card-icon">🔌</div>
@@ -227,18 +288,18 @@ builder.ConfigWebAppDomain&lt;AppUserInfo, AppDomainInitializer&gt;()
   <div class="feature-card">
     <div class="card-icon">🎯</div>
     <h3>安全体系</h3>
-    <p>AuthorityFilter + Role-based 授权 + Challenge-Response 登录，开箱即用的安全防护。</p>
+    <p>AuthorityFilter + Challenge-Response 登录 + SystemActor 系统角色 + 错误码全栈统一。</p>
   </div>
   <div class="feature-card">
     <div class="card-icon">📦</div>
     <h3>生态集成</h3>
-    <p>Web / MAUI / Blazor / FreeSql 全方位集成，适配多种应用场景。</p>
+    <p>Web / Blazor / MAUI / FreeSql 全方位集成，C# + TS 双客户端 SDK。</p>
   </div>
 </div>
 
 ---
 
-<!-- ===== 区块 7: 版本动态 ===== -->
+<!-- ===== 区块 8: 版本动态 ===== -->
 ## 最近版本动态
 
 | 版本 | 日期 | 核心内容 |
@@ -252,7 +313,7 @@ builder.ConfigWebAppDomain&lt;AppUserInfo, AppDomainInitializer&gt;()
 
 ---
 
-<!-- ===== 区块 8: NuGet 包 ===== -->
+<!-- ===== 区块 9: NuGet 包 ===== -->
 ## NuGet 包
 
 | 包名 | 说明 |
@@ -273,18 +334,12 @@ builder.ConfigWebAppDomain&lt;AppUserInfo, AppDomainInitializer&gt;()
 
 ---
 
-<!-- ===== 区块 9: 链接 ===== -->
+<!-- ===== 区块 10: 链接 ===== -->
 ## 链接
 
 - GitHub: [LoongBa/TKW.Framework](https://github.com/LoongBa/TKW.Framework)
 - 许可证: MIT
 - 构建状态: [![Build and Deploy Docs](https://github.com/LoongBa/TKWF.Docs/actions/workflows/docfx.yml/badge.svg)](https://github.com/LoongBa/TKWF.Docs/actions/workflows/docfx.yml)
-
-
-
-
-
-
 
 
 

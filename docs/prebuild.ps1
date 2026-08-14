@@ -79,14 +79,21 @@ if (Test-Path $index) {
         $tableRows += "| **$($e.Ver)** | $($e.Date) | $shortDesc |`n"
     }
 
-    # 替换版本动态区块中的表格（从 header 后到 CHANGELOG 链接前的表格内容）
-    $tablePattern = '(?s)(?<=<!-- ===== 区块 7: 版本动态 ===== -->\n## 最近版本动态\n\n).*?(?=\n> 完整变更历史)'
+    # 替换版本动态区块中的表格（从 ## 最近版本动态 标题后到 CHANGELOG 链接前）
+    $tablePattern = '(?s)(?<=## 最近版本动态\n\n).*?(?=\n> 完整变更历史)'
     if ($indexContent -match $tablePattern) {
         $newBlock = "| 版本 | 日期 | 核心内容 |`n|:-----|:-----|:---------|`n$tableRows`n"
         $indexContent = $indexContent -replace $tablePattern, $newBlock
-        Set-Content $index -Value $indexContent -Encoding UTF8
         Write-Host "  ✅ index.md  → V$newestVer 及前 2 版本"
     }
+
+    # 同步 Hero 区版本 badge + lead 版本文本（区块 1）
+    $indexContent = $indexContent -replace 'badge/version-[\d\.]+-green', "badge/version-$newestVer-green"
+    $indexContent = $indexContent -replace 'alt="Version [\d\.]+"', "alt=`"Version $newestVer`""
+    $indexContent = $indexContent -replace '当前版本 <strong>V[\d\.]+</strong>', "当前版本 <strong>V$newestVer</strong>"
+
+    Set-Content $index -Value $indexContent -Encoding UTF8
+    Write-Host "  ✅ index.md Hero badge → V$newestVer"
 }
 
 # ---- 4. 更新 source-doc-map.md 对齐版本行 ----
