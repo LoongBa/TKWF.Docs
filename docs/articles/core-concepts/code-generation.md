@@ -87,7 +87,7 @@ public static class GreetingServiceEndpoints
             string name,
             [FromServices] DomainUser<AppUserInfo> user) =>
         {
-            var service = user.UseNoAop<GreetingService>();
+            var service = user.Use<GreetingService>();
             return await service.SayHelloAsync(name);
         });
     }
@@ -131,7 +131,7 @@ public class GreetingServiceControllerDecorator
     {
         // AOP 拦截注册在此执行
         // [AuthorityFilter]、[Transactional] 等在此生效
-        var service = _user.UseNoAop<GreetingService>();
+        var service = _user.Use<GreetingService>();
         return await service.SayHelloAsync(name);
     }
 }

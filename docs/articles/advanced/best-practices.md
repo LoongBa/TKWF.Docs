@@ -13,8 +13,8 @@ TKWF 框架的设计原则和推荐实践。
 ### 领域自治
 
 - **DomainUser 只通过构造函数注入** — 不要手动创建或从静态上下文获取
-- **域内调用用 `UseNoAop`** — 避免 AOP 拦截的重复开销
-- **跨层调用用 `Use`** — 确保 AuthorityFilter 等安全拦截生效
+- **域内调用传具体类** — `Use<T>()` 传具体类走直接构造，跳过 AOP 开销
+- **跨层调用传接口** — `Use<T>()` 传 `IAopContract` 接口走 AOP 装饰器，确保 AuthorityFilter 等安全拦截生效
 
 ### 服务设计
 
@@ -95,7 +95,7 @@ public async Task CreateTodo_Should_Return_Todo()
         Roles = new() { "User" }
     });
 
-    var service = user.UseNoAop<TodoService>();
+    var service = user.Use<TodoService>();
     var result = await service.CreateTodoAsync("Test", "Content");
 
     Assert.That(result, Is.Not.Null);
@@ -114,7 +114,7 @@ public async Task CreateTodo_Should_Return_Todo()
 
 ## 性能建议
 
-1. **`UseNoAop` 优先** — 域内调用用 `UseNoAop`，避免 AOP 装饰器开销
+1. **域内调用传具体类** — `Use<T>()` 传具体类走直接构造，避免 AOP 装饰器开销
 2. **批量操作用 `[Transactional]`** — 减少数据库连接往返
 3. **按需查询** — GraphQL 客户端使用 Select 表达式只取需要的字段
 

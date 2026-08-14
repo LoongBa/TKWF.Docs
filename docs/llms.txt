@@ -9,7 +9,7 @@
 
 ## 核心概念
 
-- **领域自治**：DomainUser 自持实例化，不依赖 DI 容器，Service 通过 User.UseNoAop<T>() 或 User.Use<T>() 显式消费，杜绝串号
+- **领域自治**：DomainUser 自持实例化，不依赖 DI 容器，Service 通过 User.Use<T>() 显式消费，杜绝串号
 - **编译期 AOP**：Source Generator 在编译时生成 AOP 装饰器，零运行时反射，性能开销接近零
 - **代码生成**：[GenerateController] 标注 Service → SG 自动生成控制器、GraphQL Resolver、强类型客户端
 - **多协议**：一份 Service 定义 → GraphQL + REST + RPC 三端自动暴露
@@ -65,6 +65,8 @@
 
 - 当前同步版本：V4.9.28
 - 完整变更历史：[TKWF CHANGELOG](https://github.com/LoongBa/TKW.Framework/blob/master/docs/CHANGELOG.md)
+
+
 
 
 
