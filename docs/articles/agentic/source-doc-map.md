@@ -56,7 +56,8 @@ description: TKWF 源文档 D/G/T/xCodeGen 系列与公开文章的完整映射�
 
 ---
 
-> 对齐 TKWF：V4.9.27 · 2026-08-10
+> 对齐 TKWF：V4.9.28 · 2026-08-10
+
 
 
 
