@@ -286,3 +286,5 @@ builder.ConfigWebAppDomain&lt;AppUserInfo, AppDomainInitializer&gt;()
 
 
 
+
+

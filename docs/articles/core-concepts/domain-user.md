@@ -37,21 +37,21 @@ public class OrderService(DomainUser<AppUserInfo> user)  // ← 直接注入
 
 ### 自持实例化
 
-DomainUser 不依赖 DI 容器，而是通过 `User.Use<TService>()` / `User.UseNoAop<TService>()`
-显式实例化领域服务：
+DomainUser 不依赖 DI 容器，而是通过 `User.Use<TService>()`
+显式实例化领域服务。`Use<T>()` 根据 T 的类型自动路由（V4.9 统一入口）：
 
 ```csharp
 // 通过 DomainUser 实例化服务
-var service = user.UseNoAop<OrderService>();
+var service = user.Use<OrderService>();
 // service 的 User 必然指向当前 user，不可能串号
 ```
 
-### 两种实例化模式
+### 自动路由机制
 
-| 方法 | 行为 | 适用场景 |
-|:-----|:-----|:---------|
-| `Use<TService>()` | 通过 AOP 代理实例化，应用 AuthorityFilter、Transactional 等拦截器 | 跨层调用、API 入口 |
-| `UseNoAop<TService>()` | 直接实例化，跳过 AOP 拦截 | 域内调用、内部逻辑 |
+| T 的类型 | 行为 | 适用场景 |
+|:---------|:-----|:---------|
+| 接口（`IAopContract`） | 通过 AOP 代理实例化，应用 AuthorityFilter、Transactional 等拦截器 | 跨层调用、API 入口 |
+| 具体类（`DomainServiceBase`） | 直接实例化，跳过 AOP 拦截 | 域内调用、内部逻辑 |
 
 ### 信息层级
 
@@ -120,14 +120,14 @@ var user = new DomainUser<AppUserInfo>(new AppUserInfo
     Roles = new() { "Admin" }
 });
 
-var service = user.UseNoAop<TodoService>();
+var service = user.Use<TodoService>();
 var result = await service.CreateAsync("Test Todo");
 ```
 
 ## 最佳实践
 
 1. **构造函数注入** — 总是通过构造函数注入 DomainUser，不要手动创建
-2. **域内调用用 `UseNoAop`** — 避免重复的 AOP 拦截开销
+2. **域内调用传具体类** — `Use<T>()` 传具体类类型走直接构造，跳过 AOP 开销
 3. **跨层调用用 `Use`** — 确保 AuthorityFilter 等安全拦截生效
 4. **不要在 Service 中暴露 DomainUser** — 保持领域封装性
 

@@ -50,10 +50,10 @@
     },
     "xref": ["https://learn.microsoft.com/en-us/dotnet/.xrefmap.json"],
     "markdownEngineProperties": {
-      "alerts": [
-        { "name": "AGENTIC", "type": "tip" },
-        { "name": "VERSION", "type": "important" }
-      ]
+      "alerts": {
+        "AGENTIC": "tip",
+        "VERSION": "important"
+      }
     },
     "dest": "_site",
     "globalMetadata": {

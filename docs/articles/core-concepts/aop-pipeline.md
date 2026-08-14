@@ -44,11 +44,12 @@ public class OrderServiceDecorator : IOrderServiceController
 
 ### AOP 边界
 
-AOP 拦截只在 **Controller / API 层**生效，域内调用（`UseNoAop`）跳过拦截：
+AOP 拦截只在 **Controller / API 层**生效。`Use<T>()` 根据 T 类型自动路由——
+接口走 AOP 管线，具体类走直接构造（域内调用，无拦截）：
 
 ```
-User.Use<IService>()     → AOP 管线激活 → 装饰器执行
-User.UseNoAop<TService>() → 直接调用 → 无拦截
+User.Use<IService>()       → AOP 管线激活 → 装饰器执行（接口路径）
+User.Use<MyService>()     → 直接调用 → 无拦截（类路径，域内调用）
 ```
 
 ## 内置 Filter
