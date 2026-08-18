@@ -338,7 +338,7 @@ var service = User.Use&lt;OrderService&gt;();
 ## 链接
 
 - GitHub: [LoongBa/TKW.Framework](https://github.com/LoongBa/TKW.Framework)
-- 许可证: MIT
+- 许可证: [CC BY-NC 4.0](https://creativecommons.org/licenses/by-nc/4.0/)（署名-非商业性使用）
 - 构建状态: [![Build and Deploy Docs](https://github.com/LoongBa/TKWF.Docs/actions/workflows/docfx.yml/badge.svg)](https://github.com/LoongBa/TKWF.Docs/actions/workflows/docfx.yml)
 
 
