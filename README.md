@@ -84,4 +84,8 @@ GitHub Actions 自动部署到 `gh-pages` 分支。每次推送 `main` 时自动
 
 ## 许可证
 
-MIT
+**文档内容**采用 [CC BY-NC 4.0](https://creativecommons.org/licenses/by-nc/4.0/)（署名-非商业性使用 4.0 国际）——允许免费学习、引用、翻译、做衍生，但须署名，且禁止商业性使用。
+
+**代码示例**（`docs/articles/` 中的 C#/TS 代码片段）为 TKWF 框架使用演示，框架本身遵循 TKW.Framework 仓库的许可条款。
+
+© LoongBa / TKWF 团队
