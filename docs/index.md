@@ -6,7 +6,7 @@ _layout: landing
 <div class="hero-section">
   <div class="hero-badges">
     <img src="https://img.shields.io/badge/.NET-10-blue" alt=".NET 10" />
-    <img src="https://img.shields.io/badge/version-4.9.28-green" alt="Version 4.9.28" />
+    <img src="https://img.shields.io/badge/version-4.9.40-green" alt="Version 4.9.40" />
     <img src="https://img.shields.io/badge/Agentic-Engineering-purple" alt="Agentic Engineering" />
   </div>
 <h1>TKW.Framework — 让 Agentic Engineering 更可控、更可靠的软件开发框架</h1>
@@ -304,9 +304,9 @@ var service = User.Use&lt;OrderService&gt;();
 
 | 版本 | 日期 | 核心内容 |
 |:-----|:-----|:---------|
-| **4.9.28** | 2026-08-14 | SG2 调试构建修复：SDK 引用模式下 reference assembly 剥离控制器 private 字段，导致 DataService 实体（如 Mer… |
-| **4.9.24** | 2026-08-11 | 认证重构：authType 路由提取 + SecurePassword 加固（含第二轮加固：客户端 IP 提取、token 零污染、hex 容错）。 背景：V4… |
-| **4.9.23** | 2026-08-11 | cfg 强契约加固：静态委托重构（`IEntityDACInfrastructureRegistrar`）+ 测试覆盖 + `InternalsVisibleT… |
+| **4.9.40** | 2026-08-18 | VEntity 查询架构简化：EQR 统一入口 + 初始化器实现 IGlobalQueryFilter + 元数据驱动 + 链路精简（8 跳→3 跳）。 参考：… |
+| **4.9.39** | 2026-08-18 | V4.9.38 后修复批：消费端（DMP-Lite）联调暴露的框架 bug + 文档修正，不引入新功能。 参考：v4.9.39-V4.9.38后修复批-开发方案… |
+| **4.9.38** | 2026-08-17 | VEntity 深度增强（P0-P3 + 修复批）：编译期 ViewSql 列名校验 + AutoQuery 自动查询 + 聚合 Dto 自动生成 + 轻量 V… |
 
 
 > 完整变更历史见 [TKWF CHANGELOG](https://github.com/LoongBa/TKW.Framework/blob/master/docs/CHANGELOG.md)
@@ -340,6 +340,8 @@ var service = User.Use&lt;OrderService&gt;();
 - GitHub: [LoongBa/TKW.Framework](https://github.com/LoongBa/TKW.Framework)
 - 许可证: MIT
 - 构建状态: [![Build and Deploy Docs](https://github.com/LoongBa/TKWF.Docs/actions/workflows/docfx.yml/badge.svg)](https://github.com/LoongBa/TKWF.Docs/actions/workflows/docfx.yml)
+
+
 
 
 

@@ -4,7 +4,7 @@
 
 [![Build and Deploy Docs](https://github.com/LoongBa/TKWF.Docs/actions/workflows/docfx.yml/badge.svg)](https://github.com/LoongBa/TKWF.Docs/actions/workflows/docfx.yml)
 
-**当前同步版本：V4.9.28**（文档与框架 [LoongBa/TKW.Framework](https://github.com/LoongBa/TKW.Framework) 保持同步）
+**当前同步版本：V4.9.40**（文档与框架 [LoongBa/TKW.Framework](https://github.com/LoongBa/TKW.Framework) 保持同步）
 
 ---
 
@@ -12,12 +12,12 @@
 
 | 版本 | 日期 | 核心内容 |
 |:-----|:-----|:---------|
-| **4.9.28** | 2026-08-14 | SG2 调试构建修复：SDK 引用模式下 reference assembly 剥离控制器 private 字段，新增 DataService 名逆映射推导路径修复 + Expression 参数硬过滤 |
-| **4.9.27** | 2026-08-12 | xCodeGen 模板修复：Domain_Api 无公开方法根因、DataService 基类链遍历、ExcludeMethods 批量排除、DOMAIN_MAP 表格修复 |
-| **4.9.26** | 2026-08-11 | 限流器适配 System.Threading.RateLimiting：退役自定义 IRateLimiter 抽象层，采用官方 PartitionedRateLimiter + EnforceAsync<TKey> |
-| **4.9.25** | 2026-08-11 | 认证扩展点重构：GetSaltAsync/GetStoredBlobAsync 改 protected internal virtual、移除约定式反射、签名升级 (DomainUser<TUserInfo> user) + GetClientIp 机制回归 |
-| **4.9.24** | 2026-08-11 | 认证重构：authType 路由基座 + 6 子虚方法 + 约定式 SecurePassword + NullCredentialProtector + 四轮加固（H1-H4） |
-| **4.9.23** | 2026-08-11 | cfg 强契约加固：IEntityDACInfrastructureRegistrar 取代静态委托 + 测试覆盖 + IVT 收敛 + 上下文提取默认启用 |
+| **4.9.40** | 2026-08-18 | VEntity 查询架构简化：EQR 统一入口 + 直连 DAC（8跳→3跳）+ IGlobalQueryFilter 策略 + AutoQuery 委托 EQR + xCodeGen VEntity 跳过 DataService/Conditions |
+| **4.9.39** | 2026-08-18 | V4.9.38 后修复批：SyncViewsAsync 作用域 bug + StatsDto Razor 括号边界 + ViewSql 校验器完整化（聚合别名提取 + 双向检测） |
+| **4.9.38** | 2026-08-17 | VEntity 深度增强：ViewSql 编译期列名校验 + AutoQuery 自动查询 + 聚合 Dto 自动生成 + 轻量 VEntity（InlineSelectSql） |
+| **4.9.37** | 2026-08-17 | IsGraphQLQueryable 默认值变更（Entity false / VEntity true）+ IsComputed 全链路一致性修复 |
+| **4.9.36** | 2026-08-17 | VEntity 增强：IsComputed 计算字段 + DynamicSelector 投影跳过 + Dto.cshtml 三处跳过（ADR11） |
+| **4.9.35** | 2026-08-16 | Entity IQueryable 主路径 Phase-C：连接 resolver + 字段命名统一 + IsGraphQLQueryable 三侧落实 |
 
 > 完整变更历史见 [TKWF CHANGELOG](https://github.com/LoongBa/TKW.Framework/blob/master/docs/CHANGELOG.md)。
 
