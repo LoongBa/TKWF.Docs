@@ -4,7 +4,7 @@
 
 [![Build and Deploy Docs](https://github.com/LoongBa/TKWF.Docs/actions/workflows/docfx.yml/badge.svg)](https://github.com/LoongBa/TKWF.Docs/actions/workflows/docfx.yml)
 
-**当前同步版本：V4.9.40**（文档与框架 [LoongBa/TKW.Framework](https://github.com/LoongBa/TKW.Framework) 保持同步）
+**当前同步版本：V4.9.41**（文档与框架 [LoongBa/TKW.Framework](https://github.com/LoongBa/TKW.Framework) 保持同步）
 
 ---
 
@@ -12,6 +12,7 @@
 
 | 版本 | 日期 | 核心内容 |
 |:-----|:-----|:---------|
+| **4.9.41** | 2026-08-18 | 文档同步：EntityQuery→Query + AdminHardDelete→AdminDelete + DefaultOrder 安全默认（Id 倒序，不抛异常）+ ADR15 Phase 2 删除过期方法 shim |
 | **4.9.40** | 2026-08-18 | VEntity 查询架构简化：EQR 统一入口 + 直连 DAC（8跳→3跳）+ IGlobalQueryFilter 策略 + AutoQuery 委托 EQR + xCodeGen VEntity 跳过 DataService/Conditions |
 | **4.9.39** | 2026-08-18 | V4.9.38 后修复批：SyncViewsAsync 作用域 bug + StatsDto Razor 括号边界 + ViewSql 校验器完整化（聚合别名提取 + 双向检测） |
 | **4.9.38** | 2026-08-17 | VEntity 深度增强：ViewSql 编译期列名校验 + AutoQuery 自动查询 + 聚合 Dto 自动生成 + 轻量 VEntity（InlineSelectSql） |
