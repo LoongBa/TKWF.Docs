@@ -11,9 +11,9 @@ _layout: landing
   </div>
 <h1>TKW.Framework — 让 Agentic Engineering 更可控、更可靠的软件开发框架</h1>
   <p class="lead">
-    人声明意图，Agent 写 Service，框架编译期生成全部管道代码。<br>
-    标注 <code>[GenerateController]</code> → 编译期产出 Controller + AOP 装饰器 + GraphQL/REST 端点 + 客户端代理。<br>
-    <strong>两道防线</strong>：编译期拦截结构性错误（20+ 编译期诊断），运行时拦截行为错误（授权/验证/事务）。
+    开发者提供需求文档 → Agent 调用框架编写 Entity/Service → 框架编译期生成代码、API 接口、知识文档和 Mock 数据 → 人机协同完善和增量开发。<br>
+    <strong>开发者思考意图 → AI 辅助实现 → 框架约束保障</strong><br>
+    开发者是灵魂，TKWF 是法宝，AI 是器灵。
   </p>
   <div class="hero-cta">
     <a href="articles/getting-started.md" class="btn btn-primary">🚀 5 分钟快速开始</a>
