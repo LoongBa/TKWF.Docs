@@ -6,14 +6,14 @@ _layout: landing
 <div class="hero-section">
   <div class="hero-badges">
     <img src="https://img.shields.io/badge/.NET-10-blue" alt=".NET 10" />
-    <img src="https://img.shields.io/badge/version-4.9.43-green" alt="Version 4.9.43" />
+    <img src="https://img.shields.io/badge/version-4.9.45-green" alt="Version 4.9.45" />
     <img src="https://img.shields.io/badge/Agentic-Engineering-purple" alt="Agentic Engineering" />
   </div>
 <h1>TKW.Framework — 让 Agentic Engineering 更可控、更可靠的软件开发框架</h1>
   <p class="lead">
     人声明意图，Agent 写 Service，框架编译期生成全部管道代码。<br>
     标注 <code>[GenerateController]</code> → 编译期产出 Controller + AOP 装饰器 + GraphQL/REST 端点 + 客户端代理。<br>
-    编译期约束让 AI 生成代码天然可靠——不合规直接报错，不用运行才发现。
+    <strong>两道防线</strong>：编译期拦截结构性错误（20+ 编译期诊断），运行时拦截行为错误（授权/验证/事务）。
   </p>
   <div class="hero-cta">
     <a href="articles/getting-started.md" class="btn btn-primary">🚀 5 分钟快速开始</a>
@@ -113,7 +113,7 @@ AI-Assisted（Copilot 模式）和 Agentic Engineering 是两种完全不同的�
     <tr>
       <td>AI 门槛</td>
       <td>需顶级模型长上下文推理整个架构</td>
-      <td><strong>粒度细分管线</strong>，轻量模型（DeepSeek V4 Flash 级）即可胜任</td>
+      <td><strong>7 个框架级 Skills</strong> 分步引导 + 活文档替代源码阅读，架构降低上下文加载</td>
     </tr>
   </tbody>
 </table>
@@ -135,7 +135,7 @@ AI-Assisted（Copilot 模式）和 Agentic Engineering 是两种完全不同的�
   <div class="banner-icon">📐</div>
   <div class="banner-content">
     <h3>零歧义契约 — 标注即 Spec，编译期验证</h3>
-    <p><code>[GenerateController]</code> 标注就是完整契约——不只是一个标记，而是一份可执行的规范。<br>AI 生成的不合规代码<strong>编译期直接报错</strong>，不需要运行才发现。这是 Spec-Driven Development 在 .NET 上的落地。</p>
+    <p><code>[GenerateController]</code> 标注就是完整契约——不只是一个标记，而是一份可执行的规范。<br><strong>结构性不合规编译期直接报错</strong>（20+ 诊断）。行为合规（授权/验证/事务）由运行时 AOP 兜底。</p>
   </div>
 </div>
 
@@ -150,8 +150,16 @@ AI-Assisted（Copilot 模式）和 Agentic Engineering 是两种完全不同的�
 <div class="agentic-banner">
   <div class="banner-icon">🔬</div>
   <div class="banner-content">
-    <h3>粒度细分管线 — Agent 无需理解全局架构</h3>
-    <p>SG1（元数据提取）→ SG2（服务端生成）→ SG3（客户端生成），三层各司其职。<br>Agent 只需知道自己的输出会被下一步消费，不需要推理整个框架内部。粒度细分 = 更低 Token 消耗 = 轻量模型可用。</p>
+    <h3>粒度细分管线 — Agent 聚焦眼前工作</h3>
+    <p>SG1（元数据提取）→ SG2（服务端生成）→ SG3（客户端生成），三层各司其职。<br>7 个框架级 Skills 分步引导，活文档替代源码阅读，Agent 只加载当前域薄索引——无需理解全局架构。</p>
+  </div>
+</div>
+
+<div class="agentic-banner">
+  <div class="banner-icon">🤖</div>
+  <div class="banner-content">
+    <h3>Agentic Skills + Mock — 端到端 Agent 工作流</h3>
+    <p>自带 <strong>7 个框架级 Skills</strong>（设计→实体→业务→测试→前端→Mock），将需求文档交给 Agent 按 skill 编写即可完成开发。<br><strong>ts-client</strong> 确保前后端开发体验一致（C# 与 TS API 形态完全镜像），<strong>ts-client-mock</strong> 两级 mock（离线 + HTTP 模拟）让 Agent 无需运行后端即可自验证全栈。</p>
   </div>
 </div>
 
@@ -281,9 +289,24 @@ var service = User.Use&lt;OrderService&gt;();
     <p>DomainUser 自持实例化，不依赖 DI 容器，物理隔离，杜绝串号。</p>
   </div>
   <div class="feature-card">
+    <div class="card-icon">🤖</div>
+    <h3>Agentic Skills</h3>
+    <p>7 个框架级 Skills（设计→实体→业务→测试→前端→Mock），Agent 按 skill 分步完成开发。</p>
+  </div>
+  <div class="feature-card">
+    <div class="card-icon">📦</div>
+    <h3>前后端一致</h3>
+    <p>ts-client（TS SDK）+ ts-client-mock（两级 Mock），C# 与 TS API 形态完全镜像，开发体验统一。</p>
+  </div>
+  <div class="feature-card">
     <div class="card-icon">🔌</div>
     <h3>多协议传输</h3>
     <p>一份 Service → GraphQL (HotChocolate 16) + REST (Minimal API) + RPC 三端自动暴露。</p>
+  </div>
+  <div class="feature-card">
+    <div class="card-icon">📊</div>
+    <h3>框架级 CQRS</h3>
+    <p>Entity 写模型 / VEntity 读模型类型级分离，EQR 统一查询入口，AutoQuery 消除 80% 查询 Service。</p>
   </div>
   <div class="feature-card">
     <div class="card-icon">🎯</div>
@@ -291,7 +314,7 @@ var service = User.Use&lt;OrderService&gt;();
     <p>AuthorityFilter + Challenge-Response 登录 + SystemActor 系统角色 + 错误码全栈统一。</p>
   </div>
   <div class="feature-card">
-    <div class="card-icon">📦</div>
+    <div class="card-icon">🏗️</div>
     <h3>生态集成</h3>
     <p>Web / Blazor / MAUI / FreeSql 全方位集成，C# + TS 双客户端 SDK。</p>
   </div>
@@ -304,33 +327,34 @@ var service = User.Use&lt;OrderService&gt;();
 
 | 版本 | 日期 | 核心内容 |
 |:-----|:-----|:---------|
+| **4.9.45** | 2026-08-21 | 全局过滤器体系修正（ADR18）：移除 SG 安全核心特性重复声明（`[AuthorityFilter]` + `[ValidateParametersFilt… |
+| **4.9.44** | 2026-08-21 | Mock 数据基础设施 C# 版（ADR09 实施）：内存 `MockDbEntityDAC` + Bogus 驱动规则化数据生成（`BogusDataGene… |
 | **4.9.43** | 2026-08-20 | 代码质量修复（ADR 外评审发现）：安全（异常消息不泄漏客户端）+ 资源泄漏（HttpRequestMessage using + GraphQLClient … |
-| **4.9.42** | 2026-08-19 | C# ApiClient QueryBuilder 增强（ADR16）：CountAsync（仅计数，节省带宽）+ Clone（克隆构建器，支持并行查询）+ O… |
-| **4.9.41** | 2026-08-18 | DataService 基类方法分级与聚合 API 分层（ADR15 Phase 1 + Phase 2）：Guard 可配置 + 写方法分级（环境事务/批量/… |
 
 
 > 完整变更历史见 [TKWF CHANGELOG](https://github.com/LoongBa/TKW.Framework/blob/master/docs/CHANGELOG.md)
 
 ---
 
-<!-- ===== 区块 9: NuGet 包 ===== -->
-## NuGet 包
+<!-- ===== 区块 8.5: V5.0 路线图 ===== -->
+## 🗺️ V5.0 路线图
 
-| 包名 | 说明 |
-|:----|:-----|
-| `TKWF.Domain` | 领域框架核心（DomainUser、AOP、`[GenerateController]`） |
-| `TKWF.Domain.Web` | Web 集成（Session 中间件、HttpContext 适配） |
-| `TKWF.Domain.Maui` | MAUI 集成 |
-| `TKWF.Domain.Blazor` | Blazor 集成 |
-| `TKWF.Domain.FreeSql` | FreeSql ORM 适配 |
-| `TKWF.Domain.ApiService.HotChocolate` | GraphQL 传输层（HotChocolate 16） |
-| `TKWF.Domain.ApiService.MinimalApi` | REST 传输层（Minimal API） |
-| `TKWF.Domain.ApiClient` | RPC 客户端核心 |
-| `TKWF.Domain.ApiClient.GraphQL` | GraphQL 客户端 |
-| `TKWF.Domain.ApiClient.Rest` | REST 客户端 |
-| `TKWF.Cryptography` | 密码学工具 |
-| `TKWF.Core` | 核心基础设施 |
-| `TKWF.Abstractions` | 共享抽象层 |
+> V4.9.x 聚焦 Agentic Engineering 基础设施完善。V5.0 将在以下方向增强：
+
+| 方向 | 状态 | 说明 |
+|:--|:--|:--|
+| 领域事件 + 扩展/插件机制 | 🔬 设计中 | 适配 .NET 10+ 及成熟项目经验，含动态加载。当前版本有 Tools 扩展概念但未框架级支持，将升级为完整机制 |
+| 分布式 / 微服务 | 💬 讨论中 | 老版本基于自有架构，V5.0 将基于成熟项目重新设计实现 |
+| Agent UI 组件库 | 📋 规划中 | MVC / Blazor WASM / HTML 三端 UI 组件，方便 Agent 提高 UI 开发效率 |
+
+---
+
+<!-- ===== 区块 9: 包索引 ===== -->
+## 包索引
+
+核心包 `TKWF.Domain` 一行安装即可开始。完整的 NuGet 包清单和 npm 前端包见二级页面。
+
+→ [NuGet 包索引](articles/advanced/packages.md)
 
 ---
 
@@ -340,6 +364,8 @@ var service = User.Use&lt;OrderService&gt;();
 - GitHub: [LoongBa/TKW.Framework](https://github.com/LoongBa/TKW.Framework)
 - 许可证: [CC BY-NC 4.0](https://creativecommons.org/licenses/by-nc/4.0/)（署名-非商业性使用）
 - 构建状态: [![Build and Deploy Docs](https://github.com/LoongBa/TKWF.Docs/actions/workflows/docfx.yml/badge.svg)](https://github.com/LoongBa/TKWF.Docs/actions/workflows/docfx.yml)
+
+
 
 
 

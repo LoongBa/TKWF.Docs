@@ -69,6 +69,8 @@
       href: articles/advanced/error-handling.md
     - name: 最佳实践
       href: articles/advanced/best-practices.md
+    - name: NuGet 包索引
+      href: articles/advanced/packages.md
 - name: 🤖 Agentic 专题
   href: articles/agentic/quick-start-for-ai.md
 - name: 📚 API 参考
