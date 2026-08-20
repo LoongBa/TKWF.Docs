@@ -1,12 +1,31 @@
 ﻿---
 title: 框架概览
-description: TKWF.Domain — 为 Agentic Coding 时代设计的 .NET 10 领域自治框架。声明式标注，编译期全自动生成 Controller、AOP 装饰器、GraphQL/REST 端点、强类型客户端代理。
+description: TKWF.Domain — 为 Agentic Engineering 时代设计的 .NET 10 领域自治框架。声明式标注，编译期全自动生成 Controller、AOP 装饰器、GraphQL/REST 端点、强类型客户端代理。
 ---
 # 框架概览
 
 > **TKWF.Domain** — 让 AI 写 Service，框架负责剩下的。
 
 一个 `[GenerateController]` 标注，编译期自动生成 Controller + AOP 装饰器 + GraphQL/REST 端点 + 强类型客户端代理。零运行时反射，零 DI 串号，代码行为对 AI 完全可预测。
+
+---
+
+## 💭 设计哲学："思想件"
+
+**TKW = Thinking Ware，"思想件"**——开发者是软件开发的灵魂，框架是服务于灵魂的"件"。哪怕 AI 时代亦不曾、不会改变。
+
+TKWF 经历了四个时代的演进，一条主线贯穿始终——**让框架越来越不挡路**：
+
+| 版本 | 时代 | 哲学 | 手段 |
+|:--|:--|:--|:--|
+| V1 | 2006 | 分离 | 表现层与逻辑分离 |
+| V2 | — | 去臃肿 | partial 特性替代继承体系 |
+| V3 | — | 自治 | 动态代理实现领域自治 |
+| V4 | 2024+ | 可靠 | 编译期约束让 AI 代码天然可靠 |
+
+V4 是最彻底的一步：恰逢 VibeCoding 流行，但选择了工程化约束——在人编程时代太重，在人机协同时代反而是优势。**AI 不需要自由，需要可靠的护栏。**
+
+> 框架不做思考，但让思考有器可依。编译期约束是渠，AI 思考是水，水入渠则不泛滥。
 
 ---
 
@@ -102,6 +121,61 @@ REST 端点原生支持 `?fields=` 投影——嵌套属性树形裁剪，按需
 
 ---
 
+## 📊 框架级 CQRS：Entity 写模型 / VEntity 读模型
+
+TKWF 在类型系统级实现读写分离——Entity 负责写，VEntity 专用于查询、统计和聚合：
+
+```csharp
+// 写模型 — Entity
+public class Order : Entity { ... }
+
+// 读模型 — VEntity（专用于查询，框架阻止写操作）
+[DomainGenerateCode(IsView = true, AutoQuery = true)]
+public class OrderSummaryView : VEntity
+{
+    // ViewSql 定义 SQL 视图 + 编译期列名校验
+    // AutoQuery 自动生成 QueryController（消除 80% 手写查询 Service）
+}
+```
+
+**读写分离是类型级强制的**：VEntity 不生成 DataService、不允许写操作、默认暴露 GraphQL。这不是约定，是框架级硬约束。
+
+### EQR 统一查询入口
+
+`User.Query<T>()` → EQR → `IEntityReadOnlyDAC` → `IQueryable`，3 跳零反射。V4.9.40 将原 8 跳路径重构为 3 跳，消除反射和死代码。
+
+### 三端统一查询 API
+
+无论进程内还是进程外，开发体验保持一致：
+
+```csharp
+// C# 进程内（完整 LINQ）
+var list = await User.Query<Order>()
+    .Where(o => o.Status == "Paid")
+    .OrderBy(o => o.CreatedAt)
+    .Page(1, 20)
+    .ToPageAsync();
+```
+
+```typescript
+// TS 前端（API 表面同构）
+const list = await Tkwf.User.Query<Order>()
+    .where(f => f.status.eq("Paid"))
+    .orderBy(f => f.createdAt)
+    .page(1, 20)
+    .toPageAsync();
+```
+
+### AutoQuery + ViewSql + StatsDto
+
+- **AutoQuery**：`[DomainGenerateCode(AutoQuery=true)]` → SG 自动生成 QueryController（List + Count），消除 80% 手写查询 Service
+- **ViewSql**：SQL 视图定义 + **编译期列名校验**（SG1a warning + 运行时启动阻断）
+- **StatsDto**：xCodeGen自动从 ViewSql 的 `SUM/COUNT/AVG` 生成统计 DTO
+
+> → 深入了解：[数据服务](core-concepts/data-services.md) · [查询指南](advanced/query-guide.md)
+
+---
+
 ## 🔐 安全体系：声明式权限 + Challenge-Response
 
 权限控制不需要手写 `if`，一个标注搞定：
@@ -125,21 +199,25 @@ public class ReportService(DomainUser<AppUserInfo> user) : DomainServiceBase<App
 
 ---
 
-## 🤖 为 Agentic Coding 而生
+## 🤖 为 Agentic Engineering 而生
 
-TKWF 的架构约束让 AI 生成代码**天然可靠**：
+TKWF 的架构约束让 AI 生成代码**结构性可靠**：
 
-- **编译期约束** — SG 在编译时验证所有契约，AI 生成的不合规代码直接报错
-- **粒度细分** — 元数据管线分三层（SG1→SG2→SG3），每层职责单一，AI 无需理解全局架构
-- **零歧义契约** — `[GenerateController]` 标注即完整契约，AI 只需写 Service，框架约束剩余全部
-- **轻量模型可用** — DeepSeek V4 Flash 级模型即可高质量完成，Token 消耗与成本大幅降低
+- **编译期约束** — SG 在编译时验证所有结构性契约（20+ 诊断），不合规直接报错
+- **两道防线** — 编译器拦截结构性错误（接口/返回类型/命名/架构边界）；运行时拦截行为错误（授权/验证/事务）
+- **粒度细分** — 元数据管线分三层（SG1→SG2→SG3），每层职责单一，Agent 无需理解全局架构
+- **7 个框架级 Skills** — 设计→实体→业务→测试→前端→Mock，Agent 按 skill 分步完成开发
+- **活文档替代源码** — Agent 读 `.TKWF/{Domain}/` 薄索引（DOMAIN_MAP / DataService_API / Business.md），不读 500+ 行生成代码
 
 ```
 人定意图（声明式标注）
-    → AI 写实现（Service 业务逻辑）
+    → AI 按 skill 写实现（Service 业务逻辑）
     → 框架管生成（Controller + AOP + 端点 + 客户端）
-    → 编译期验证（不合规直接报错）
+    → 编译期验证（结构性不合规直接报错）
+    → 运行时兜底（授权/验证/事务 AOP 拦截）
 ```
+
+> 架构设计降低 Agent 上下文加载和推理复杂度——方向上支持轻量模型和 token 优化。
 
 > → 深入了解：[AI 快速上手](agentic/quick-start-for-ai.md) · [源文档映射表](agentic/source-doc-map.md)
 
@@ -181,17 +259,72 @@ TKWF 的架构约束让 AI 生成代码**天然可靠**：
 
 ---
 
-## 📦 NuGet 包
+## 🤖 Agentic Engineering 基础设施
 
-| 包名 | 说明 |
-|:----|:-----|
-| `TKWF.Domain` | 领域框架核心（DomainUser、AOP、`[GenerateController]`） |
-| `TKWF.Domain.Web` | Web 集成（Session 中间件、HttpContext 适配） |
-| `TKWF.Domain.ApiService.HotChocolate` | GraphQL 传输层（HotChocolate 16） |
-| `TKWF.Domain.ApiService.MinimalApi` | REST 传输层（Minimal API） |
-| `TKWF.Domain.ApiClient` | RPC 客户端核心 |
-| `TKWF.Domain.FreeSql` | FreeSql ORM 适配 |
-| `TKWF.Domain.Maui` / `TKWF.Domain.Blazor` | MAUI / Blazor 集成 |
+TKWF 不只是框架，还自带让 Agent 端到端完成开发的基础设施：
+
+### 7 个框架级 Skills
+
+将需求分析文档交给 Agent，按 skill 分步编写 Entity / Service / UI 即可完成开发：
+
+| Skill | 职责 |
+|:--|:--|
+| `tkwf-design` | 设计阶段（需求→R/S/DS/U 文档 + HANDOVER） |
+| `tkwf-business` | 业务规则物化（`.TKWF/{Domain}/Business.md`） |
+| `tkwf-entity` | Entity / VEntity 编写 |
+| `tkwf-service` | DomainService 编写 |
+| `tkwf-test` | Contract 测试（InMemory DAC） |
+| `tkwf-tsclient` | 前端 RPC 调用 |
+| `tkwf-tsclient-mock` | Mock 数据生成 |
+
+**增量变更路由**：`TKWF_Rules.md` 路由中枢分类变更信号 → 加载匹配 skill → `Business.md` 门控确保业务规则先物化。Agent 只加载当前域的薄索引，不读整个代码库。
+
+### ts-client — 前后端开发体验一致
+
+TS 客户端 SDK（`@tkwf/tsclient`），API 形态与 C# ApiClient **完全镜像**：
+
+```typescript
+// TS 前端（与 C# 后端相同形态）
+const service = Tkwf.User.Use<OrderService>();
+const todo = await service.createAsync("买咖啡");
+
+const list = await Tkwf.User.Query<Todo>()
+    .where(f => f.title.contains("买"))
+    .orderBy(f => f.id)
+    .page(1, 10)
+    .toPageAsync();
+```
+
+### ts-client-mock — 两级 Mock 测试
+
+`@tkwf/tsclient-mock` 提供两级 mock，Agent 无需运行后端即可自验证全栈：
+
+| 级别 | 机制 | 场景 |
+|:--|:--|:--|
+| **离线 Mock** | `MockTransport`（Transport 接口注入，零依赖） | 单元测试，无需服务器 |
+| **HTTP Mock** | `MockHttpServer`（node:http HTTP 服务器） | 集成测试，模拟 WebApi |
+
+> → 深入了解：[AI 快速上手](agentic/quick-start-for-ai.md) · [源文档映射表](agentic/source-doc-map.md)
+
+---
+
+## 📦 包索引
+
+核心包 `TKWF.Domain` 一行安装即可开始。完整 NuGet 包清单和 npm 前端包见二级页面。
+
+→ [NuGet 包索引](advanced/packages.md)
+
+---
+
+## 🗺️ V5.0 路线图
+
+> V4.9.x 聚焦 Agentic Engineering 基础设施完善。V5.0 将在以下方向增强：
+
+| 方向 | 状态 | 说明 |
+|:--|:--|:--|
+| 领域事件 + 扩展/插件机制 | 🔬 设计中 | 适配 .NET 10+ 及成熟项目经验，含动态加载。当前版本有 Tools 扩展概念但未框架级支持，将升级为完整机制 |
+| 分布式 / 微服务 | 💬 讨论中 | 老版本基于自有架构，V5.0 将基于成熟项目重新设计实现 |
+| Agent UI 组件库 | 📋 规划中 | MVC / Blazor WASM / HTML 三端 UI 组件，方便 Agent 提高 UI 开发效率 |
 
 ---
 
