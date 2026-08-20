@@ -276,17 +276,22 @@ var service = User.Use&lt;OrderService&gt;();
   <div class="feature-card">
     <div class="card-icon">⚙️</div>
     <h3>编译期 AOP</h3>
-    <p>Source Generator 编译期生成装饰器，零运行时反射。权限、事务、缓存声明式标注。</p>
+    <p>Source Generator 编译期生成装饰器，零运行时反射。权限、事务、验证声明式标注。</p>
   </div>
   <div class="feature-card">
     <div class="card-icon">📐</div>
     <h3>声明式标注</h3>
-    <p><code>[GenerateController]</code> 一标注，SG 自动生成 Controller、接口、Resolver、客户端代理。</p>
+    <p><code>[GenerateController]</code> → Controller + AOP + GraphQL/REST 端点 + 客户端代理全自动生成。</p>
   </div>
   <div class="feature-card">
     <div class="card-icon">🧩</div>
     <h3>领域自治</h3>
-    <p>DomainUser 自持实例化，不依赖 DI 容器，物理隔离，杜绝串号。</p>
+    <p>DomainUser 不进 DI 容器，<code>Use&lt;T&gt;()</code> 显式传递，物理隔离，杜绝串号。</p>
+  </div>
+  <div class="feature-card">
+    <div class="card-icon">📊</div>
+    <h3>框架级 CQRS</h3>
+    <p>Entity 写 / VEntity 读类型级分离。ViewEntity + IQueryable + GraphQL 提供强大查询/统计/聚合（JS 表现层暂时部分受限）。</p>
   </div>
   <div class="feature-card">
     <div class="card-icon">🤖</div>
@@ -296,27 +301,27 @@ var service = User.Use&lt;OrderService&gt;();
   <div class="feature-card">
     <div class="card-icon">📦</div>
     <h3>前后端一致</h3>
-    <p>ts-client（TS SDK）+ ts-client-mock（两级 Mock），C# 与 TS API 形态完全镜像，开发体验统一。</p>
+    <p>Blazor Web Server / Wasm / 网页（TS）开发体验统一。ts-client + ts-client-mock 两级 mock 自验证。</p>
   </div>
   <div class="feature-card">
     <div class="card-icon">🔌</div>
     <h3>多协议传输</h3>
-    <p>一份 Service → GraphQL (HotChocolate 16) + REST (Minimal API) + RPC 三端自动暴露。</p>
+    <p>一份 Service → GraphQL + REST + RPC 三端自动暴露。默认三协议，可扩展（如 OData）。</p>
   </div>
   <div class="feature-card">
-    <div class="card-icon">📊</div>
-    <h3>框架级 CQRS</h3>
-    <p>Entity 写模型 / VEntity 读模型类型级分离，EQR 统一查询入口，AutoQuery 消除 80% 查询 Service。</p>
+    <div class="card-icon">🛡️</div>
+    <h3>两道防线</h3>
+    <p>编译期拦截结构性错误（20+ 诊断），运行时拦截行为错误（授权/验证/事务）。</p>
   </div>
   <div class="feature-card">
-    <div class="card-icon">🎯</div>
-    <h3>安全体系</h3>
-    <p>AuthorityFilter + Challenge-Response 登录 + SystemActor 系统角色 + 错误码全栈统一。</p>
+    <div class="card-icon">🔐</div>
+    <h3>安全 + SystemActor</h3>
+    <p>AuthorityFilter + Challenge-Response + <strong>SystemActor 区分人/系统写入审计</strong>。错误码全栈统一。</p>
   </div>
   <div class="feature-card">
     <div class="card-icon">🏗️</div>
-    <h3>生态集成</h3>
-    <p>Web / Blazor / MAUI / FreeSql 全方位集成，C# + TS 双客户端 SDK。</p>
+    <h3>ORM 可扩展</h3>
+    <p>内置 FreeSql + MockEntityDac（测试），<code>IEntityDAC</code> ORM 无关抽象，可扩展支持其它。</p>
   </div>
 </div>
 
@@ -364,6 +369,7 @@ var service = User.Use&lt;OrderService&gt;();
 - GitHub: [LoongBa/TKW.Framework](https://github.com/LoongBa/TKW.Framework)
 - 许可证: [CC BY-NC 4.0](https://creativecommons.org/licenses/by-nc/4.0/)（署名-非商业性使用）
 - 构建状态: [![Build and Deploy Docs](https://github.com/LoongBa/TKWF.Docs/actions/workflows/docfx.yml/badge.svg)](https://github.com/LoongBa/TKWF.Docs/actions/workflows/docfx.yml)
+
 
 
 
