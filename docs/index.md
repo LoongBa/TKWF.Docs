@@ -32,24 +32,27 @@ _layout: landing
 
 传统开发中，人包揽意图、业务、管道代码。TKWF 把这三件事拆开：
 
-```
-  你（人）              AI Agent             TKW.Framework
-  ────────             ──────────           ──────────────
-  声明意图       →     写 Service      →     编译期生成
-  [GenerateController]   业务逻辑              Controller + AOP 装饰器
-  [AuthorityFilter]      领域规则              GraphQL Resolver
-  [Transactional]        状态流转              REST 端点
-                                               客户端代理
-  ────────             ──────────           ──────────────
-  你只写标注             Agent 只写业务        框架管全部管道
+```mermaid
+graph LR
+    A["👤 开发者<br/>提供需求文档"] --> B["🤖 AI Agent<br/>编写 Entity/Service"]
+    B --> C["⚙️ TKW.Framework<br/>编译期生成"]
+    C --> D["Controller + AOP 装饰器"]
+    C --> E["GraphQL / REST 端点"]
+    C --> F["强类型客户端代理"]
+    C --> G["知识文档 + Mock 数据"]
+    D --> H["🔄 人机协同<br/>完善与增量开发"]
+    E --> H
+    F --> H
+    G --> H
+    H -. 循环 .-> A
 ```
 
-**你写的**：一个 `[GenerateController]` 标注 + Service 业务方法。
-**框架生成的**：Controller 接口、AOP 装饰器、GraphQL Resolver、REST 端点、强类型客户端代理。
-**Agent 写的**：Service 里的业务逻辑——无需理解 DI 配置、路由注册、序列化细节。
+**开发者**提供需求文档 → **Agent** 编写实体和业务方法 → **框架**编译期生成 Controller、AOP 装饰器、GraphQL/REST 端点、客户端代理、知识文档和 Mock 数据 → 人机协同进行完善和增量开发。
+
+框架将每一部分分解为**最小粒度**交给 Agent 编写——一个用例 = 一个 Service 方法，Agent 无需理解全局架构、DI 配置、路由注册、序列化细节。**粒度细分 = 更少模型思考 = 更高可控性和可靠性 = 更低上下文依赖和 Token 消耗。**
 
 ```csharp
-// 你 + Agent 只写这一份
+// 开发者 + Agent 只写这一份
 [GenerateController]
 public class OrderService(DomainUser<AppUserInfo> user)
     : DomainServiceBase<AppUserInfo>(user)
@@ -59,7 +62,7 @@ public class OrderService(DomainUser<AppUserInfo> user)
     public async Task<Order> CreateAsync(string title) { ... }
 }
 
-// 编译期自动产出 5 份（你不用写，Agent 也不用写）：
+// 编译期自动产出 5 份（开发者不用写，Agent 也不用写）：
 // → IOrderServiceController.g.cs         (契约接口)
 // → OrderServiceControllerDecorator.g.cs  (AOP 装饰器)
 // → OrderServiceResolver.g.cs            (GraphQL Resolver)
