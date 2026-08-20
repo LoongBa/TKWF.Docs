@@ -91,7 +91,7 @@ GreetingService.cs    →    IGreetingServiceController.g.cs   (契约接口)
 
 ## 🔌 一份 Service，三端自动暴露
 
-同一个 Service，无需修改一行代码，同时暴露三种协议：
+同一个 Service，无需修改一行代码，同时暴露三种协议。**默认三协议，可扩展**（如 OData）：
 
 ```csharp
 // 你只写这一份
@@ -192,8 +192,8 @@ public class ReportService(DomainUser<AppUserInfo> user) : DomainServiceBase<App
 
 - **Challenge-Response 登录** — 防重放、防密码泄露
 - **AuthorityFilter** — 声明式方法级权限，AOP 管线自动拦截
-- **SystemActor** — 系统角色体系，`DomainUser` 永不为空（后台 Job / OAuth 回调不再 null-check 泛滥）
-- **错误码全栈统一** — 8 码四端一致（GraphQL / REST / .NET / TS）
+- **SystemActor** — 系统角色体系，区分人/系统写入审计（`IEntityActorAuditable` + `ISystemActorService`）。后台 Job / OAuth 回调 / AI Agent 调用均有可审计的系统身份
+- **错误码全栈统一** — 16 码四端一致（GraphQL / REST / .NET / TS）
 
 > → 深入了解：[认证与授权](security/authentication.md) · [异常处理](advanced/error-handling.md)
 
