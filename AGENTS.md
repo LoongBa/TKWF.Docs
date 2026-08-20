@@ -165,6 +165,8 @@ _TKWF（源码 + docs/ 源文档）  ←——— 唯一事实来源 ———  
 
 **打 tag 一句话**：`pwsh scripts/tag.ps1`（自动取 TKWF 最新 v* tag → 同步版本 → 提交 → tag → 推送）
 
+**tag 触发规则**：tag 是**版本对齐标记**——仅当 `_TKWF` 发布新版本（出现新 `v*` tag，需同步文档站版本号）时打 tag。**文档内容微调（版本号不变）不需要 tag**，普通 `git commit` + `git push` 即可（推送 main 触发 GitHub Actions 自动构建）。打重复 tag 会报错，微调后勿运行 tag.ps1。
+
 ### 2.3 内容对齐流程（TKWF 新版本发布时）
 
 > 对齐 tag = 同步 tag = 对齐内容 = 对齐框架的最新文档。
