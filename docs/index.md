@@ -11,9 +11,8 @@ _layout: landing
   </div>
 <h1>TKW.Framework — 让 Agentic Engineering 更可控、更可靠的软件开发框架</h1>
   <p class="lead">
-    开发者提供需求文档 → Agent 调用框架编写 Entity/Service → 框架编译期生成代码、API 接口、知识文档和 Mock 数据 → 人机协同完善和增量开发。<br>
     <strong>开发者思考意图 → AI 辅助实现 → 框架约束保障</strong><br>
-    开发者是灵魂，TKWF 是法宝，AI 是器灵。
+    <em style="font-size: 1.1em;">开发者是灵魂，TKWF 是法宝，AI 是器灵。</em>
   </p>
   <div class="hero-cta">
     <a href="articles/getting-started.md" class="btn btn-primary">🚀 5 分钟快速开始</a>
@@ -47,9 +46,9 @@ graph LR
     H -. 循环 .-> A
 ```
 
-**开发者**提供需求文档 → **Agent** 编写实体和业务方法 → **框架**编译期生成 Controller、AOP 装饰器、GraphQL/REST 端点、客户端代理、知识文档和 Mock 数据 → 人机协同进行完善和增量开发。
+框架将每一部分分解为**最小粒度**交给 Agent 编写——一个用例 = 一个 Service 方法，Agent 无需理解全局架构、DI 配置、路由注册、序列化细节。
 
-框架将每一部分分解为**最小粒度**交给 Agent 编写——一个用例 = 一个 Service 方法，Agent 无需理解全局架构、DI 配置、路由注册、序列化细节。**粒度细分 = 更少模型思考 = 更高可控性和可靠性 = 更低上下文依赖和 Token 消耗。**
+> **粒度细分 = 更少模型思考 = 更高可控性和可靠性 = 更低上下文依赖和 Token 消耗。**
 
 ```csharp
 // 开发者 + Agent 只写这一份
@@ -197,76 +196,187 @@ AI-Assisted（Copilot 模式）和 Agentic Engineering 是两种完全不同的�
 ---
 
 <!-- ===== 区块 6: 场景卡片 ===== -->
-## 经典场景快速体验
+## Talk is Cheap, Show me the Code
+
+> 每个场景都是痛点 + 亮点 + 代码——三层分别自动完成、高度一致。
 
 <div class="scenario-card">
-  <div class="scenario-card-header">🤖 场景一：Agentic Engineering 完整闭环</div>
+  <div class="scenario-card-header">1️⃣ 编写 Entity → 自动建表建视图 + 自动生成 Dto/DataService/Conditions</div>
   <div class="scenario-card-body">
-    <p>
-      人标注 <span class="highlight">[GenerateController]</span>，Agent 写 Service 业务逻辑，
-      框架编译期生成 Controller + AOP + GraphQL/REST 端点 + 客户端代理。
-      <strong>三方分工，一个编译期完成。</strong>
-    </p>
-    <pre><code class="lang-csharp">// 人：标注意图
-[GenerateController]
-// Agent：写业务逻辑
-public class TodoService(DomainUser&lt;AppUserInfo&gt; user)
+    <p>定义实体字段 + ORM 注解，xCodeGen 自动生成 DTO、DataService（CRUD）、Conditions（查询条件）、Dto 映射代码。无需手写样板。</p>
+    <pre><code class="lang-csharp">[DomainGenerateCode(IsView = true, AutoQuery = true)]
+public class OrderView : VEntity
+{
+    [Column(Name = "order_id")]      public long OrderId { get; set; }
+    [Column(Name = "amount")]        public decimal Amount { get; set; }
+    [Column(Name = "status")]        public string Status { get; set; }
+}
+// xCodeGen 自动生成：OrderViewDto / OrderViewDataService / OrderViewConditions / 映射代码
+// ViewSql 编译期列名校验——列名不匹配直接 warning + 运行时启动阻断</code></pre>
+  </div>
+</div>
+
+<div class="scenario-card">
+  <div class="scenario-card-header">2️⃣ 编写 Service → 自动生成 Controller + 自动暴露 WebApi</div>
+  <div class="scenario-card-body">
+    <p>标注 <code>[GenerateController]</code>，SG 编译期生成 Controller + AOP 装饰器 + GraphQL/REST 端点。业务方法用 <code>User.Use&lt;T&gt;()</code> 获取 DataService，Conditions 链式查询，声明式认证/审计/事务。</p>
+    <pre><code class="lang-csharp">[GenerateController]
+public class OrderService(DomainUser&lt;AppUserInfo&gt; user)
     : DomainServiceBase&lt;AppUserInfo&gt;(user)
 {
-    public async Task&lt;Todo&gt; CreateAsync(string title, string content)
+    [AuthorityFilter(Roles = "Admin")]   // ← 声明式权限
+    [Transactional]                       // ← 声明式事务
+    public async Task&lt;OrderDto&gt; CreateAsync(string title)
     {
-        var todo = new Todo { Title = title, Content = content, UserId = User.UserId };
-        return await Repository.InsertAsync(todo);
+        var ds = User.Use&lt;OrderDataService&gt;();           // 获取 DataService
+        var order = new Order { Title = title, UserId = User.UserId };
+        await ds.InsertAsync(order);                        // 自动审计 CreateBy/CreateTime
+        return order.ToDto&lt;OrderDto&gt;();                     // 自动映射 DTO
+    }
+
+    public async Task&lt;List&lt;OrderDto&gt;&gt; QueryAsync(string keyword)
+    {
+        var ds = User.Use&lt;OrderDataService&gt;();
+        var list = await ds.Query                          // Conditions 链式查询
+            .Where(o => o.Title.Contains(keyword))
+            .OrderByDescending(o => o.CreateTime)
+            .ToListAsync();
+        return list.ToDtoList&lt;OrderDto&gt;();
     }
 }
-// 框架：编译期生成 5 份代码（你不用写，Agent 也不用写）</code></pre>
-    <p><a href="articles/getting-started.md">→ 完整教程</a></p>
+// 编译期自动生成 5 份：Controller / AOP Decorator / GraphQL Resolver / REST Endpoint / Client</code></pre>
   </div>
 </div>
 
 <div class="scenario-card">
-  <div class="scenario-card-header">🔐 场景二：声明式权限 + 事务控制</div>
+  <div class="scenario-card-header">3️⃣ 客户端 Wasm → 自动调用 WebApi + 增强查询</div>
   <div class="scenario-card-body">
-    <p>
-      用 <span class="highlight">[AuthorityFilter]</span> + <span class="highlight">[Transactional]</span>
-      声明横切关注点，AOP 管线编译期织入。不写一行 <code>if</code> 判断。
-    </p>
-    <pre><code class="lang-csharp">[AuthorityFilter(Roles = "Admin")]    // ← 声明式权限
-[Transactional]                        // ← 声明式事务
-public async Task&lt;Report&gt; GenerateReportAsync() { ... }</code></pre>
-    <p><a href="articles/security/authorization.md">→ 了解安全体系</a></p>
+    <p>Wasm 端 <code>User.Use&lt;T&gt;()</code> 调用 Service，<code>User.Query&lt;T&gt;()</code> 链式查询——与进程内 C# API 表面同构。</p>
+    <pre><code class="lang-csharp">// Wasm 客户端——与进程内 API 形态一致
+var svc = User.Use&lt;IOrderServiceController&gt;();
+var order = await svc.CreateAsync("买咖啡");        // → GraphQL mutation
+
+var list = await User.Query&lt;Order&gt;()               // 增强查询
+    .Where(o => o.Status == "Paid")
+    .OrderBy(o => o.CreatedAt)
+    .Page(1, 20)
+    .ToPageAsync();                                  // → GraphQL connection
+
+var count = await User.Query&lt;Order&gt;()
+    .Where(o => o.Status == "Paid")
+    .CountAsync();                                   // 仅计数不请求 nodes，省带宽</code></pre>
+    <p>→ <a href="articles/client/api-client.md">客户端 SDK 文档</a></p>
   </div>
 </div>
 
 <div class="scenario-card">
-  <div class="scenario-card-header">🌐 场景三：一份 Service → GraphQL + REST</div>
+  <div class="scenario-card-header">4️⃣ CQRS 读写分离 — VEntity 强大查询 + 统计聚合</div>
   <div class="scenario-card-body">
-    <p>
-      同一个 Service，框架自动生成 GraphQL 和 REST 双协议端点。
-      REST 原生支持 <code>?fields=</code> 投影——嵌套属性树形裁剪。
-    </p>
-    <pre><code class="lang-csharp">// 只需配置宿主
-builder.ConfigWebAppDomain&lt;AppUserInfo, AppDomainInitializer&gt;()
-    .UseGraphQLApiService&lt;AppUserInfo&gt;()   // GraphQL 自动暴露
-    .UseRestApiService&lt;AppUserInfo&gt;();      // REST 自动暴露</code></pre>
-    <p><a href="articles/transport/graphql.md">→ 查看传输协议文档</a></p>
+    <p>Entity 写模型 / VEntity 读模型类型级分离。VEntity + IQueryable + GraphQL 提供强大查询、统计和聚合（StatsDto 自动生成）。</p>
+    <pre><code class="lang-csharp">// VEntity 专用读模型——框架阻止写操作
+var list = await User.Query&lt;OrderSummaryView&gt;()     // EQR 统一入口 3 跳零反射
+    .Where(v => v.Status == "Paid")
+    .OrderByDescending(v => v.Amount)
+    .Page(1, 10)
+    .ToListAsync();
+
+// ViewSql 含 SUM/COUNT → xCodeGen 自动生成 StatsDto
+var stats = await svc.GetAsync&lt;OrderSummaryStatsDto&gt;();
+// stats.TotalAmount / stats.OrderCount / stats.AvgAmount</code></pre>
+    <p><small>注：JS 表现层暂时部分聚合能力受限，可通过特化查询方法变通（ADR20 规划中）。</small></p>
   </div>
 </div>
 
 <div class="scenario-card">
-  <div class="scenario-card-header">🧩 场景四：领域自治 — 不可能串号</div>
+  <div class="scenario-card-header">5️⃣ 以 User 为中心 + 多租户支持</div>
   <div class="scenario-card-body">
-    <p>
-      DomainUser 不进 DI 容器，<code>Use&lt;T&gt;()</code> 显式传递。
-      请求 A 的 User 和请求 B 的 User <strong>物理隔离</strong>，结构上消灭整类串号缺陷。
-    </p>
-    <pre><code class="lang-csharp">// 请求 A：User.UserId = "Alice"
-// 请求 B：User.UserId = "Bob"
-// 两个请求的 Service 完全隔离，不可能串号
+    <p><code>User.Use&lt;T&gt;()</code> 搞定一切——业务类不需要修改构造器，需要什么从 User 获取。User 自动完成认证验证、权限、日志、租户隔离。</p>
+    <pre><code class="lang-csharp">// 不需要构造器注入——User 统一入口
+var ds = User.Use&lt;OrderDataService&gt;();        // 数据服务
+var productService = User.Use&lt;ProductService&gt;(); // 其他服务
+var repo = User.Use&lt;IEntityDAC&lt;Order&gt;&gt;();       // 原始 DAC
 
-var service = User.Use&lt;OrderService&gt;();
-// service 的 User 就是当前请求的 User，确定性的</code></pre>
+// 多租户——IEntityTenant 自动过滤，无需手写 WHERE TenantId
+// IGlobalQueryFilter 策略：软删除 + 多租户 + 审计自动应用
+// User.TenantId / User.UserId / User.Roles 全部由框架填充</code></pre>
     <p><a href="articles/core-concepts/domain-user.md">→ DomainUser 详解</a></p>
+  </div>
+</div>
+
+<div class="scenario-card">
+  <div class="scenario-card-header">6️⃣ 自动注册服务和控制器 — 无需复杂容器配置</div>
+  <div class="scenario-card-body">
+    <p>一行 <code>AddTKWFDomain</code> 注册全部。Service/DataService 自动发现注册，Controller 由 SG 生成自动挂载。无 <code>services.AddScoped&lt;T&gt;()</code> 模板代码。</p>
+    <pre><code class="lang-csharp">// 一行注册全部——自动扫描注册所有 DomainService / DataService
+builder.Services.AddTKWFDomain&lt;AppUserInfo, AppDomainInitializer&gt;();
+
+// SG 生成的 _GeneratedControllerRegistrations.g.cs 自动挂载全部 Controller
+// 无需 services.AddScoped&lt;OrderService&gt;() — 框架自动注册
+// 无需 app.MapControllers() — Minimal API 端点由 SG2 自动生成</code></pre>
+  </div>
+</div>
+
+<div class="scenario-card">
+  <div class="scenario-card-header">7️⃣ 自动更新业务领域知识文档 — Agent 无需读代码</div>
+  <div class="scenario-card-body">
+    <p><code>dotnet build</code> → AfterBuild → xCodeGen 自动生成 <code>.TKWF/{Domain}/</code> 活文档。Agent 开发 Service/Test 不读代码、开发 UI 不读接口契约——只读薄索引，<strong>减少上下文依赖和 Token 消耗</strong>。</p>
+    <pre><code class="lang-csharp">// dotnet build 后自动生成（Agent 读这些，不读 .g.cs）：
+// .TKWF/Order/
+//   ├── DOMAIN_MAP.md          // 领域实体/服务全貌
+//   ├── DataService_API.md     // 每个 DataService 的方法签名速查
+//   └── Business.md            // 业务规则物化（tkwf-business skill 产出）
+
+// Agent 守则："❌ 不读 *.g.cs / *.biz.cs / DataServices/*.cs"</code></pre>
+  </div>
+</div>
+
+<div class="scenario-card">
+  <div class="scenario-card-header">8️⃣ 网页端 ts-client — 与客户端调用一致的能力</div>
+  <div class="scenario-card-body">
+    <p>TS 前端 API 与 C# Wasm 完全镜像：<code>Tkwf.User.Use&lt;T&gt;()</code> / <code>Tkwf.User.Query&lt;T&gt;()</code>。错误码、认证流程、查询链全部一致。</p>
+    <pre><code class="lang-typescript">// TS 前端——与 C# Wasm API 形态完全一致
+const svc = Tkwf.User.Use&lt;OrderService&gt;();
+const order = await svc.createAsync("买咖啡");
+
+const list = await Tkwf.User.Query&lt;Order&gt;()
+    .where(f => f.status.eq("Paid"))
+    .orderBy(f => f.createdAt)
+    .page(1, 20)
+    .toPageAsync();</code></pre>
+  </div>
+</div>
+
+<div class="scenario-card">
+  <div class="scenario-card-header">9️⃣ 测试支持 — ts-client-mock 两级 Mock + 单机测试</div>
+  <div class="scenario-card-body">
+    <p><code>@tkwf/tsclient-mock</code> 两级 Mock：离线 <code>MockTransport</code>（零依赖单元测试）+ <code>MockHttpServer</code>（HTTP 模拟集成测试）。C# 端 <code>MockEntityDac</code>（InMemory DAC Contract 测试）。</p>
+    <pre><code class="lang-typescript">// Level 1: 离线 Mock——无需服务器
+Tkwf.configure("default", { transport: createMockTransport(handlers) });
+
+// Level 2: HTTP Mock Server——模拟 WebApi
+const server = new MockHttpServer(handlers);
+await server.listen(4000);
+
+// MockDataSpec 规则驱动生成数据（非手写）
+const spec = { fields: { amount: { strategy: "number", min: 10, max: 9999 } } };
+const data = generateFromSpec(spec);</code></pre>
+  </div>
+</div>
+
+<div class="scenario-card">
+  <div class="scenario-card-header">🔟 Agentic Skills + 人机友好文档</div>
+  <div class="scenario-card-body">
+    <p>7 个框架级 Skills（设计→实体→业务→测试→前端→Mock），Agent 按 skill 分步完成开发。llms.txt + AC01-06 速查卡 + 活文档 + 编译错误速查——给 Agent 的"指南针而非百科全书"。</p>
+    <pre><code class="lang-text">tkwf-design    → 设计阶段（需求→R/S/DS/U 文档）
+tkwf-business  → 业务规则物化（Business.md 门控）
+tkwf-entity    → Entity/VEntity 编写
+tkwf-service   → DomainService 编写
+tkwf-test      → Contract 测试（InMemory DAC）
+tkwf-tsclient  → 前端 RPC 调用
+tkwf-tsclient-mock → Mock 数据生成
+
+每个 skill ≤400 行：骨架 → 参数规则 → ✅/❌ 清单 → 编译错误速查</code></pre>
+    <p><a href="articles/agentic/quick-start-for-ai.md">→ AI 快速上手</a></p>
   </div>
 </div>
 
