@@ -28,8 +28,14 @@ if (-not $docfx) {
 }
 
 # 构建并预览（使用本地配置，跳过 API 参考）
-Write-Host "[1/2] 构建文档（仅文章，跳过 API 参考）..." -ForegroundColor Green
+Write-Host "[1/2] 清理旧构建产物..." -ForegroundColor Green
 Set-Location $rootDir
+if (Test-Path "docs/_site_local") {
+    Remove-Item -LiteralPath "docs/_site_local" -Recurse -Force
+    Write-Host "  已删除 docs/_site_local（防止嵌套构建）" -ForegroundColor Yellow
+}
+
+Write-Host "[2/2] 构建文档（仅文章，跳过 API 参考）..." -ForegroundColor Green
 docfx docs/docfx.local.json --serve
 
 # 注意：上面的命令会阻塞，Ctrl+C 停止

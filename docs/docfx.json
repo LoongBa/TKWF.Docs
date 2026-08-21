@@ -38,7 +38,7 @@
       { "files": ["index.md"], "src": ".", "dest": "." }
     ],
     "resource": [
-      { "files": ["404.md", "robots.txt", "llms.txt", "**/*.png", "**/*.jpg", "**/*.svg", "**/*.gif"] }
+      { "files": ["404.md", "robots.txt", "llms.txt", "**/*.png", "**/*.jpg", "**/*.svg", "**/*.gif"], "exclude": ["_site/**", "_site_local/**", "_site_local*/**"] }
     ],
     "overwrite": [],
     "sitemap": {
