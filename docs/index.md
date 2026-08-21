@@ -209,7 +209,7 @@ AI-Assisted（Copilot 模式）和 Agentic Engineering 是两种完全不同的�
 > 每个场景都是痛点 + 亮点 + 代码——三层分别自动完成、高度一致。
 
 <div class="scenario-card">
-  <div class="scenario-card-header">1️⃣ 编写 Entity → 自动建表建视图 + 自动生成 Dto/DataService/Conditions</div>
+  <div class="scenario-card-header">1️⃣ Agent 编写 Entity → 自动建表建视图 + 自动生成 Dto/DataService/Conditions</div>
   <div class="scenario-card-body">
     <p>定义实体字段 + ORM 注解，xCodeGen 自动生成 DTO、DataService（CRUD）、Conditions（查询条件）、Dto 映射代码。</p>
     <p>无需手写样板。</p>
@@ -247,10 +247,10 @@ var count = await ds.Query.CountAsync();                  // 计数
 </div>
 
 <div class="scenario-card">
-  <div class="scenario-card-header">2️⃣ 编写 Service → 自动生成 Controller + 自动暴露 WebApi</div>
+  <div class="scenario-card-header">2️⃣ Agent 编写 Service → 自动生成 Controller + 自动暴露 WebApi</div>
   <div class="scenario-card-body">
-    <p>标注 <code>[GenerateController]</code>，SG 编译期生成 Controller + AOP 装饰器 + GraphQL/REST 端点。</p>
-    <p>业务方法用 <code>User.Use&lt;T&gt;()</code> 获取 DataService，Conditions 链式查询，声明式认证/审计/事务。</p>
+    <p>公共业务方法自动生成 Controller + AOP 框架支持 + WebApi GraphQL/REST 端点。</p>
+    <p>业务领域层内部调用 <code>User.Use&lt;T&gt;()</code> 获取所需的 DataService，Conditions 链式查询，声明式认证/审计/事务。</p>
 
 ```csharp
 [GenerateController]
