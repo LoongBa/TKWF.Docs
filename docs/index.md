@@ -303,7 +303,7 @@ var stats = await statsDs.GetAsync&lt;OrderSummaryStatsDto&gt;();
 <div class="scenario-card">
   <div class="scenario-card-header">5️⃣ 以 User 为中心 + 多租户支持</div>
   <div class="scenario-card-body">
-    <p><code>User.Use&lt;T&gt;()</code> 搞定一切——业务类不需要修改构造器，需要什么从 User 获取，减少运行时错误。User 自动完成认证验证、权限、日志、租户隔离。</p>
+    <p><code>User.Query&lt;Entity&gt;()</code>、<code>User.Use&lt;TService&gt;()</code> 搞定一切——业务类不需要修改构造器，需要什么通过 User 获取，减少运行时错误。<br>User 自动完成认证验证、权限、日志、租户隔离。业务领域、WebApi 接入层、表现层 Wasm/TypeScript 三层调用体验统一。</p>
     <pre><code class="lang-csharp">// 不需要构造器注入——User 统一入口
 var ds = User.Use&lt;OrderDataService&gt;();        // 数据服务
 var productService = User.Use&lt;ProductService&gt;(); // 其他服务
