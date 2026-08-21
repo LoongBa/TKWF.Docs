@@ -14,7 +14,9 @@ _layout: landing
   <p class="lead">
     <strong>开发者思考意图 → AI 辅助实现 → 框架约束保障</strong>
   </p>
-  <h2 style="font-size: 1.25em; margin: 0.5rem 0 0; color: inherit; text-align: center;">开发者是灵魂，TKWF 是法宝，AI 是器灵。</h2>
+
+#### 开发者是灵魂，TKWF 是法宝，AI 是器灵。
+
   <div class="hero-cta">
     <a href="articles/getting-started.md" class="btn btn-primary">🚀 5 分钟快速开始</a>
     <a href="articles/intro.md" class="btn btn-outline-light">📖 框架概览</a>
@@ -41,11 +43,11 @@ graph LR
     C --> E["GraphQL / REST 端点"]
     C --> F["强类型客户端代理"]
     C --> G["知识文档 + Mock 数据"]
-    D --> H["🔄 人机协同<br/>完善与增量开发"]
+    D --> H["🔄 人机协同<br/>完善细节"]
     E --> H
     F --> H
     G --> H
-    H -. 循环 .-> A
+    H -. 增量开发、维护和扩展循环 .-> A
 ```
 
 框架将每一部分分解为**最小粒度**交给 Agent 编写——一个用例 = 一个 Service 方法，Agent 无需理解全局架构、DI 配置、路由注册、序列化细节。
@@ -279,9 +281,9 @@ var count = await User.Query&lt;Order&gt;()
 </div>
 
 <div class="scenario-card">
-  <div class="scenario-card-header">4️⃣ CQRS 读写分离 — VEntity 强大查询 + 统计聚合</div>
+  <div class="scenario-card-header">4️⃣ CQRS 读写分离 — VEntity（View Entity）强大查询 + 统计聚合</div>
   <div class="scenario-card-body">
-    <p>Entity 写模型 / VEntity 读模型类型级分离。VEntity + IQueryable + GraphQL 提供强大查询、统计和聚合能力（StatsDto 自动生成），直接发挥 EF 和数据库视图的优势。</p>
+    <p>Entity 写模型 / VEntity 读模型，table/view 底层分离。VEntity + IQueryable + GraphQL 提供强大查询、统计和聚合能力（StatsDto 自动生成），直接发挥 EF 和数据库视图的优势。</p>
     <pre><code class="lang-csharp">// VEntity 专用读模型——框架阻止写操作
 var list = await User.Query&lt;OrderSummaryView&gt;()     // EQR 统一入口 3 跳零反射
     .Where(v => v.Status == "Paid")
@@ -422,7 +424,7 @@ tkwf-tsclient-mock → Mock 数据生成
   <div class="feature-card">
     <div class="card-icon">📊</div>
     <h3>框架级 CQRS</h3>
-    <p>Entity 写 / VEntity 读类型级分离。ViewEntity + IQueryable + GraphQL 提供强大查询/统计/聚合（JS 表现层暂时部分受限）。</p>
+    <p>Entity 写 / VEntity（View Entity）读，table/view 底层分离。IQueryable + GraphQL 提供强大查询/统计/聚合（JS 表现层暂时部分受限）。</p>
   </div>
   <div class="feature-card">
     <div class="card-icon">🤖</div>
@@ -503,3 +505,4 @@ tkwf-tsclient-mock → Mock 数据生成
 - GitHub: [LoongBa/TKW.Framework](https://github.com/LoongBa/TKW.Framework)
 - 许可证: [CC BY-NC 4.0](https://creativecommons.org/licenses/by-nc/4.0/)（署名-非商业性使用）
 - 构建状态: [![Build and Deploy Docs](https://github.com/LoongBa/TKWF.Docs/actions/workflows/docfx.yml/badge.svg)](https://github.com/LoongBa/TKWF.Docs/actions/workflows/docfx.yml)
+
