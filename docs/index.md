@@ -47,7 +47,7 @@ graph LR
     E --> H
     F --> H
     G --> H
-    H -. 增量开发、维护和扩展循环 .-> A
+    H -. 迭代：增量开发、维护和扩展 .-> A
 ```
 
 框架将每一部分分解为**最小粒度**交给 Agent 编写——一个用例 = 一个 Service 方法，Agent 无需理解全局架构、DI 配置、路由注册、序列化细节。
@@ -226,6 +226,23 @@ public class OrderView : VEntity
 // ViewSql 编译期列名校验——列名不匹配直接 warning + 运行时启动阻断
 ```
 
+同样，定义普通 Entity 也自动生成 CRUD 的 DataService + Conditions + Dto——查询/更新直接链式调用，返回强类型 Dto：
+
+```csharp
+// 自动生成的 OrderDataService + OrderConditions —— 直接链式使用
+var ds = User.Use<OrderDataService>();
+var list = await ds.Query
+    .Where(OrderConditions.Status.Eq("Paid"))        // Conditions 链式条件
+    .And(o => o.Amount >= 100)
+    .OrderByDescending(o => o.CreateTime)
+    .Page(1, 20)
+    .ToListAsync()
+    .ToDtoList<OrderDto>();                            // 自动映射 DTO
+
+var orderDto = await ds.GetAsync(1L).ToDto<OrderDto>();  // 单条转 DTO
+var count = await ds.Query.CountAsync();                  // 计数
+```
+
   </div>
 </div>
 
@@ -289,7 +306,7 @@ var count = await User.Query<Order>()
     .CountAsync();                                   // 仅计数不请求 nodes，省带宽
 ```
 
-    <p>→ <a href="articles/client/api-client.md">客户端 SDK 文档</a></p>
+→ [客户端 SDK 文档](articles/client/api-client.md)
   </div>
 
 </div>
@@ -313,8 +330,8 @@ var statsDs = User.Use<OrderViewDataService>();
 var stats = await statsDs.GetAsync<OrderSummaryStatsDto>();
 // stats.TotalAmount / stats.OrderCount / stats.AvgAmount
 ```
-
-    <p><small>注：JS 表现层暂时部分聚合能力受限于 HotChocolate GraphQL 实现限制，可编写特化查询方法变通（增强功能近期实现中）。</small></p>
+ 
+> **注**：JS 表现层暂时部分聚合能力受限于 HotChocolate GraphQL 实现限制，可编写特化查询方法变通（增强功能近期实现中）。
   </div>
 
 </div>
@@ -337,7 +354,7 @@ var repo = User.Use<IEntityDAC<Order>>();       // 原始 DAC
 // User.TenantId / User.UserId / User.Roles 全部由框架填充
 ```
 
-    <p><a href="articles/core-concepts/domain-user.md">→ DomainUser 详解</a></p>
+→ [DomainUser 详解](articles/core-concepts/domain-user.md)
   </div>
 
 </div>
@@ -383,12 +400,26 @@ builder.Services.AddTKWFDomain<AppUserInfo, AppDomainInitializer>();
 </div>
 
 <div class="scenario-card">
-  <div class="scenario-card-header">8️⃣ 网页端 ts-client — 与客户端调用一致的能力</div>
+  <div class="scenario-card-header">8️⃣ 网页端 ts-client — 自动生成的强类型客户端</div>
   <div class="scenario-card-body">
-    <p>TS 前端 API 与 C# Wasm 完全镜像：<code>Tkwf.User.Use&lt;T&gt;()</code> / <code>Tkwf.User.Query&lt;T&gt;()</code>。</p>
-    <p>错误码、认证流程、查询链全部一致。</p>
+    <p>TS 客户端由 <code>schema.graphql</code> <strong>自动生成强类型定义</strong>——无需手写接口、字段名或请求构造，拼错即编译报错。</p>
+    <p>API 与 C# Wasm 完全镜像：<code>Tkwf.User.Use&lt;T&gt;()</code> / <code>Tkwf.User.Query&lt;T&gt;()</code>。错误码、认证流程、查询链全部一致。</p>
 
 ```typescript
+// 由 gen-domain-client 从 schema.graphql 自动生成 ts-client.g.ts：
+// interface OrderService { createAsync(args): Promise<Order>; ... }   // 强类型签名
+// interface OrderQueryBuilder { where(f): ...; orderBy(f): ... }       // 字段代理类型
+
+// 无需手写任何接口/请求构造——类型即契约，拼错字段编译期报错
+const svc = Tkwf.User.Use<OrderService>();          // 强类型服务代理
+const order = await svc.createAsync("买咖啡");
+
+const list = await Tkwf.User.Query<Order>()
+    .where(f => f.status.eq("Paid"))                // f.status 字段由类型限定，拼错即报错
+    .orderBy(f => f.createdAt)
+    .page(1, 20)
+    .toPageAsync();                                  // 返回强类型 Order[]
+```
 // TS 前端——与 C# Wasm API 形态完全一致
 const svc = Tkwf.User.Use<OrderService>();
 const order = await svc.createAsync("买咖啡");
@@ -405,22 +436,36 @@ const list = await Tkwf.User.Query<Order>()
 </div>
 
 <div class="scenario-card">
-  <div class="scenario-card-header">9️⃣ 测试支持 — ts-client-mock 两级 Mock + 单机测试</div>
+  <div class="scenario-card-header">9️⃣ 测试支持 — ts-client-mock 自动生成测试接口 + 语义化测试数据</div>
   <div class="scenario-card-body">
-    <p><code>@tkwf/tsclient-mock</code> 两级 Mock：离线 <code>MockTransport</code>（零依赖单元测试）+ <code>MockHttpServer</code>（HTTP 模拟集成测试）。</p>
-    <p>C# 端 <code>MockEntityDac</code>（InMemory DAC Contract 测试）。</p>
+    <p><code>@tkwf/tsclient-mock</code> <strong>自动生成测试接口</strong>（<code>gen-mock-handlers</code> 从 schema 生成 handler 骨架 + <code>satisfies</code> 编译时守卫生成补全），<strong>基于语义描述生成测试数据</strong>（MockDataSpec 规则而非手写死数据）。</p>
+    <p>两级 Mock：离线 <code>MockTransport</code>（零依赖单元测试）+ <code>MockHttpServer</code>（HTTP 模拟集成测试）。C# 端 <code>MockEntityDac</code>（InMemory DAC Contract 测试）。</p>
+
+```bash
+# 自动生成测试接口骨架——从 schema.graphql 生成 handler + db + 场景
+npx gen-mock-handlers --mock-spec spec.json
+# 生成 ts-client.mock.g.ts：createMockDb + handlers + scenarios（缺 handler 编译报错）
+```
 
 ```typescript
-// Level 1: 离线 Mock——无需服务器
-Tkwf.configure("default", { transport: createMockTransport(handlers) });
+// MockDataSpec——语义化描述测试数据，非手写死数据
+const spec: MockDataSpec = {
+  scenarios: {                        // 场景化数据：默认/空/错误/加载
+    "default": { order: { count: 20, fields: { amount: { strategy: "number", min: 10, max: 9999 } } } },
+    "empty":   { order: { count: 0 } },
+    "error":   { order: { strategy: "throw", errorCode: "OrderLocked" } }
+  }
+};
+const data = generateFromSpec(spec);  // LCG 确定性种子——测试可复现
+```
 
-// Level 2: HTTP Mock Server——模拟 WebApi
+```typescript
+// 两级 Mock——开发/测试无需后端
+// Level 1: 离线 Mock（零依赖，单机测试）
+Tkwf.configure("default", { transport: createMockTransport(handlers) });
+// Level 2: HTTP Mock Server（模拟 WebApi，集成测试）
 const server = new MockHttpServer(handlers);
 await server.listen(4000);
-
-// MockDataSpec 规则驱动生成数据（非手写）
-const spec = { fields: { amount: { strategy: "number", min: 10, max: 9999 } } };
-const data = generateFromSpec(spec);
 ```
 
   </div>
@@ -445,7 +490,7 @@ tkwf-tsclient-mock → Mock 数据生成
 每个 skill ≤400 行：骨架 → 参数规则 → ✅/❌ 清单 → 编译错误速查
 ```
 
-    <p><a href="articles/agentic/quick-start-for-ai.md">→ AI 快速上手</a></p>
+→ [AI 快速上手](articles/agentic/quick-start-for-ai.md)
   </div>
 
 </div>
