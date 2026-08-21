@@ -295,7 +295,7 @@ var list = await User.Query&lt;OrderSummaryView&gt;()     // EQR 统一入口 3 
 var statsDs = User.Use&lt;OrderViewDataService&gt;();
 var stats = await statsDs.GetAsync&lt;OrderSummaryStatsDto&gt;();
 // stats.TotalAmount / stats.OrderCount / stats.AvgAmount</code></pre>
-    <p><small>注：JS 表现层暂时部分聚合能力受限，可通过特化查询方法变通（ADR20 规划中）。</small></p>
+    <p><small>注：JS 表现层暂时部分聚合能力受限于 HotChocolate GraphQL 实现限制，可编写特化查询方法变通（增强功能近期实现中）。</small></p>
   </div>
 
 </div>
