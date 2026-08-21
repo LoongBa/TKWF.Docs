@@ -3,6 +3,7 @@ _layout: landing
 ---
 
 <!-- ===== 区块 1: Hero ===== -->
+
 <div class="hero-section">
   <div class="hero-badges">
     <img src="https://img.shields.io/badge/.NET-10-blue" alt=".NET 10" />
@@ -11,9 +12,9 @@ _layout: landing
   </div>
 <h1>TKW.Framework — 让 Agentic Engineering 更可控、更可靠的软件开发框架</h1>
   <p class="lead">
-    <strong>开发者思考意图 → AI 辅助实现 → 框架约束保障</strong><br>
-    <em style="font-size: 1.1em;">开发者是灵魂，TKWF 是法宝，AI 是器灵。</em>
+    <strong>开发者思考意图 → AI 辅助实现 → 框架约束保障</strong>
   </p>
+  <h2 style="font-size: 1.25em; margin: 0.5rem 0 0; color: inherit; text-align: center;">开发者是灵魂，TKWF 是法宝，AI 是器灵。</h2>
   <div class="hero-cta">
     <a href="articles/getting-started.md" class="btn btn-primary">🚀 5 分钟快速开始</a>
     <a href="articles/intro.md" class="btn btn-outline-light">📖 框架概览</a>
@@ -24,6 +25,7 @@ _layout: landing
 ---
 
 <!-- ===== 区块 2: Agentic Engineering 三方分工 ===== -->
+
 ## Agentic Engineering：三方分工，各司其职
 
 > **Agentic Engineering** — 你不直接写代码 99% 的时间，你在编排 Agent 并充当监督者。
@@ -72,6 +74,7 @@ public class OrderService(DomainUser<AppUserInfo> user)
 ---
 
 <!-- ===== 区块 3: AI-Assisted vs Agentic Engineering ===== -->
+
 ## 为什么不是 AI-Assisted？
 
 > Gartner 预测：到 2028 年，Agentic 工作流将提升团队生产力 30%-50%，远超 AI-Assisted 的 0%-20%。
@@ -123,6 +126,7 @@ AI-Assisted（Copilot 模式）和 Agentic Engineering 是两种完全不同的�
 ---
 
 <!-- ===== 区块 4: 四大设计支柱 ===== -->
+
 ## 为什么 TKWF 让 Agentic Engineering 可靠？
 
 <div class="agentic-banner">
@@ -168,6 +172,7 @@ AI-Assisted（Copilot 模式）和 Agentic Engineering 是两种完全不同的�
 ---
 
 <!-- ===== 区块 5: 路径卡片 ===== -->
+
 ## 从这里开始
 
 <div class="path-grid">
@@ -196,6 +201,7 @@ AI-Assisted（Copilot 模式）和 Agentic Engineering 是两种完全不同的�
 ---
 
 <!-- ===== 区块 6: 场景卡片 ===== -->
+
 ## Talk is Cheap, Show me the Code
 
 > 每个场景都是痛点 + 亮点 + 代码——三层分别自动完成、高度一致。
@@ -243,15 +249,17 @@ public class OrderService(DomainUser&lt;AppUserInfo&gt; user)
             .ToListAsync();
         return list.ToDtoList&lt;OrderDto&gt;();
     }
+
 }
 // 编译期自动生成 5 份：Controller / AOP Decorator / GraphQL Resolver / REST Endpoint / Client</code></pre>
   </div>
+
 </div>
 
 <div class="scenario-card">
   <div class="scenario-card-header">3️⃣ 客户端 Wasm → 自动调用 WebApi + 增强查询</div>
   <div class="scenario-card-body">
-    <p>Wasm 端 <code>User.Use&lt;T&gt;()</code> 调用 Service，<code>User.Query&lt;T&gt;()</code> 链式查询——与进程内 C# API 表面同构。</p>
+    <p>Wasm 端 <code>User.Use&lt;T&gt;()</code> 调用 Service，<code>User.Query&lt;T&gt;()</code> 链式查询——与进程内 C# API 表面同构，查询能力一致。</p>
     <pre><code class="lang-csharp">// Wasm 客户端——与进程内 API 形态一致
 var svc = User.Use&lt;IOrderServiceController&gt;();
 var order = await svc.CreateAsync("买咖啡");        // → GraphQL mutation
@@ -267,12 +275,13 @@ var count = await User.Query&lt;Order&gt;()
     .CountAsync();                                   // 仅计数不请求 nodes，省带宽</code></pre>
     <p>→ <a href="articles/client/api-client.md">客户端 SDK 文档</a></p>
   </div>
+
 </div>
 
 <div class="scenario-card">
   <div class="scenario-card-header">4️⃣ CQRS 读写分离 — VEntity 强大查询 + 统计聚合</div>
   <div class="scenario-card-body">
-    <p>Entity 写模型 / VEntity 读模型类型级分离。VEntity + IQueryable + GraphQL 提供强大查询、统计和聚合（StatsDto 自动生成）。</p>
+    <p>Entity 写模型 / VEntity 读模型类型级分离。VEntity + IQueryable + GraphQL 提供强大查询、统计和聚合能力（StatsDto 自动生成），直接发挥 EF 和数据库视图的优势。</p>
     <pre><code class="lang-csharp">// VEntity 专用读模型——框架阻止写操作
 var list = await User.Query&lt;OrderSummaryView&gt;()     // EQR 统一入口 3 跳零反射
     .Where(v => v.Status == "Paid")
@@ -281,16 +290,18 @@ var list = await User.Query&lt;OrderSummaryView&gt;()     // EQR 统一入口 3 
     .ToListAsync();
 
 // ViewSql 含 SUM/COUNT → xCodeGen 自动生成 StatsDto
-var stats = await svc.GetAsync&lt;OrderSummaryStatsDto&gt;();
+var statsDs = User.Use&lt;OrderViewDataService&gt;();
+var stats = await statsDs.GetAsync&lt;OrderSummaryStatsDto&gt;();
 // stats.TotalAmount / stats.OrderCount / stats.AvgAmount</code></pre>
     <p><small>注：JS 表现层暂时部分聚合能力受限，可通过特化查询方法变通（ADR20 规划中）。</small></p>
   </div>
+
 </div>
 
 <div class="scenario-card">
   <div class="scenario-card-header">5️⃣ 以 User 为中心 + 多租户支持</div>
   <div class="scenario-card-body">
-    <p><code>User.Use&lt;T&gt;()</code> 搞定一切——业务类不需要修改构造器，需要什么从 User 获取。User 自动完成认证验证、权限、日志、租户隔离。</p>
+    <p><code>User.Use&lt;T&gt;()</code> 搞定一切——业务类不需要修改构造器，需要什么从 User 获取，减少运行时错误。User 自动完成认证验证、权限、日志、租户隔离。</p>
     <pre><code class="lang-csharp">// 不需要构造器注入——User 统一入口
 var ds = User.Use&lt;OrderDataService&gt;();        // 数据服务
 var productService = User.Use&lt;ProductService&gt;(); // 其他服务
@@ -301,6 +312,7 @@ var repo = User.Use&lt;IEntityDAC&lt;Order&gt;&gt;();       // 原始 DAC
 // User.TenantId / User.UserId / User.Roles 全部由框架填充</code></pre>
     <p><a href="articles/core-concepts/domain-user.md">→ DomainUser 详解</a></p>
   </div>
+
 </div>
 
 <div class="scenario-card">
@@ -314,6 +326,7 @@ builder.Services.AddTKWFDomain&lt;AppUserInfo, AppDomainInitializer&gt;();
 // 无需 services.AddScoped&lt;OrderService&gt;() — 框架自动注册
 // 无需 app.MapControllers() — Minimal API 端点由 SG2 自动生成</code></pre>
   </div>
+
 </div>
 
 <div class="scenario-card">
@@ -328,6 +341,7 @@ builder.Services.AddTKWFDomain&lt;AppUserInfo, AppDomainInitializer&gt;();
 
 // Agent 守则："❌ 不读 *.g.cs / *.biz.cs / DataServices/*.cs"</code></pre>
   </div>
+
 </div>
 
 <div class="scenario-card">
@@ -344,6 +358,7 @@ const list = await Tkwf.User.Query&lt;Order&gt;()
     .page(1, 20)
     .toPageAsync();</code></pre>
   </div>
+
 </div>
 
 <div class="scenario-card">
@@ -361,6 +376,7 @@ await server.listen(4000);
 const spec = { fields: { amount: { strategy: "number", min: 10, max: 9999 } } };
 const data = generateFromSpec(spec);</code></pre>
   </div>
+
 </div>
 
 <div class="scenario-card">
@@ -378,11 +394,13 @@ tkwf-tsclient-mock → Mock 数据生成
 每个 skill ≤400 行：骨架 → 参数规则 → ✅/❌ 清单 → 编译错误速查</code></pre>
     <p><a href="articles/agentic/quick-start-for-ai.md">→ AI 快速上手</a></p>
   </div>
+
 </div>
 
 ---
 
 <!-- ===== 区块 7: 核心特性 ===== -->
+
 ## 核心特性
 
 <div class="feature-grid">
@@ -441,33 +459,35 @@ tkwf-tsclient-mock → Mock 数据生成
 ---
 
 <!-- ===== 区块 8: 版本动态 ===== -->
+
 ## 最近版本动态
 
-| 版本 | 日期 | 核心内容 |
-|:-----|:-----|:---------|
-| **4.9.45** | 2026-08-21 | 全局过滤器体系修正（ADR18）：移除 SG 安全核心特性重复声明（`[AuthorityFilter]` + `[ValidateParametersFilt… |
-| **4.9.44** | 2026-08-21 | Mock 数据基础设施 C# 版（ADR09 实施）：内存 `MockDbEntityDAC` + Bogus 驱动规则化数据生成（`BogusDataGene… |
+| 版本       | 日期       | 核心内容                                                                                                           |
+|:---------- |:---------- |:------------------------------------------------------------------------------------------------------------------ |
+| **4.9.45** | 2026-08-21 | 全局过滤器体系修正（ADR18）：移除 SG 安全核心特性重复声明（`[AuthorityFilter]` + `[ValidateParametersFilt…         |
+| **4.9.44** | 2026-08-21 | Mock 数据基础设施 C# 版（ADR09 实施）：内存 `MockDbEntityDAC` + Bogus 驱动规则化数据生成（`BogusDataGene…          |
 | **4.9.43** | 2026-08-20 | 代码质量修复（ADR 外评审发现）：安全（异常消息不泄漏客户端）+ 资源泄漏（HttpRequestMessage using + GraphQLClient … |
-
 
 > 完整变更历史见 [TKWF CHANGELOG](https://github.com/LoongBa/TKW.Framework/blob/master/docs/CHANGELOG.md)
 
 ---
 
 <!-- ===== 区块 8.5: V5.0 路线图 ===== -->
+
 ## 🗺️ V5.0 路线图
 
 > V4.9.x 聚焦 Agentic Engineering 基础设施完善。V5.0 将在以下方向增强：
 
-| 方向 | 状态 | 说明 |
-|:--|:--|:--|
+| 方向                     | 状态      | 说明                                                                                                |
+|:------------------------ |:--------- |:--------------------------------------------------------------------------------------------------- |
 | 领域事件 + 扩展/插件机制 | 🔬 设计中 | 适配 .NET 10+ 及成熟项目经验，含动态加载。当前版本有 Tools 扩展概念但未框架级支持，将升级为完整机制 |
-| 分布式 / 微服务 | 💬 讨论中 | 老版本基于自有架构，V5.0 将基于成熟项目重新设计实现 |
-| Agent UI 组件库 | 📋 规划中 | MVC / Blazor WASM / HTML 三端 UI 组件，方便 Agent 提高 UI 开发效率 |
+| 分布式 / 微服务          | 💬 讨论中 | 老版本基于自有架构，V5.0 将基于成熟项目重新设计实现                                                 |
+| Agent UI 组件库          | 📋 规划中 | MVC / Blazor WASM / HTML 三端 UI 组件，方便 Agent 提高 UI 开发效率                                  |
 
 ---
 
 <!-- ===== 区块 9: 包索引 ===== -->
+
 ## 包索引
 
 核心包 `TKWF.Domain` 一行安装即可开始。完整的 NuGet 包清单和 npm 前端包见二级页面。
@@ -477,19 +497,9 @@ tkwf-tsclient-mock → Mock 数据生成
 ---
 
 <!-- ===== 区块 10: 链接 ===== -->
+
 ## 链接
 
 - GitHub: [LoongBa/TKW.Framework](https://github.com/LoongBa/TKW.Framework)
 - 许可证: [CC BY-NC 4.0](https://creativecommons.org/licenses/by-nc/4.0/)（署名-非商业性使用）
 - 构建状态: [![Build and Deploy Docs](https://github.com/LoongBa/TKWF.Docs/actions/workflows/docfx.yml/badge.svg)](https://github.com/LoongBa/TKWF.Docs/actions/workflows/docfx.yml)
-
-
-
-
-
-
-
-
-
-
-
