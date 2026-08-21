@@ -8,7 +8,7 @@
       { "files": ["index.md"], "src": ".", "dest": "." }
     ],
     "resource": [
-      { "files": ["**/*.png", "**/*.jpg", "**/*.svg", "**/*.gif"] }
+      { "files": ["**/*.png", "**/*.jpg", "**/*.svg", "**/*.gif"], "exclude": ["_site/**", "_site_local/**", "_site_local*/**"] }
     ],
     "overwrite": [],
     "dest": "_site_local",
