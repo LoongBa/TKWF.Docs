@@ -362,7 +362,7 @@ var repo = User.Use<IEntityDAC<Order>>();       // 原始 DAC
 <div class="scenario-card">
   <div class="scenario-card-header">6️⃣ 自动注册服务和控制器 — 无需复杂容器配置</div>
   <div class="scenario-card-body">
-    <p>一行 <code>AddTKWFDomain</code> 注册全部。</p>
+    <p>配置简单，BlazorWeb/WebApi/Wasm 等项目一行配置，自动注册全部。</p>
     <p>Service/DataService 自动发现注册，Controller 由 SG 生成自动挂载。</p>
     <p>无 <code>services.AddScoped&lt;T&gt;()</code> 模板代码。</p>
 
