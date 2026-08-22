@@ -17,7 +17,7 @@ _layout: landing
 
 #### 开发者是灵魂，TKWF 是法宝，AI 是器灵。
 
-  <div class="hero-cta">
+<div class="hero-cta">
     <a href="articles/getting-started.md" class="btn btn-primary">🚀 5 分钟快速开始</a>
     <a href="articles/intro.md" class="btn btn-outline-light">📖 框架概览</a>
     <a href="articles/agentic/quick-start-for-ai.md" class="btn btn-outline-light">🤖 AI 快速上手</a>
@@ -26,14 +26,34 @@ _layout: landing
 
 ---
 
-<!-- ===== 区块 2: Agentic Engineering 三方分工 ===== -->
+<!-- ===== 区块 2: Agentic 友好度评分结论 ===== -->
 
-## Agentic Engineering：三方分工，各司其职
+## Agentic Engineering 最友好的框架：TKW.Framework
+
+业界对 Agentic 友好度 10 维准则评估，TKWF 全维度满分：
+
+- **ABP Framework** —— 24/50
+- **Axon Framework** —— 30/50
+- **TKW.Framework** —— **50/50** ✅
+
+业界趋势信号：
+
+- **ABP Framework** 社区投票用 Source Generator 替代 DynamicProxy（issue `#7198`，2026.03）
+- **`lint4sg`**（2026.03）——专为约束 AI 而建的编译期分析器，与 TKWF 编译期约束路线一致
+- **Spring AOP** `@Retryable` 静默失败（Doctolib 2026.05）——运行时代理的静默失败是 AI 无法自诊断的致命问题
+
+→ **完整评估报告（10 维逐条详解 + CQRS 架构 + 诚实限制）见 [Agentic Coding 友好度评估](articles/explanation/agentic-evaluation.md)**
+
+---
+
+<!-- ===== 区块 3: Agentic Engineering 三方分工 ===== -->
+
+## TKW.Framework：合理分工，更可控、更可靠
 
 > **Agentic Engineering** — 你不直接写代码 99% 的时间，你在编排 Agent 并充当监督者。
 > —— Andrej Karpathy, 2026
 
-传统开发中，人包揽意图、业务、管道代码。TKWF 把这三件事拆开：
+TKWF 框架自动完成**尽可能多**，只需少量业务代码：
 
 ```mermaid
 graph LR
@@ -48,11 +68,13 @@ graph LR
     F --> H
     G --> H
     H -. 迭代：增量开发、维护和扩展 .-> A
+    classDef agent fill:#fde68a,stroke:#d97706,stroke-width:2px,color:#78350f
+    class B,H agent
 ```
 
-框架将每一部分分解为**最小粒度**交给 Agent 编写——一个用例 = 一个 Service 方法，Agent 无需理解全局架构、DI 配置、路由注册、序列化细节。
+将需求分解为最小粒度交给 Agent：一个用例 = 一个 Service 方法，无需理解全局架构、DI 配置、路由注册、序列化细节，**没有机会犯错**。
 
-> **粒度细分 = 更少模型思考 = 更高可控性和可靠性 = 更低上下文依赖和 Token 消耗。**
+> **粒度细分 = 模型更少思考 = 更高可控性和可靠性 = 更低上下文依赖和 Token 消耗。**
 
 ```csharp
 // 开发者 + Agent 只写这一份
@@ -75,115 +97,47 @@ public class OrderService(DomainUser<AppUserInfo> user)
 
 ---
 
-<!-- ===== 区块 3: AI-Assisted vs Agentic Engineering ===== -->
-
-## 为什么不是 AI-Assisted？
-
-> Gartner 预测：到 2028 年，Agentic 工作流将提升团队生产力 30%-50%，远超 AI-Assisted 的 0%-20%。
-
-AI-Assisted（Copilot 模式）和 Agentic Engineering 是两种完全不同的范式：
-
-<table class="comparison-table">
-  <thead>
-    <tr>
-      <th>维度</th>
-      <th>AI-Assisted（Copilot 模式）</th>
-      <th>Agentic Engineering（TKWF）</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>人类角色</td>
-      <td>驾驶员，逐行审查补全建议</td>
-      <td><strong>委派者 + 验证者</strong>，声明意图后由 Agent 写业务</td>
-    </tr>
-    <tr>
-      <td>Agent 自主性</td>
-      <td>被动响应，只补全当前光标处</td>
-      <td><strong>端到端写 Service</strong>，从 Entity 到业务规则</td>
-    </tr>
-    <tr>
-      <td>代码生成</td>
-      <td>IDE 内补全片段</td>
-      <td><strong>编译期 SG 全自动生成</strong> Controller/端点/客户端</td>
-    </tr>
-    <tr>
-      <td>约束机制</td>
-      <td>人工审查每行 diff</td>
-      <td><strong>编译期硬约束</strong>——不合规代码直接报错</td>
-    </tr>
-    <tr>
-      <td>协议暴露</td>
-      <td>手写 Controller + 路由注册</td>
-      <td>一份 Service → <strong>GraphQL + REST + RPC 三端自动暴露</strong></td>
-    </tr>
-    <tr>
-      <td>AI 门槛</td>
-      <td>需顶级模型长上下文推理整个架构</td>
-      <td><strong>7 个框架级 Skills</strong> 分步引导 + 活文档替代源码阅读，架构降低上下文加载</td>
-    </tr>
-  </tbody>
-</table>
-
----
-
-<!-- ===== 区块 4: Agentic 友好度评分结论 ===== -->
-
-## 📊 业界 10 维准则评估：TKWF 50/50
-
-> 以 Agentic Coding 10 维准则（来自 `mixcode/agent-friendly-guide`、`Context Architecture`、`arXiv Claude Code`、`lint4sg` 等）评估三框架——TKWF 全维度满分。
-
-| 框架 | ABP | Axon 5 | **TKWF** |
-|:--|:--:|:--:|:--:|
-| **总分（/50）** | 24 | 30 | **50** |
-
-**业界正在追认 TKWF 早已走的路**：ABP 社区投票用 SG 替代 DynamicProxy（`#7198`，2026.03）；`lint4sg`（2026.03）专为约束 AI 而建；Spring AOP `@Retryable` 静默失败（Doctolib 2026.05）——运行时代理的静默失败是 AI 无法自诊断的致命问题。
-
-→ **完整评估报告（10 维逐条详解 + CQRS 架构 + 诚实限制）见 [Agentic Coding 友好度评估](articles/explanation/agentic-evaluation.md)**
-
----
-
-<!-- ===== 区块 4.5: 五大设计支柱 ===== -->
+<!-- ===== 区块 4: 五大设计支柱 ===== -->
 
 ## 凭什么满分？五大设计支柱
 
 <div class="agentic-banner">
+  <div class="banner-icon">🧩</div>
+  <div class="banner-content">
+    <h3>领域自治 — 编译即运行，零运行时惊喜</h3>
+    <p>DomainUser 不进 DI 容器不会串号、不经动态代理、不被运行时反射——<strong>代码所写即所得</strong>，AI 和人类看到同一份可预测的执行流。<br>20+ 编译期诊断直接 fail build，结构错误编译期暴露，不合规代码根本编译不过。</p>
+  </div>
+</div>
+
+<div class="agentic-banner">
   <div class="banner-icon">⚡</div>
   <div class="banner-content">
-    <h3>声明即生成 — 一行标注，编译期产出全部管道</h3>
-    <p>手写 Controller/路由/DI 注册/客户端代理——样板代码占 70%。<br><code>[GenerateController]</code> 一行标注 → 编译期生成 5 份管道（Controller+AOP+GraphQL+REST+Client）+ AutoQuery 消除 80% 手写查询 Service。</p>
+    <h3>仅极少业务代码 — 一行标注，编译期产出全部管道</h3>
+    <p>无需手写 Controller/路由/DI 注册/客户端代理——传统样板代码占 70%。<br><code>[GenerateController]</code> 一行标注 → 编译期生成 5 份管道（Controller+AOP+GraphQL+REST+Client）+ AutoQuery 消除 80% 手写查询 Service。</p>
   </div>
 </div>
 
 <div class="agentic-banner">
-  <div class="banner-icon">🔧</div>
+  <div class="banner-icon">📊</div>
   <div class="banner-content">
-    <h3>结构可靠 — 代码所见即所行，零运行时惊喜</h3>
-    <p>DI 容器串号、动态代理运行时惊喜——AI 生成的代码行为不可预测。<br>DomainUser 不进 DI 容器 + SG 编译期装饰器 <code>.g.cs</code> 可见可调试，运行时行为 = 源码所见。</p>
-  </div>
-</div>
-
-<div class="agentic-banner">
-  <div class="banner-icon">✅</div>
-  <div class="banner-content">
-    <h3>编译即验证 — 不合规直接构建失败</h3>
-    <p>配置错误运行时才暴露——Agent 改完代码不知道对不对。<br>20+ Error 级编译期诊断直接 fail build + ViewSql 列名校验，编译通过 = 结构正确。行为合规（授权/验证/事务）由运行时 AOP 兜底。</p>
-  </div>
-</div>
-
-<div class="agentic-banner">
-  <div class="banner-icon">🤖</div>
-  <div class="banner-content">
-    <h3>Agent 自主工作 — 无需先验知识，按图索骥</h3>
-    <p>AI 不了解框架约定，需读大量源码才能动手。<br>7 个框架级 Skills 分步引导 + <code>llms.txt</code> + 活文档替代源码阅读 + <code>TKWF_Rules.md</code> 路由中枢——Agent 只加载当前域薄索引，无需理解全局架构。</p>
+    <h3>架构级读写分离 — 视图即统计，前后端配合更丝滑</h3>
+    <p>传统痛点：前端需要各种复杂查询和统计，且经常因 UI 调整而更改——后端最大工作量在复杂查询类方法（分页/分组/聚合）。<br>Entity（写模型）/ VEntity（读模型）在<strong>类型系统级分离</strong>：只需调整视图（ViewSql），框架自动持久化 DB 视图 + 编译期列名校验，<strong>自动生成统计 Dto</strong>（扫描 SUM/COUNT/AVG/MIN/MAX 推断类型）+ AutoQuery 自动生成分页查询——几乎不需要编写代码。三端统一 <code>User.Query&lt;T&gt;()</code> 入口 + GraphQL 聚合查询。</p>
   </div>
 </div>
 
 <div class="agentic-banner">
   <div class="banner-icon">🔗</div>
   <div class="banner-content">
-    <h3>全栈一致 — C#/TS 镜像 + 无后端自验证</h3>
-    <p>前后端 API 不一致、测试需起后端——全栈开发割裂。<br><code>ts-client</code> 与 C# API 形态完全镜像（<code>Use&lt;T&gt;()</code> / <code>Query&lt;T&gt;()</code>），<code>ts-client-mock</code> 两级 mock（离线 MockTransport + HTTP MockHttpServer）让 Agent 无需运行后端即可自验证全链路。</p>
+    <h3>全栈一致 — C#/Wasm/TypeScript + 无后端自验证</h3>
+    <p>避免前后端 API 不一致，测试无需运行后端——分工同步开发，各自验证。<br><code>ts-client</code> 与 C# API 形态完全镜像（<code>Use&lt;T&gt;()</code> / <code>Query&lt;T&gt;()</code>），<code>ts-client-mock</code> 两级 mock（离线 MockTransport + HTTP MockHttpServer）让 Agent 无需运行后端即可自验证全链路。</p>
+  </div>
+</div>
+
+<div class="agentic-banner">
+  <div class="banner-icon">📚</div>
+  <div class="banner-content">
+    <h3>文档 — Agent 无需先验知识，按图索骥</h3>
+    <p>AI 无需了解框架约定，无需读大量源码。<br>7 个框架级 Skills 分步引导 + <code>Domain Map/Api 文档</code> + 阅读活文档替代源码 + <code>TKWF_Rules.md</code> 路由中枢——Agent 只加载当前域薄索引，无需理解全局架构。</p>
   </div>
 </div>
 
@@ -259,7 +213,7 @@ var orderDto = await ds.GetAsync(1L).ToDto<OrderDto>();  // 单条转 DTO
 var count = await ds.Query.CountAsync();                  // 计数
 ```
 
-  </div>
+</div>
 </div>
 
 <div class="scenario-card">
@@ -297,7 +251,7 @@ public class OrderService(DomainUser<AppUserInfo> user)
 // 编译期自动生成 5 份：Controller / AOP Decorator / GraphQL Resolver / REST Endpoint / Client
 ```
 
-  </div>
+</div>
 
 </div>
 
@@ -346,9 +300,10 @@ var statsDs = User.Use<OrderViewDataService>();
 var stats = await statsDs.GetAsync<OrderSummaryStatsDto>();
 // stats.TotalAmount / stats.OrderCount / stats.AvgAmount
 ```
- 
+
 > **注**：JS 表现层暂时部分聚合能力受限于 HotChocolate GraphQL 实现限制，可编写特化查询方法变通（增强功能近期实现中）。
-  </div>
+>
+> </div>
 
 </div>
 
@@ -361,9 +316,9 @@ var stats = await statsDs.GetAsync<OrderSummaryStatsDto>();
 
 ```csharp
 // 不需要构造器注入——User 统一入口
-var ds = User.Use<OrderDataService>();        // 数据服务
+var ds = User.Use<OrderDataService>();        // 数据服务：CRUD
 var productService = User.Use<ProductService>(); // 其他服务
-var repo = User.Use<IEntityDAC<Order>>();       // 原始 DAC
+var repo = User.Use<IEntityDAC<Order>>();       // 原始 DAC —— 只有特殊情况才需要
 
 // 多租户——IEntityTenant 自动过滤，无需手写 WHERE TenantId
 // IGlobalQueryFilter 策略：软删除 + 多租户 + 审计自动应用
@@ -391,7 +346,7 @@ builder.Services.AddTKWFDomain<AppUserInfo, AppDomainInitializer>();
 // 无需 app.MapControllers() — Minimal API 端点由 SG2 自动生成
 ```
 
-  </div>
+</div>
 
 </div>
 
@@ -403,15 +358,16 @@ builder.Services.AddTKWFDomain<AppUserInfo, AppDomainInitializer>();
 
 ```csharp
 // dotnet build 后自动生成（Agent 读这些，不读 .g.cs）：
-// .TKWF/Order/
+// .TKWF/Commerce/
 //   ├── DOMAIN_MAP.md          // 领域实体/服务全貌
 //   ├── DataService_API.md     // 每个 DataService 的方法签名速查
+//   ├── Domain_Api.md          // 对外暴露的 API 接口清单（GraphQL/REST）
 //   └── Business.md            // 业务规则物化（tkwf-business skill 产出）
 
 // Agent 守则："❌ 不读 *.g.cs / *.biz.cs / DataServices/*.cs"
 ```
 
-  </div>
+</div>
 
 </div>
 
@@ -437,7 +393,7 @@ const list = await Tkwf.User.Query<Order>()
     .toPageAsync();                                  // 返回强类型 Order[]
 ```
 
-  </div>
+</div>
 
 </div>
 
@@ -474,7 +430,7 @@ const server = new MockHttpServer(handlers);
 await server.listen(4000);
 ```
 
-  </div>
+</div>
 
 </div>
 
@@ -566,11 +522,11 @@ tkwf-tsclient-mock → Mock 数据生成
 
 ## 最近版本动态
 
-| 版本       | 日期       | 核心内容                                                                                                           |
-|:---------- |:---------- |:------------------------------------------------------------------------------------------------------------------ |
+| 版本       | 日期       | 核心内容                                                                                                       |
+|:---------- |:---------- |:-------------------------------------------------------------------------------------------------------------- |
 | **4.9.60** | 2026-08-23 | SG 生成代码编译修复：枚举特性参数完整表达式生成 + `[Service]`/`Filter` 命名空间修正（消费项目 199 错误全归零） |
-| **4.9.59** | 2026-08-22 | DatabaseProvider 枚举 + ViewSql 方言兼容性检查（覆盖 FreeSql + EF Core 全部数据库类型 26 值枚举） |
-| **4.9.58** | 2026-08-22 | 简化双标注（方案 D）：删除 8 项有 BCL 等价的冗余 FreeSql 双标注，仅保留无 BCL 等价的 FreeSql 特性 |
+| **4.9.59** | 2026-08-22 | DatabaseProvider 枚举 + ViewSql 方言兼容性检查（覆盖 FreeSql + EF Core 全部数据库类型 26 值枚举）              |
+| **4.9.58** | 2026-08-22 | 简化双标注（方案 D）：删除 8 项有 BCL 等价的冗余 FreeSql 双标注，仅保留无 BCL 等价的 FreeSql 特性              |
 
 > 完整变更历史见 [TKWF CHANGELOG](https://github.com/LoongBa/TKW.Framework/blob/master/docs/CHANGELOG.md)
 
@@ -607,7 +563,3 @@ tkwf-tsclient-mock → Mock 数据生成
 - GitHub: [LoongBa/TKW.Framework](https://github.com/LoongBa/TKW.Framework)
 - 许可证: [CC BY-NC 4.0](https://creativecommons.org/licenses/by-nc/4.0/)（署名-非商业性使用）
 - 构建状态: [![Build and Deploy Docs](https://github.com/LoongBa/TKWF.Docs/actions/workflows/docfx.yml/badge.svg)](https://github.com/LoongBa/TKWF.Docs/actions/workflows/docfx.yml)
-
-
-
-
