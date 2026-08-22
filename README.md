@@ -4,7 +4,7 @@
 
 [![Build and Deploy Docs](https://github.com/LoongBa/TKWF.Docs/actions/workflows/docfx.yml/badge.svg)](https://github.com/LoongBa/TKWF.Docs/actions/workflows/docfx.yml)
 
-**当前同步版本：V4.9.43**（文档与框架 [LoongBa/TKW.Framework](https://github.com/LoongBa/TKW.Framework) 保持同步）
+**当前同步版本：V4.9.60**（文档与框架 [LoongBa/TKW.Framework](https://github.com/LoongBa/TKW.Framework) 保持同步）
 
 ---
 
@@ -12,15 +12,9 @@
 
 | 版本 | 日期 | 核心内容 |
 |:-----|:-----|:---------|
-| **4.9.43** | 2026-08-20 | 代码质量修复：异常消息不泄漏客户端 + 资源泄漏（HttpRequestMessage using + GraphQLClient IDisposable）+ Debug.WriteLine→ILogger + 死代码删除（UserSessionProvider） |
-| **4.9.42** | 2026-08-19 | C# ApiClient QueryBuilder 增强（ADR16）：CountAsync（仅计数省带宽）+ Clone（并行查询）+ OrderByField/ThenByField（动态排序） |
-| **4.9.41** | 2026-08-18 | 文档同步：EntityQuery→Query + AdminHardDelete→AdminDelete + DefaultOrder 安全默认（Id 倒序，不抛异常）+ ADR15 Phase 2 删除过期方法 shim |
-| **4.9.40** | 2026-08-18 | VEntity 查询架构简化：EQR 统一入口 + 直连 DAC（8跳→3跳）+ IGlobalQueryFilter 策略 + AutoQuery 委托 EQR + xCodeGen VEntity 跳过 DataService/Conditions |
-| **4.9.39** | 2026-08-18 | V4.9.38 后修复批：SyncViewsAsync 作用域 bug + StatsDto Razor 括号边界 + ViewSql 校验器完整化（聚合别名提取 + 双向检测） |
-| **4.9.38** | 2026-08-17 | VEntity 深度增强：ViewSql 编译期列名校验 + AutoQuery 自动查询 + 聚合 Dto 自动生成 + 轻量 VEntity（InlineSelectSql） |
-| **4.9.37** | 2026-08-17 | IsGraphQLQueryable 默认值变更（Entity false / VEntity true）+ IsComputed 全链路一致性修复 |
-| **4.9.36** | 2026-08-17 | VEntity 增强：IsComputed 计算字段 + DynamicSelector 投影跳过 + Dto.cshtml 三处跳过（ADR11） |
-| **4.9.35** | 2026-08-16 | Entity IQueryable 主路径 Phase-C：连接 resolver + 字段命名统一 + IsGraphQLQueryable 三侧落实 |
+| **4.9.60** | 2026-08-23 | SG 生成代码编译修复：枚举特性参数完整表达式生成 + `[Service]`/`Filter` 命名空间修正（消费项目 DMP-Lite 199 错误全归零） |
+| **4.9.59** | 2026-08-22 | DatabaseProvider 枚举 + ViewSql 方言兼容性检查（覆盖 FreeSql + EF Core 全部数据库类型 26 值枚举） |
+| **4.9.58** | 2026-08-22 | 简化双标注（方案 D）：删除 8 项有 BCL 等价的冗余 FreeSql 双标注，仅保留无 BCL 等价的 FreeSql 特性 |
 
 > 完整变更历史见 [TKWF CHANGELOG](https://github.com/LoongBa/TKW.Framework/blob/master/docs/CHANGELOG.md)。
 

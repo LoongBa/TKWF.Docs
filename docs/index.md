@@ -7,7 +7,7 @@ _layout: landing
 <div class="hero-section">
   <div class="hero-badges">
     <img src="https://img.shields.io/badge/.NET-10-blue" alt=".NET 10" />
-    <img src="https://img.shields.io/badge/version-4.9.45-green" alt="Version 4.9.45" />
+    <img src="https://img.shields.io/badge/version-4.9.60-green" alt="Version 4.9.60" />
     <img src="https://img.shields.io/badge/Agentic-Engineering-purple" alt="Agentic Engineering" />
   </div>
 <h1>TKW.Framework — 让 Agentic Engineering 更可控、更可靠的软件开发框架</h1>
@@ -127,47 +127,63 @@ AI-Assisted（Copilot 模式）和 Agentic Engineering 是两种完全不同的�
 
 ---
 
-<!-- ===== 区块 4: 四大设计支柱 ===== -->
+<!-- ===== 区块 4: Agentic 友好度评分结论 ===== -->
 
-## 为什么 TKWF 让 Agentic Engineering 可靠？
+## 📊 业界 10 维准则评估：TKWF 50/50
+
+> 以 Agentic Coding 10 维准则（来自 `mixcode/agent-friendly-guide`、`Context Architecture`、`arXiv Claude Code`、`lint4sg` 等）评估三框架——TKWF 全维度满分。
+
+| 框架 | ABP | Axon 5 | **TKWF** |
+|:--|:--:|:--:|:--:|
+| **总分（/50）** | 24 | 30 | **50** |
+
+**业界正在追认 TKWF 早已走的路**：ABP 社区投票用 SG 替代 DynamicProxy（`#7198`，2026.03）；`lint4sg`（2026.03）专为约束 AI 而建；Spring AOP `@Retryable` 静默失败（Doctolib 2026.05）——运行时代理的静默失败是 AI 无法自诊断的致命问题。
+
+→ **完整评估报告（10 维逐条详解 + CQRS 架构 + 诚实限制）见 [Agentic Coding 友好度评估](articles/explanation/agentic-evaluation.md)**
+
+---
+
+<!-- ===== 区块 4.5: 五大设计支柱 ===== -->
+
+## 凭什么满分？五大设计支柱
 
 <div class="agentic-banner">
-  <div class="banner-icon">⚙️</div>
+  <div class="banner-icon">⚡</div>
   <div class="banner-content">
-    <h3>编译期静态装配 — AI 生成代码与手写行为一致</h3>
-    <p>V4 从 Autofac 动态代理迁移到 SG + 装饰器。AOP 拦截在编译期完成，零运行时反射、零 IL Emit。<br>AI 生成的代码可见、可调试、可预测——不存在"运行时才暴露的惊喜"。</p>
+    <h3>声明即生成 — 一行标注，编译期产出全部管道</h3>
+    <p>手写 Controller/路由/DI 注册/客户端代理——样板代码占 70%。<br><code>[GenerateController]</code> 一行标注 → 编译期生成 5 份管道（Controller+AOP+GraphQL+REST+Client）+ AutoQuery 消除 80% 手写查询 Service。</p>
   </div>
 </div>
 
 <div class="agentic-banner">
-  <div class="banner-icon">📐</div>
+  <div class="banner-icon">🔧</div>
   <div class="banner-content">
-    <h3>零歧义契约 — 标注即 Spec，编译期验证</h3>
-    <p><code>[GenerateController]</code> 标注就是完整契约——不只是一个标记，而是一份可执行的规范。<br><strong>结构性不合规编译期直接报错</strong>（20+ 诊断）。行为合规（授权/验证/事务）由运行时 AOP 兜底。</p>
+    <h3>结构可靠 — 代码所见即所行，零运行时惊喜</h3>
+    <p>DI 容器串号、动态代理运行时惊喜——AI 生成的代码行为不可预测。<br>DomainUser 不进 DI 容器 + SG 编译期装饰器 <code>.g.cs</code> 可见可调试，运行时行为 = 源码所见。</p>
   </div>
 </div>
 
 <div class="agentic-banner">
-  <div class="banner-icon">🧩</div>
+  <div class="banner-icon">✅</div>
   <div class="banner-content">
-    <h3>领域自治 — 结构上不可能串号</h3>
-    <p>DomainUser 不进 DI 容器，<code>Use&lt;T&gt;()</code> 显式传递。调用方的 User 就是 Service 的 User，物理隔离。<br>AI 生成的代码无需理解 DI 生命周期——结构本身就消灭了整类缺陷。</p>
-  </div>
-</div>
-
-<div class="agentic-banner">
-  <div class="banner-icon">🔬</div>
-  <div class="banner-content">
-    <h3>粒度细分管线 — Agent 聚焦眼前工作</h3>
-    <p>SG1（元数据提取）→ SG2（服务端生成）→ SG3（客户端生成），三层各司其职。<br>7 个框架级 Skills 分步引导，活文档替代源码阅读，Agent 只加载当前域薄索引——无需理解全局架构。</p>
+    <h3>编译即验证 — 不合规直接构建失败</h3>
+    <p>配置错误运行时才暴露——Agent 改完代码不知道对不对。<br>20+ Error 级编译期诊断直接 fail build + ViewSql 列名校验，编译通过 = 结构正确。行为合规（授权/验证/事务）由运行时 AOP 兜底。</p>
   </div>
 </div>
 
 <div class="agentic-banner">
   <div class="banner-icon">🤖</div>
   <div class="banner-content">
-    <h3>Agentic Skills + Mock — 端到端 Agent 工作流</h3>
-    <p>自带 <strong>7 个框架级 Skills</strong>（设计→实体→业务→测试→前端→Mock），将需求文档交给 Agent 按 skill 编写即可完成开发。<br><strong>ts-client</strong> 确保前后端开发体验一致（C# 与 TS API 形态完全镜像），<strong>ts-client-mock</strong> 两级 mock（离线 + HTTP 模拟）让 Agent 无需运行后端即可自验证全栈。</p>
+    <h3>Agent 自主工作 — 无需先验知识，按图索骥</h3>
+    <p>AI 不了解框架约定，需读大量源码才能动手。<br>7 个框架级 Skills 分步引导 + <code>llms.txt</code> + 活文档替代源码阅读 + <code>TKWF_Rules.md</code> 路由中枢——Agent 只加载当前域薄索引，无需理解全局架构。</p>
+  </div>
+</div>
+
+<div class="agentic-banner">
+  <div class="banner-icon">🔗</div>
+  <div class="banner-content">
+    <h3>全栈一致 — C#/TS 镜像 + 无后端自验证</h3>
+    <p>前后端 API 不一致、测试需起后端——全栈开发割裂。<br><code>ts-client</code> 与 C# API 形态完全镜像（<code>Use&lt;T&gt;()</code> / <code>Query&lt;T&gt;()</code>），<code>ts-client-mock</code> 两级 mock（离线 MockTransport + HTTP MockHttpServer）让 Agent 无需运行后端即可自验证全链路。</p>
   </div>
 </div>
 
@@ -420,16 +436,6 @@ const list = await Tkwf.User.Query<Order>()
     .page(1, 20)
     .toPageAsync();                                  // 返回强类型 Order[]
 ```
-// TS 前端——与 C# Wasm API 形态完全一致
-const svc = Tkwf.User.Use<OrderService>();
-const order = await svc.createAsync("买咖啡");
-
-const list = await Tkwf.User.Query<Order>()
-    .where(f => f.status.eq("Paid"))
-    .orderBy(f => f.createdAt)
-    .page(1, 20)
-    .toPageAsync();
-```
 
   </div>
 
@@ -562,9 +568,9 @@ tkwf-tsclient-mock → Mock 数据生成
 
 | 版本       | 日期       | 核心内容                                                                                                           |
 |:---------- |:---------- |:------------------------------------------------------------------------------------------------------------------ |
-| **4.9.45** | 2026-08-21 | 全局过滤器体系修正（ADR18）：移除 SG 安全核心特性重复声明（`[AuthorityFilter]` + `[ValidateParametersFilt…         |
-| **4.9.44** | 2026-08-21 | Mock 数据基础设施 C# 版（ADR09 实施）：内存 `MockDbEntityDAC` + Bogus 驱动规则化数据生成（`BogusDataGene…          |
-| **4.9.43** | 2026-08-20 | 代码质量修复（ADR 外评审发现）：安全（异常消息不泄漏客户端）+ 资源泄漏（HttpRequestMessage using + GraphQLClient … |
+| **4.9.60** | 2026-08-23 | SG 生成代码编译修复：枚举特性参数完整表达式生成 + `[Service]`/`Filter` 命名空间修正（消费项目 199 错误全归零） |
+| **4.9.59** | 2026-08-22 | DatabaseProvider 枚举 + ViewSql 方言兼容性检查（覆盖 FreeSql + EF Core 全部数据库类型 26 值枚举） |
+| **4.9.58** | 2026-08-22 | 简化双标注（方案 D）：删除 8 项有 BCL 等价的冗余 FreeSql 双标注，仅保留无 BCL 等价的 FreeSql 特性 |
 
 > 完整变更历史见 [TKWF CHANGELOG](https://github.com/LoongBa/TKW.Framework/blob/master/docs/CHANGELOG.md)
 
@@ -601,4 +607,7 @@ tkwf-tsclient-mock → Mock 数据生成
 - GitHub: [LoongBa/TKW.Framework](https://github.com/LoongBa/TKW.Framework)
 - 许可证: [CC BY-NC 4.0](https://creativecommons.org/licenses/by-nc/4.0/)（署名-非商业性使用）
 - 构建状态: [![Build and Deploy Docs](https://github.com/LoongBa/TKWF.Docs/actions/workflows/docfx.yml/badge.svg)](https://github.com/LoongBa/TKWF.Docs/actions/workflows/docfx.yml)
+
+
+
 
