@@ -17,11 +17,11 @@ description: TKWF 源文档 D/G/T/xCodeGen 系列与公开文章的完整映射�
 | `D00-TKWF.Domain-领域自治框架-V4-白皮书.md` | [框架概览](../intro.md) | 领域自治核心设计、六大工程原则（含 SystemActor 系统角色） |
 | `D00-TKWF.Domain-领域自治框架-V4-设计方案.md` | [框架概览](../intro.md) | 架构决策（Autofac 弃用、装饰器模式、AsyncLocal、宿主适配器） |
 | `D01-Domain运行时上下文.md` | [DomainUser 详解](../core-concepts/domain-user.md) | 初始化生命周期 + DomainUser + 会话管理 + 客户端认证架构（合并 D01/D02-核心/D03） |
-| `D03-AOP拦截与事务与验证.md` | [AOP 管线详解](../core-concepts/aop-pipeline.md) | AOP 静态拦截 + 事务横切关注 + 参数验证机制。V2.1 补充短接机制、Bag 通信、过滤器组合策略；V4.9.31 新增 ValidateParametersFilter 分层设计 |
+| `D03-AOP拦截与事务与验证.md` | [AOP 管线详解](../core-concepts/aop-pipeline.md) · [全局过滤器体系](../core-concepts/filters.md) | AOP 静态拦截 + 事务横切关注 + 参数验证机制。V2.1 补充短接机制、Bag 通信、过滤器组合策略；V4.9.31 新增 ValidateParametersFilter 分层设计 |
 | `D03A-缓存框架-设计方案.md` | — | 缓存策略：ContentCacheFilter AOP 方法级缓存（ICacheProvider 抽象、短接集成、缓存键设计）、HybridCache 会话后端缓存 |
 | `D04-领域初始化器设计-模板方法体系与内置能力.md` | [Web 集成](../integration/web.md) | 初始化器钩子体系（V4.9.21+） |
 | `D05-宿主集成与配置V2-Web-Blazor-MAUI-Testing.md` | [配置参考](../advanced/configuration.md) | 宿主集成与 cfg 强契约 |
-| `D06-领域数据服务与数据存取设计.md` | [数据层架构](../explanation/data-layer-architecture.md) | DataService 数据存取 |
+| `D06-领域数据服务与数据存取设计.md` | [数据层架构](../explanation/data-layer-architecture.md) | DataService 数据存取、IEntityDAC 抽象、ITransactionManager 事务管理（V4.9.52 ADR26）、多 ORM 兼容策略（BCL 标准属性 + EF Core 适配层，V4.9.54 ADR27）、简化双标注策略（V4.9.58 ADR28/29）、DatabaseProvider 方言检查（V4.9.59）。v1.4 |
 | `D06B-条件表达式构建器设计.md` | [条件构建器](../advanced/conditions-builder.md) | PredicateBuilderBase、Entity.Conditions 静态类、xCodeGen + SG1 双重生成 |
 | `D06C-Entity映射与DB Schema-设计方案.md` | — | Entity 映射策略：ORM 特性体系（Table/Column/Index/Navigate）、接口标记 vs 基类继承、查询条件生成管线（三阶段 SearchGroup 提取） |
 | `D07-三层SG-原则和设计方案.md` | [代码生成管线](../core-concepts/code-generation.md) | 三层 SG 管线：SG1 元数据提取 → SG2 服务端生成 → SG3 客户端生成；ProjectMetaContext 唯一元数据源。V4.9.32 IsExposed 暴露过滤；V4.9.34 EntityFieldList 字段白名单；V4.9.35 Phase-C 实体连接 resolver + IsGraphQLQueryable 三侧过滤 |
@@ -39,14 +39,14 @@ description: TKWF 源文档 D/G/T/xCodeGen 系列与公开文章的完整映射�
 | `D07A-RPC-远程过程调用-设计方案V2.md` | [RPC 传输](../transport/rpc.md) | RPC 主文档：SG 管线、IAopContract、A/B 控制器路径、DataService 方法提取规则、ExcludeMethods。V4.9.35 Phase-C 双轨并行；V4.9.40 查询架构简化（EQR 统一 + IGlobalQueryFilter） |
 | `D07B-C#客户端SDK架构-设计方案.md` | [客户端 SDK](../client/api-client.md) | C# 客户端 SDK：DomainClientUser 架构、IApiClient 双协议传输层、表达式树→GraphQL 查询管线、Wasm 管道。V4.9.28 起 Use<T>() 客户端服务端统一命名 |
 | `D07C-TS客户端SDK架构-设计方案.md` | — | TS 客户端 SDK（@tkwf/tsclient）：两层架构（SDK 层 vs 消费端集成层）、Tkwf 门面工厂、Transport 抽象、ServiceProxy JS Proxy 引擎、ChainablePromise |
-| `D07M-RPC-前端客户端-ts-client-mock-设计方案.md` | — | TS 前端 mock 运行时：MockTransport 注入、内存数据库、策略化工厂、录制回放、HTTP mock server |
+| `D07M-RPC-前端客户端-ts-client-mock-设计方案.md` | — | TS 前端 mock 运行时：MockTransport 注入、内存数据库、策略化工厂、录制回放、HTTP mock server。v1.4.3：gen-seed CLI + session handlers |
 | `G07A-RPC-远程过程调用-WebApi服务端使用指南.md` | — | C# 服务端：[GenerateController] 标注 Service，SG 自动生成 WebApi 端点 + V2 管道配置 |
 | `G07B-RPC-远程过程调用-Wasm客户端使用指南.md` | — | Blazor Wasm 客户端：ConfigWasmClient 管道、User.Query<T> 实体查询、User.Use<IController> 调用、认证与会话管理 |
 | `G07B-RPC-远程过程调用-Wasm客户端增强查询-QueryBuilder-使用指南.md` | [查询指南](../advanced/query-guide.md) | Wasm 客户端增强查询：User.Query<T> 统一查询入口（合并原 QueryApi/QueryGraphQL）。V4.9.34 EntityFieldList 默认字段；V4.9.35 Phase-C 端到端可用 + Connection 类型；V4.9.36 重命名 QueryBuilder；V4.9.40 EQR 统一（删除 InternalQueryGraphQL/OnGraphQLFiltering） |
 | `G07C-RPC-远程过程调用-TS前端-ts-client-使用指南.md` | — | TS 前端 @tkwf/tsclient 客户端（独立仓库 tkwf-tsclient，V1.0.5：Tkwf 门面工厂入口，transport 注入点，移除 Call()/ChainableBuilder） |
 | `G07C-RPC-远程过程调用-TS前端增强查询-QueryBuilder-使用指南.md` | — | TS 前端增强查询：QueryBuilder 链式查询（where/orderBy/select/page/toPageAsync） |
 | `G07C-ts-client-优势分析.md` | — | ts-client 优势分析：为何选择 @tkwf/tsclient 而非传统 fetch/axios/graphql-codegen |
-| `G07D-RPC-远程过程调用-TS前端测试-ts-client-mock-使用指南.md` | — | TS 前端 Mock 测试：@tkwf/tsclient-mock（v1.2.2：MockTransport 注入、createMockDb、场景切换、策略化数据生成、录制回放、HTTP server） |
+| `G07D-RPC-远程过程调用-TS前端测试-ts-client-mock-使用指南.md` | — | TS 前端 Mock 测试：@tkwf/tsclient-mock（v1.4.3：MockTransport 注入、createMockDb、场景切换、策略化数据生成、录制回放、HTTP server、gen-seed CLI） |
 | `G07E-RPC-远程过程调用-错误处理指南.md` | [异常处理](../advanced/error-handling.md) | 异常映射表、Middleware、Problem Details |
 
 ## 安全、限流与多租户
@@ -57,7 +57,7 @@ description: TKWF 源文档 D/G/T/xCodeGen 系列与公开文章的完整映射�
 | `D10A-Wasm客户端异常处理机制-设计方案.md` | — | （D10 子方案）Blazor Wasm 客户端三层错误处理模型、DomainClientUser 事件、SendWithAuthGuardAsync |
 | `D10B-ts-client异常处理机制-设计方案.md` | — | （D10 子方案）TS 前端异常处理：@tkwf/tsclient 错误映射、静态事件、重试策略 |
 | `D10C-Web服务端错误处理机制-设计方案.md` | — | （D10 子方案）ASP.NET Core 服务端错误输出：DomainErrorFilter、WebExceptionMiddleware、IErrorScope |
-| `D10D-限流架构-设计方案.md` | — | 限流架构：V4.9.26 退役自定义 IRateLimiter → 官方 System.Threading.RateLimiting。PartitionedRateLimiter 分区限流、EnforceAsync 扩展方法、AOP 集成、429 错误码映射 |
+| `D10D-限流架构-设计方案.md` | [全局过滤器体系](../core-concepts/filters.md) | 限流架构：V4.9.26 退役自定义 IRateLimiter → 官方 System.Threading.RateLimiting。PartitionedRateLimiter 分区限流、EnforceAsync 扩展方法、AOP 集成、429 错误码映射 |
 | `D11-系统角色-SystemActor-设计方案.md` | [SystemActor 体系](../explanation/system-actor-explained.md) | 系统角色：BeginSystemScopeAsync、scope.System/scope.IsSystem、IEntityActorAuditable、[DenySystemActor]、StandaloneDomainUserAccessor（ADR 14/15/16） |
 | `D13-多租户架构-设计方案.md` | — | 多租户架构：租户识别与上下文传播（IAmbientContext）、数据库级隔离（FreeSqlCloud 分库）、连接串解析模板方法、IEntityTenant 接口标记 |
 
@@ -84,6 +84,12 @@ description: TKWF 源文档 D/G/T/xCodeGen 系列与公开文章的完整映射�
 | `D12-TKWFRole-项目分发配置参考表.md` | — | （D12 附表）TKWFRole 角色注入清单、DLL 模式自动注入依赖链、各角色项目配置参考 |
 | `D14-Agent开发生态-设计方案.md` | — | Agent 开发生态：tkwf-skills 体系（design/entity/service/test/business）、ADR 架构决策系统、迭代开发工作流、提交与 Tag 纪律 |
 
+## 事件与消息基础设施
+
+| 源文档 | 公开文章 | 说明 |
+|:-------|:---------|:-----|
+| `D15-事件总线与消息基础设施-设计方案.md` | [事件总线与消息基础设施](../explanation/event-bus.md) | 事件总线与消息基础设施：领域事件（AddLocalEvent）、本地/分布式事件总线、后台作业管理器、Outbox/Inbox 事务性消息、EntityHistory 属性级 Diff。对标 ABP 事件/消息体系 11 维功能。与 ADR21-25 互补（ADR 讲 HOW，D15 讲 WHY+WHAT）。V4.9.52 ADR26 已实施 |
+
 ## Agentic 专用
 
 | 源文档 | 公开文章 | 说明 |
@@ -102,7 +108,11 @@ description: TKWF 源文档 D/G/T/xCodeGen 系列与公开文章的完整映射�
 
 ---
 
-> 对齐 TKWF：V4.9.45 · 2026-08-15
+> 对齐 TKWF：V4.9.60 · 2026-08-22
+
+
+
+
 
 
 

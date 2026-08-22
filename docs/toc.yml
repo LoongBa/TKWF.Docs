@@ -8,7 +8,19 @@
     - name: 60 分钟进阶教程
       href: articles/tutorials/60-min-advanced-part1.md
     - name: 深度理解系列
-      href: articles/explanation/why-domain-autonomy.md
+      items:
+        - name: 为什么领域自治
+          href: articles/explanation/why-domain-autonomy.md
+        - name: 数据层架构与 ORM 无关性
+          href: articles/explanation/data-layer-architecture.md
+        - name: SystemActor 系统角色解析
+          href: articles/explanation/system-actor-explained.md
+        - name: 三层 SG 管线解剖
+          href: articles/explanation/sg-pipeline-anatomy.md
+        - name: 事件总线与消息基础设施
+          href: articles/explanation/event-bus.md
+        - name: Agentic Coding 友好度评估
+          href: articles/explanation/agentic-evaluation.md
     - name: 决策指南
       href: articles/decision-guides/choose-transport.md
 - name: 🏗️ 框架概览
@@ -20,6 +32,10 @@
       href: articles/core-concepts/domain-user.md
     - name: AOP 管线
       href: articles/core-concepts/aop-pipeline.md
+    - name: 全局过滤器体系
+      href: articles/core-concepts/filters.md
+    - name: 事务管理
+      href: articles/core-concepts/transactions.md
     - name: 代码生成
       href: articles/core-concepts/code-generation.md
 - name: 🔐 安全
@@ -67,6 +83,10 @@
       href: articles/advanced/configuration.md
     - name: 异常处理
       href: articles/advanced/error-handling.md
+    - name: 增强查询 QueryBuilder
+      href: articles/advanced/query-guide.md
+    - name: 条件表达式构建器
+      href: articles/advanced/conditions-builder.md
     - name: 最佳实践
       href: articles/advanced/best-practices.md
     - name: NuGet 包索引
