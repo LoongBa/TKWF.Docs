@@ -1,0 +1,9 @@
+{
+  "title": "🗺️ V5.0 路线图",
+  "intro": "V4.9.x 聚焦 Agentic Engineering 基础设施完善。V5.0 将在以下方向增强：",
+  "items": [
+    { "direction": "领域事件 + 扩展/插件机制", "status": "🔬 设计中", "description": "适配 .NET 10+ 及成熟项目经验，含动态加载。当前版本有 Tools 扩展概念但未框架级支持，将升级为完整机制" },
+    { "direction": "分布式 / 微服务", "status": "💬 讨论中", "description": "老版本基于自有架构，V5.0 将基于成熟项目重新设计实现" },
+    { "direction": "Agent UI 组件库", "status": "📋 规划中", "description": "MVC / Blazor WASM / HTML 三端 UI 组件，方便 Agent 提高 UI 开发效率" }
+  ]
+}

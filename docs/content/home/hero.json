@@ -1,0 +1,15 @@
+{
+  "badges": [
+    { "label": ".NET", "value": "10", "color": "blue" },
+    { "label": "version", "value": "4.9.61", "color": "green" },
+    { "label": "Agentic", "value": "Engineering", "color": "purple" }
+  ],
+  "title": "TKW.Framework — 让 Agentic Engineering 更可控、更可靠的软件开发框架",
+  "subtitle": "开发者思考意图 → AI 辅助实现 → 框架约束保障",
+  "tagline": "开发者是灵魂，TKWF 是法宝，AI 是器灵。",
+  "ctas": [
+    { "label": "🚀 5 分钟快速开始", "href": "articles/getting-started.md", "variant": "primary", "type": "docfx" },
+    { "label": "📖 框架概览", "href": "articles/intro.md", "variant": "outline", "type": "docfx" },
+    { "label": "🤖 AI 快速上手", "href": "articles/agentic/quick-start-for-ai.md", "variant": "outline", "type": "docfx" }
+  ]
+}

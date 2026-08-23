@@ -1,0 +1,25 @@
+{
+  "title": "TKW.Framework：合理分工，更可控、更可靠",
+  "quote": "Agentic Engineering — 你不直接写代码 99% 的时间，你在编排 Agent 并充当监督者。",
+  "quoteAuthor": "Andrej Karpathy, 2026",
+  "intro": "TKWF 框架自动完成尽可能多，只需少量业务代码：",
+  "steps": [
+    { "icon": "user", "label": "👤 开发者", "subtitle": "提供需求文档", "color": "blue" },
+    { "icon": "bot", "label": "🤖 AI Agent", "subtitle": "编写 Entity/Service", "color": "amber" },
+    { "icon": "settings", "label": "⚙️ TKW.Framework", "subtitle": "编译期生成", "color": "purple" }
+  ],
+  "outputs": [
+    "Controller + AOP 装饰器",
+    "GraphQL / REST 端点",
+    "强类型客户端代理",
+    "知识文档 + Mock 数据"
+  ],
+  "collaborationStep": { "icon": "refresh-cw", "label": "🔄 人机协同", "subtitle": "完善细节" },
+  "summary": "将需求分解为最小粒度交给 Agent：一个用例 = 一个 Service 方法，无需理解全局架构、DI 配置、路由注册、序列化细节，没有机会犯错。",
+  "principle": "粒度细分 = 模型更少思考 = 更高可控性和可靠性 = 更低上下文依赖和 Token 消耗。",
+  "codeExample": {
+    "title": "开发者 + Agent 只写这一份",
+    "language": "csharp",
+    "code": "[GenerateController]\npublic class OrderService(DomainUser<AppUserInfo> user)\n    : DomainServiceBase<AppUserInfo>(user)\n{\n    [AuthorityFilter(Roles = \"Admin\")]\n    [Transactional]\n    public async Task<Order> CreateAsync(string title) { ... }\n}\n\n// 编译期自动产出 5 份（开发者不用写，Agent 也不用写）：\n// → IOrderServiceController.g.cs         (契约接口)\n// → OrderServiceControllerDecorator.g.cs  (AOP 装饰器)\n// → OrderServiceResolver.g.cs            (GraphQL Resolver)\n// → OrderServiceEndpoints.g.cs           (REST 端点)\n// → OrderServiceClient.g.cs              (客户端代理)"
+  }
+}

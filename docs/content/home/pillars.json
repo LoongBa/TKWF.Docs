@@ -1,0 +1,37 @@
+[
+  {
+    "icon": "puzzle",
+    "emoji": "🧩",
+    "title": "领域自治",
+    "subtitle": "编译即运行，零运行时惊喜",
+    "description": "DomainUser 不进 DI 容器不会串号、不经动态代理、不被运行时反射——代码所写即所得，AI 和人类看到同一份可预测的执行流。20+ 编译期诊断直接 fail build，结构错误编译期暴露，不合规代码根本编译不过。"
+  },
+  {
+    "icon": "zap",
+    "emoji": "⚡",
+    "title": "仅极少业务代码",
+    "subtitle": "一行标注，编译期产出全部管道",
+    "description": "无需手写 Controller/路由/DI 注册/客户端代理——传统样板代码占 70%。[GenerateController] 一行标注 → 编译期生成 5 份管道（Controller+AOP+GraphQL+REST+Client）+ AutoQuery 消除 80% 手写查询 Service。"
+  },
+  {
+    "icon": "bar-chart-3",
+    "emoji": "📊",
+    "title": "架构级读写分离",
+    "subtitle": "视图即统计，前后端配合更丝滑",
+    "description": "传统痛点：前端需要各种复杂查询和统计，且经常因 UI 调整而更改——后端最大工作量在复杂查询类方法。Entity（写模型）/ VEntity（读模型）在类型系统级分离：只需调整视图（ViewSql），框架自动持久化 DB 视图 + 编译期列名校验，自动生成统计 Dto（扫描 SUM/COUNT/AVG/MIN/MAX 推断类型）+ AutoQuery 自动生成分页查询——几乎不需要编写代码。三端统一 User.Query<T>() 入口 + GraphQL 聚合查询。"
+  },
+  {
+    "icon": "link",
+    "emoji": "🔗",
+    "title": "全栈一致",
+    "subtitle": "C#/Wasm/TypeScript + 无后端自验证",
+    "description": "避免前后端 API 不一致，测试无需运行后端——分工同步开发，各自验证。ts-client 与 C# API 形态完全镜像（Use<T>() / Query<T>()），ts-client-mock 两级 mock（离线 MockTransport + HTTP MockHttpServer）让 Agent 无需运行后端即可自验证全链路。"
+  },
+  {
+    "icon": "book-open",
+    "emoji": "📚",
+    "title": "文档",
+    "subtitle": "Agent 无需先验知识，按图索骥",
+    "description": "AI 无需了解框架约定，无需读大量源码。7 个框架级 Skills 分步引导 + Domain Map/Api 文档 + 阅读活文档替代源码 + TKWF_Rules.md 路由中枢——Agent 只加载当前域薄索引，无需理解全局架构。"
+  }
+]

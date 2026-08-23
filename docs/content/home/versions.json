@@ -1,0 +1,5 @@
+[
+  { "version": "4.9.61", "date": "2026-08-23", "description": "多 ORM 表结构同步门控分层（ADR30）：SyncTables 固定流程 + AutoMigrateDatabase 转正为生产放行开关" },
+  { "version": "4.9.60", "date": "2026-08-23", "description": "SG 生成代码编译修复：枚举特性参数完整表达式生成 + [Service]/Filter 命名空间修正（消费项目 199 错误全归零）" },
+  { "version": "4.9.59", "date": "2026-08-22", "description": "DatabaseProvider 枚举 + ViewSql 方言兼容性检查（覆盖 FreeSql + EF Core 全部数据库类型 26 值枚举）" }
+]

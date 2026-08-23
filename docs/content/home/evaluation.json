@@ -1,0 +1,19 @@
+{
+  "title": "Agentic Engineering 最友好的框架：TKW.Framework",
+  "intro": "业界对 Agentic 友好度 10 维准则评估，TKWF 全维度满分：",
+  "frameworks": [
+    { "name": "ABP Framework", "score": 24, "maxScore": 50, "color": "orange" },
+    { "name": "Axon Framework", "score": 30, "maxScore": 50, "color": "orange" },
+    { "name": "TKW.Framework", "score": 50, "maxScore": 50, "color": "green", "isWinner": true }
+  ],
+  "trendSignals": [
+    "ABP Framework 社区投票用 Source Generator 替代 DynamicProxy（issue #7198，2026.03）",
+    "lint4sg（2026.03）——专为约束 AI 而建的编译期分析器，与 TKWF 编译期约束路线一致",
+    "Spring AOP @Retryable 静默失败（Doctolib 2026.05）——运行时代理的静默失败是 AI 无法自诊断的致命问题"
+  ],
+  "detailLink": {
+    "label": "完整评估报告（10 维逐条详解 + CQRS 架构 + 诚实限制）",
+    "href": "articles/explanation/agentic-evaluation.md",
+    "type": "docfx"
+  }
+}

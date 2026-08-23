@@ -1,0 +1,38 @@
+[
+  {
+    "icon": "rocket",
+    "emoji": "🚀",
+    "title": "快速探索",
+    "emphasis": "5 分钟感受\"标注即生成\"",
+    "description": "安装 NuGet → 写 Service → 标注 → 编译即得 GraphQL + REST 端点",
+    "href": "articles/getting-started.md",
+    "type": "docfx"
+  },
+  {
+    "icon": "book-open",
+    "emoji": "📖",
+    "title": "框架概览",
+    "emphasis": "Agentic Engineering 全景",
+    "description": "三方分工、代码生成管线、多协议暴露、安全体系——每段都带代码示例",
+    "href": "articles/intro.md",
+    "type": "docfx"
+  },
+  {
+    "icon": "microscope",
+    "emoji": "🔬",
+    "title": "深度理解",
+    "emphasis": "为什么这样设计？",
+    "description": "领域自治 vs DI 容器、编译期 AOP 原理、三层 SG 管线解剖",
+    "href": "articles/explanation/why-domain-autonomy.md",
+    "type": "docfx"
+  },
+  {
+    "icon": "bot",
+    "emoji": "🤖",
+    "title": "AI 快速上手",
+    "emphasis": "给 Agent 的速查卡",
+    "description": "框架规则、Prompt 模板、源文档映射表——让 AI 高质量生成 Service",
+    "href": "articles/agentic/quick-start-for-ai.md",
+    "type": "docfx"
+  }
+]

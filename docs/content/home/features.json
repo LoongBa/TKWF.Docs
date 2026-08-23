@@ -1,0 +1,12 @@
+[
+  { "icon": "settings", "emoji": "⚙️", "title": "编译期 AOP", "description": "Source Generator 编译期生成装饰器，零运行时反射。权限、事务、验证声明式标注。" },
+  { "icon": "file-code", "emoji": "📐", "title": "声明式标注", "description": "[GenerateController] → Controller + AOP + GraphQL/REST 端点 + 客户端代理全自动生成。" },
+  { "icon": "puzzle", "emoji": "🧩", "title": "领域自治", "description": "DomainUser 不进 DI 容器，Use<T>() 显式传递，物理隔离，杜绝串号。" },
+  { "icon": "bar-chart-3", "emoji": "📊", "title": "框架级 CQRS", "description": "Entity 写 / VEntity（View Entity）读，table/view 底层分离。IQueryable + GraphQL 提供强大查询/统计/聚合。" },
+  { "icon": "bot", "emoji": "🤖", "title": "Agentic Skills", "description": "7 个框架级 Skills（设计→实体→业务→测试→前端→Mock），Agent 按 skill 分步完成开发。" },
+  { "icon": "monitor", "emoji": "📦", "title": "前后端一致", "description": "Blazor Web Server / Wasm / 网页（TS）开发体验统一。ts-client + ts-client-mock 两级 mock 自验证。" },
+  { "icon": "plug", "emoji": "🔌", "title": "多协议传输", "description": "一份 Service → GraphQL + REST + RPC 三端自动暴露。默认三协议，可扩展（如 OData）。" },
+  { "icon": "shield", "emoji": "🛡️", "title": "两道防线", "description": "编译期拦截结构性错误（20+ 诊断），运行时拦截行为错误（授权/验证/事务）。" },
+  { "icon": "lock", "emoji": "🔐", "title": "安全 + SystemActor", "description": "AuthorityFilter + Challenge-Response + SystemActor 区分人/系统写入审计。错误码全栈统一。" },
+  { "icon": "database", "emoji": "🏗️", "title": "ORM 可扩展", "description": "内置 FreeSql + MockEntityDac（测试），IEntityDAC ORM 无关抽象，可扩展支持其它。" }
+]
