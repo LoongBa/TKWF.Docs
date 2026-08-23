@@ -1,0 +1,23 @@
+{
+  "json.schemas": [
+    { "fileMatch": ["docs/content/site.json"], "url": "./docs/schemas/site.json" },
+    { "fileMatch": ["docs/content/shared/nav.json"], "url": "./docs/schemas/shared-nav.json" },
+    { "fileMatch": ["docs/content/shared/footer.json"], "url": "./docs/schemas/shared-footer.json" },
+    { "fileMatch": ["docs/content/home/sections.json"], "url": "./docs/schemas/home-sections.json" },
+    { "fileMatch": ["docs/content/home/hero.json"], "url": "./docs/schemas/home-hero.json" },
+    { "fileMatch": ["docs/content/home/evaluation.json"], "url": "./docs/schemas/home-evaluation.json" },
+    { "fileMatch": ["docs/content/home/workflow.json"], "url": "./docs/schemas/home-workflow.json" },
+    { "fileMatch": ["docs/content/home/pillars.json"], "url": "./docs/schemas/home-pillars.json" },
+    { "fileMatch": ["docs/content/home/paths.json"], "url": "./docs/schemas/home-paths.json" },
+    { "fileMatch": ["docs/content/home/features.json"], "url": "./docs/schemas/home-features.json" },
+    { "fileMatch": ["docs/content/home/versions.json"], "url": "./docs/schemas/home-versions.json" },
+    { "fileMatch": ["docs/content/home/roadmap.json"], "url": "./docs/schemas/home-roadmap.json" },
+    { "fileMatch": ["docs/content/nuget/packages.json"], "url": "./docs/schemas/nuget-packages.json" },
+    { "fileMatch": ["docs/content/architecture/layers.json"], "url": "./docs/schemas/architecture-layers.json" },
+    { "fileMatch": ["docs/content/best-practices/practices.json"], "url": "./docs/schemas/best-practices-practices.json" }
+  ],
+  "json.validate.enable": true,
+  "files.associations": {
+    "*.json": "jsonc"
+  }
+}

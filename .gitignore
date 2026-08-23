@@ -10,7 +10,8 @@ obj/
 
 # IDE
 .vs/
-.vscode/
+.vscode/*
+!.vscode/settings.json
 *.suo
 *.user
 *.userosscache
