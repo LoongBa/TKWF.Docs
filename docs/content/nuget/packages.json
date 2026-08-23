@@ -1,0 +1,14 @@
+{
+  "intro": "核心包 TKWF.Domain 一行安装即可开始。完整的 NuGet 包清单见二级页面。",
+  "corePackage": {
+    "name": "TKWF.Domain",
+    "installCommand": "dotnet add package TKWF.Domain",
+    "description": "核心领域框架包，包含 DomainUser、DomainService、AOP、代码生成等全部核心功能"
+  },
+  "packages": [
+    { "name": "TKWF.Domain", "category": "core", "description": "核心领域框架" },
+    { "name": "TKWF.Domain.Web", "category": "web", "description": "Web 项目集成" },
+    { "name": "TKWF.Domain.FreeSql", "category": "orm", "description": "FreeSql ORM 适配" }
+  ],
+  "linkToFullList": { "label": "NuGet 包索引", "href": "articles/advanced/packages.md", "type": "docfx" }
+}

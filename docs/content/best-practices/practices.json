@@ -1,0 +1,18 @@
+{
+  "sections": [
+    {
+      "title": "推荐做法",
+      "icon": "check-circle-2",
+      "items": [
+        { "title": "...", "description": "...", "code": "..." }
+      ]
+    },
+    {
+      "title": "反模式",
+      "icon": "alert-triangle",
+      "items": [
+        { "title": "...", "description": "...", "code": "..." }
+      ]
+    }
+  ]
+}

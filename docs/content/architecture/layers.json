@@ -1,0 +1,7 @@
+{
+  "intro": "TKWF.Framework 分层架构设计",
+  "layers": [
+    { "icon": "layers", "name": "表现层", "description": "Blazor / MVC / Wasm / TypeScript" },
+    { "icon": "shield", "name": "传输层", "description": "GraphQL + REST + RPC 三协议" }
+  ]
+}
