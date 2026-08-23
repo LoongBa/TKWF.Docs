@@ -1,5 +1,12 @@
 # prebuild.ps1 — 在 docfx build 前同步 TKWF 版本号到文档站
-# 从 _TKWF/docs/CHANGELOG.md 提取最新 3 版本，更新 3 处维护点
+# 从 _TKWF/docs/CHANGELOG.md 提取最新 3 版本，更新 7 处维护点：
+#   1. docs/llms.txt                        — 当前同步版本号
+#   2. docs/index.md                        — 版本动态区块 + Hero badge
+#   3. docs/articles/agentic/source-doc-map.md — 对齐 TKWF 版本号
+#   4. docs/content/site.json               — SPA 站点版本号
+#   5. docs/content/home/versions.json       — SPA 版本动态表
+#   6. docs/content/home/hero.json           — SPA Hero 版本徽章
+#   7. (index.md 将在 SPA 集成后废弃)
 #
 # 用法: pwsh docs/prebuild.ps1
 # 依赖: ../_TKWF 仓库已 checkout（CI 中由 workflow 控制）
@@ -109,3 +116,37 @@ if (Test-Path $sdm) {
 }
 
 Write-Host "版本同步完成: V$newestVer"
+
+# ---- 5. 更新 docs/content/site.json ----
+$siteJson = Join-Path $DocsRoot "content" "site.json"
+if (Test-Path $siteJson) {
+    $site = Get-Content $siteJson -Raw | ConvertFrom-Json
+    $site.version = $newestVer
+    $site | ConvertTo-Json -Depth 10 | Set-Content $siteJson -Encoding UTF8
+    Write-Host "  ✅ content/site.json  → V$newestVer"
+}
+
+# ---- 6. 更新 docs/content/home/versions.json ----
+$versionsJson = Join-Path $DocsRoot "content" "home" "versions.json"
+if (Test-Path $versionsJson) {
+    $versions = @()
+    for ($i = 0; $i -lt $latest.Count; $i++) {
+        $e = $latest[$i]
+        $versions += [ordered]@{ version = $e.Ver; date = $e.Date; description = $e.Desc }
+    }
+    $versions | ConvertTo-Json -Depth 5 | Set-Content $versionsJson -Encoding UTF8
+    Write-Host "  ✅ content/home/versions.json  → $($latest.Count) 条版本"
+}
+
+# ---- 7. 更新 docs/content/home/hero.json 版本徽章 ----
+$heroJson = Join-Path $DocsRoot "content" "home" "hero.json"
+if (Test-Path $heroJson) {
+    $hero = Get-Content $heroJson -Raw | ConvertFrom-Json
+    foreach ($badge in $hero.badges) {
+        if ($badge.label -eq "version") {
+            $badge.value = $newestVer
+        }
+    }
+    $hero | ConvertTo-Json -Depth 10 | Set-Content $heroJson -Encoding UTF8
+    Write-Host "  ✅ content/home/hero.json  → badge V$newestVer"
+}
