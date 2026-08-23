@@ -7,7 +7,7 @@ _layout: landing
 <div class="hero-section">
   <div class="hero-badges">
     <img src="https://img.shields.io/badge/.NET-10-blue" alt=".NET 10" />
-    <img src="https://img.shields.io/badge/version-4.9.60-green" alt="Version 4.9.60" />
+    <img src="https://img.shields.io/badge/version-4.9.61-green" alt="Version 4.9.61" />
     <img src="https://img.shields.io/badge/Agentic-Engineering-purple" alt="Agentic Engineering" />
   </div>
 <h1>TKW.Framework — 让 Agentic Engineering 更可控、更可靠的软件开发框架</h1>
@@ -524,9 +524,9 @@ tkwf-tsclient-mock → Mock 数据生成
 
 | 版本       | 日期       | 核心内容                                                                                                       |
 |:---------- |:---------- |:-------------------------------------------------------------------------------------------------------------- |
+| **4.9.61** | 2026-08-23 | 多 ORM 表结构同步门控分层（ADR30）：SyncTables 固定流程 + AutoMigrateDatabase 转正为生产放行开关                  |
 | **4.9.60** | 2026-08-23 | SG 生成代码编译修复：枚举特性参数完整表达式生成 + `[Service]`/`Filter` 命名空间修正（消费项目 199 错误全归零） |
 | **4.9.59** | 2026-08-22 | DatabaseProvider 枚举 + ViewSql 方言兼容性检查（覆盖 FreeSql + EF Core 全部数据库类型 26 值枚举）              |
-| **4.9.58** | 2026-08-22 | 简化双标注（方案 D）：删除 8 项有 BCL 等价的冗余 FreeSql 双标注，仅保留无 BCL 等价的 FreeSql 特性              |
 
 > 完整变更历史见 [TKWF CHANGELOG](https://github.com/LoongBa/TKW.Framework/blob/master/docs/CHANGELOG.md)
 
@@ -563,3 +563,4 @@ tkwf-tsclient-mock → Mock 数据生成
 - GitHub: [LoongBa/TKW.Framework](https://github.com/LoongBa/TKW.Framework)
 - 许可证: [CC BY-NC 4.0](https://creativecommons.org/licenses/by-nc/4.0/)（署名-非商业性使用）
 - 构建状态: [![Build and Deploy Docs](https://github.com/LoongBa/TKWF.Docs/actions/workflows/docfx.yml/badge.svg)](https://github.com/LoongBa/TKWF.Docs/actions/workflows/docfx.yml)
+

@@ -69,7 +69,7 @@
 
 ## 版本信息
 
-- 当前同步版本：V4.9.60
+- 当前同步版本：V4.9.61
 - 完整变更历史：[TKWF CHANGELOG](https://github.com/LoongBa/TKW.Framework/blob/master/docs/CHANGELOG.md)
 
 ## V5.0 路线图
@@ -77,6 +77,7 @@
 - 领域事件 + 扩展/插件机制（动态加载）：设计中，适配 .NET 10+ 及成熟项目经验。当前版本有 Tools 扩展概念但未框架级支持，将升级为完整机制
 - 分布式/微服务：讨论中，老版本基于自有架构，V5.0 将基于成熟项目重新设计
 - Agent UI 组件库：规划中，MVC / Blazor WASM / HTML 三端 UI 组件，方便 Agent 提高 UI 开发效率
+
 
 
 

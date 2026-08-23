@@ -4,7 +4,7 @@
 
 [![Build and Deploy Docs](https://github.com/LoongBa/TKWF.Docs/actions/workflows/docfx.yml/badge.svg)](https://github.com/LoongBa/TKWF.Docs/actions/workflows/docfx.yml)
 
-**当前同步版本：V4.9.60**（文档与框架 [LoongBa/TKW.Framework](https://github.com/LoongBa/TKW.Framework) 保持同步）
+**当前同步版本：V4.9.61**（文档与框架 [LoongBa/TKW.Framework](https://github.com/LoongBa/TKW.Framework) 保持同步）
 
 ---
 
@@ -12,9 +12,9 @@
 
 | 版本 | 日期 | 核心内容 |
 |:-----|:-----|:---------|
+| **4.9.61** | 2026-08-23 | 多 ORM 表结构同步门控分层（ADR30）：SyncTables 从 opt-in 改为固定流程 + AutoMigrateDatabase 转正为生产放行开关 |
 | **4.9.60** | 2026-08-23 | SG 生成代码编译修复：枚举特性参数完整表达式生成 + `[Service]`/`Filter` 命名空间修正（消费项目 DMP-Lite 199 错误全归零） |
 | **4.9.59** | 2026-08-22 | DatabaseProvider 枚举 + ViewSql 方言兼容性检查（覆盖 FreeSql + EF Core 全部数据库类型 26 值枚举） |
-| **4.9.58** | 2026-08-22 | 简化双标注（方案 D）：删除 8 项有 BCL 等价的冗余 FreeSql 双标注，仅保留无 BCL 等价的 FreeSql 特性 |
 
 > 完整变更历史见 [TKWF CHANGELOG](https://github.com/LoongBa/TKW.Framework/blob/master/docs/CHANGELOG.md)。
 

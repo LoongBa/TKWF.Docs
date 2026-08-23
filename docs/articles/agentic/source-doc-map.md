@@ -19,7 +19,7 @@ description: TKWF 源文档 D/G/T/xCodeGen 系列与公开文章的完整映射�
 | `D01-Domain运行时上下文.md` | [DomainUser 详解](../core-concepts/domain-user.md) | 初始化生命周期 + DomainUser + 会话管理 + 客户端认证架构（合并 D01/D02-核心/D03） |
 | `D03-AOP拦截与事务与验证.md` | [AOP 管线详解](../core-concepts/aop-pipeline.md) · [全局过滤器体系](../core-concepts/filters.md) | AOP 静态拦截 + 事务横切关注 + 参数验证机制。V2.1 补充短接机制、Bag 通信、过滤器组合策略；V4.9.31 新增 ValidateParametersFilter 分层设计 |
 | `D03A-缓存框架-设计方案.md` | — | 缓存策略：ContentCacheFilter AOP 方法级缓存（ICacheProvider 抽象、短接集成、缓存键设计）、HybridCache 会话后端缓存 |
-| `D04-领域初始化器设计-模板方法体系与内置能力.md` | [Web 集成](../integration/web.md) | 初始化器钩子体系（V4.9.21+） |
+| `D04-领域初始化器设计-模板方法体系与内置能力.md` | [Web 集成](../integration/web.md) | 初始化器钩子体系（V4.9.21+）。V4.9.61 ADR30：SyncTables 门控分层（固定流程 + AutoMigrateDatabase 生产放行开关） |
 | `D05-宿主集成与配置V2-Web-Blazor-MAUI-Testing.md` | [配置参考](../advanced/configuration.md) | 宿主集成与 cfg 强契约 |
 | `D06-领域数据服务与数据存取设计.md` | [数据层架构](../explanation/data-layer-architecture.md) | DataService 数据存取、IEntityDAC 抽象、ITransactionManager 事务管理（V4.9.52 ADR26）、多 ORM 兼容策略（BCL 标准属性 + EF Core 适配层，V4.9.54 ADR27）、简化双标注策略（V4.9.58 ADR28/29）、DatabaseProvider 方言检查（V4.9.59）。v1.4 |
 | `D06B-条件表达式构建器设计.md` | [条件构建器](../advanced/conditions-builder.md) | PredicateBuilderBase、Entity.Conditions 静态类、xCodeGen + SG1 双重生成 |
@@ -108,7 +108,8 @@ description: TKWF 源文档 D/G/T/xCodeGen 系列与公开文章的完整映射�
 
 ---
 
-> 对齐 TKWF：V4.9.60 · 2026-08-22
+> 对齐 TKWF：V4.9.61 · 2026-08-22
+
 
 
 
