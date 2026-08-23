@@ -25,6 +25,20 @@
 > - **本文件位置**：`TKWF.Docs/docs/CONTENT_MAP.md`
 > - **内容文件位置**：`TKWF.Docs/docs/content/`
 > - **版本号说明**：大版本（V1 → V2）结构性重构，子版本（V1.0 → V1.1）新增/修改章节，修订（V1.0.1）错别字/格式
+>
+> ### UI Agent 本地预览工作流
+>
+> UI Agent 需要在本地 `src/content/` 保留一份内容文件副本用于 Vite HMR 实时预览：
+>
+> ```
+> 1. cd webui
+> 2. 从 GitHub 下载最新内容文件到本地 src/content/
+>    curl -L https://api.github.com/repos/LoongBa/TKWF.Docs/contents/docs/content -o content.zip
+>    或：git clone --depth 1 --filter=blob:none --sparse https://github.com/LoongBa/TKWF.Docs.git
+> 3. pnpm dev  ← Vite HMR 热更新正常
+> ```
+>
+> 交付包时 `src/content/` 会包含在内——**TKWF.Docs 维护者收到包后会删除该目录**，因为事实来源是 `docs/content/`。不影响编译（Vite 别名 `@content` 指向 `../docs/content/`）。
 
 ---
 
@@ -835,13 +849,16 @@ UI Agent 每次交付完整的 SPA 项目包，**你负责筛选整理**：
 ```
 1. Remove-Item -Recurse -Force webui/     ← 删干净，不留旧文件残留
 2. 解压包 → webui/                         ← 放入新文件
-3. cd webui && pnpm install               ← 装依赖
-4. cd webui && pnpm build                 ← 验证编译通过
-5. git status / git diff                  ← 审查变化
-6. git add webui/ && git commit           ← 提交
+3. Remove-Item -Recurse -Force webui/src/content/  ← 删除 UI Agent 本地副本，事实来源是 docs/content/
+4. cd webui && pnpm install               ← 装依赖
+5. cd webui && pnpm build                 ← 验证编译通过
+6. git status / git diff                  ← 审查变化
+7. git add webui/ && git commit           ← 提交
 ```
 
-> **注意**：`webui/src/content/` 目录在 UI Agent 包中可能为空或存根——但没关系，因为 `docs/content/` 才是真正的内容来源。`webui/` 中的组件通过 `@content` 别名导入 `docs/content/` 下的文件，内容文件不受 `webui/` 删除重建影响。
+> **注意**：UI Agent 的 `src/content/` 是从 GitHub 下载的本地预览副本，非事实来源。`webui/` 中的组件通过 `@content` 别名导入 `docs/content/` 下的文件，删除此目录不影响编译。
+>
+> **UI Agent 交付时需附带变更说明**：如果设计调整过程中修改了 `docs/content/` 下的内容文件，UI Agent 应在交付包中附一份变更摘要（`docs/CONTENT_CHANGELOG.md` 或随附说明），列明哪些文件被修改、修改了什么，以便核对和同步到 `docs/content/`。
 
 ---
 
