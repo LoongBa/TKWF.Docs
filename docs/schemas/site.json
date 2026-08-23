@@ -1,0 +1,19 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Site Config",
+  "type": "object",
+  "required": ["name","tagline","version","dotnetVersion","repoUrl","docsRepoUrl","license","licenseUrl"],
+  "properties": {
+    "name": { "type": "string" },
+    "tagline": { "type": "string" },
+    "version": { "type": "string", "pattern": "^\\d+\\.\\d+\\.\\d+$" },
+    "dotnetVersion": { "type": "string" },
+    "repoUrl": { "type": "string", "format": "uri" },
+    "docsRepoUrl": { "type": "string", "format": "uri" },
+    "license": { "type": "string" },
+    "licenseUrl": { "type": "string", "format": "uri" },
+    "buildBadgeUrl": { "type": "string" },
+    "buildBadgeLink": { "type": "string" }
+  },
+  "additionalProperties": false
+}

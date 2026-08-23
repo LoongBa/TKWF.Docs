@@ -1,0 +1,27 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Footer",
+  "type": "object",
+  "required": ["copyright","year","tagline","links"],
+  "properties": {
+    "copyright": { "type": "string" },
+    "year": { "type": "string", "enum": ["dynamic"] },
+    "tagline": { "type": "string" },
+    "links": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["label","href","type"],
+        "properties": {
+          "label": { "type": "string" },
+          "href": { "type": "string" },
+          "type": { "type": "string", "enum": ["spa","docfx","external"] },
+          "icon": { "type": "string", "enum": ["github","external-link","arrow-right","arrow-down"] },
+          "isBadge": { "type": "boolean" }
+        },
+        "additionalProperties": false
+      }
+    }
+  },
+  "additionalProperties": false
+}

@@ -1,0 +1,24 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Roadmap",
+  "type": "object",
+  "required": ["title","intro","items"],
+  "properties": {
+    "title": { "type": "string" },
+    "intro": { "type": "string" },
+    "items": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["direction","status","description"],
+        "properties": {
+          "direction": { "type": "string" },
+          "status": { "type": "string" },
+          "description": { "type": "string" }
+        },
+        "additionalProperties": false
+      }
+    }
+  },
+  "additionalProperties": false
+}

@@ -1,0 +1,42 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "NuGet Packages",
+  "type": "object",
+  "required": ["intro","corePackage","packages"],
+  "properties": {
+    "intro": { "type": "string" },
+    "corePackage": {
+      "type": "object",
+      "required": ["name","installCommand","description"],
+      "properties": {
+        "name": { "type": "string" },
+        "installCommand": { "type": "string" },
+        "description": { "type": "string" }
+      },
+      "additionalProperties": false
+    },
+    "packages": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["name","category","description"],
+        "properties": {
+          "name": { "type": "string" },
+          "category": { "type": "string", "enum": ["core","web","orm","blazor","maui","api","test","other"] },
+          "description": { "type": "string" }
+        },
+        "additionalProperties": false
+      }
+    },
+    "linkToFullList": {
+      "type": "object",
+      "properties": {
+        "label": { "type": "string" },
+        "href": { "type": "string" },
+        "type": { "type": "string", "enum": ["spa","docfx","external"] }
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false
+}

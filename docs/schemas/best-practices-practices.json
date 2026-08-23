@@ -1,0 +1,34 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Best Practices",
+  "type": "object",
+  "required": ["sections"],
+  "properties": {
+    "sections": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["title","icon","items"],
+        "properties": {
+          "title": { "type": "string" },
+          "icon": { "type": "string", "enum": ["check-circle-2","alert-triangle","lightbulb","info"] },
+          "items": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": ["title","description"],
+              "properties": {
+                "title": { "type": "string" },
+                "description": { "type": "string" },
+                "code": { "type": "string" }
+              },
+              "additionalProperties": false
+            }
+          }
+        },
+        "additionalProperties": false
+      }
+    }
+  },
+  "additionalProperties": false
+}

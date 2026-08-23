@@ -1,0 +1,23 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Architecture Layers",
+  "type": "object",
+  "required": ["intro","layers"],
+  "properties": {
+    "intro": { "type": "string" },
+    "layers": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["icon","name","description"],
+        "properties": {
+          "icon": { "type": "string", "enum": ["layers","shield","database","plug","settings","code-2","git-branch","workflow"] },
+          "name": { "type": "string" },
+          "description": { "type": "string" }
+        },
+        "additionalProperties": false
+      }
+    }
+  },
+  "additionalProperties": false
+}

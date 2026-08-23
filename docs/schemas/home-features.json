@@ -1,0 +1,16 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Features",
+  "type": "array",
+  "items": {
+    "type": "object",
+    "required": ["icon", "emoji", "title", "description"],
+    "properties": {
+      "icon": { "type": "string", "enum": ["settings","file-code","puzzle","zap","bar-chart-3","link","book-open","bot","monitor","plug","shield","lock","database","user","arrow-right","arrow-down","github","external-link","check-circle-2","x-circle","calendar-days","clock","rocket","layers","code-2","git-branch","workflow","copy","check","download","package","lightbulb","alert-triangle","microscope","refresh-cw","menu","x","sun","moon"] },
+      "emoji": { "type": "string" },
+      "title": { "type": "string" },
+      "description": { "type": "string" }
+    },
+    "additionalProperties": false
+  }
+}

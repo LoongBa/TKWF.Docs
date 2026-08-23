@@ -1,0 +1,6 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Section Order",
+  "type": "array",
+  "items": { "type": "string", "enum": ["hero","evaluation","workflow","pillars","scenarios","paths","features","versions","roadmap"] }
+}
