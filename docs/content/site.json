@@ -1,0 +1,12 @@
+{
+  "name": "TKW.Framework",
+  "tagline": "让 Agentic Engineering 更可控、更可靠的软件开发框架",
+  "version": "4.9.61",
+  "dotnetVersion": "10",
+  "repoUrl": "https://github.com/LoongBa/TKW.Framework",
+  "docsRepoUrl": "https://github.com/LoongBa/TKWF.Docs",
+  "license": "CC BY-NC 4.0",
+  "licenseUrl": "https://creativecommons.org/licenses/by-nc/4.0/",
+  "buildBadgeUrl": "https://github.com/LoongBa/TKWF.Docs/actions/workflows/docfx.yml/badge.svg",
+  "buildBadgeLink": "https://github.com/LoongBa/TKWF.Docs/actions/workflows/docfx.yml"
+}

@@ -1,0 +1,10 @@
+{
+  "copyright": "© LoongBa / TKWF 团队",
+  "year": "dynamic",
+  "tagline": "让 Agentic Engineering 更可控、更可靠",
+  "links": [
+    { "label": "GitHub", "href": "https://github.com/LoongBa/TKW.Framework", "type": "external", "icon": "github" },
+    { "label": "许可证", "href": "https://creativecommons.org/licenses/by-nc/4.0/", "type": "external" },
+    { "label": "构建状态", "href": "BUILD_BADGE", "type": "external", "isBadge": true }
+  ]
+}
