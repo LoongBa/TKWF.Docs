@@ -1,7 +1,56 @@
 {
-  "intro": "TKWF.Framework 分层架构设计",
+  "intro": "TKW.Framework 分层架构设计——领域自治、编译期生成、多协议暴露",
   "layers": [
-    { "icon": "layers", "name": "表现层", "description": "Blazor / MVC / Wasm / TypeScript" },
-    { "icon": "shield", "name": "传输层", "description": "GraphQL + REST + RPC 三协议" }
-  ]
+    {
+      "icon": "monitor",
+      "name": "表现层",
+      "description": "Blazor Web Server / Wasm / MVC / TypeScript 多端统一开发体验",
+      "color": "blue",
+      "items": ["Blazor", "Wasm", "ts-client", "ts-client-mock"]
+    },
+    {
+      "icon": "plug",
+      "name": "传输层",
+      "description": "一份 Service → GraphQL + REST + RPC 三端自动暴露",
+      "color": "purple",
+      "items": ["HotChocolate GraphQL", "Minimal API REST", "ApiClient RPC"]
+    },
+    {
+      "icon": "puzzle",
+      "name": "领域层",
+      "description": "领域自治核心：DomainUser 自持实例化，Entity 写模型 / VEntity 读模型类型级分离",
+      "color": "green",
+      "items": ["DomainService", "Entity / VEntity", "编译期 AOP 装饰器", "CQRS"]
+    },
+    {
+      "icon": "database",
+      "name": "基础设施层",
+      "description": "FreeSql ORM 适配 + IEntityDAC 抽象 + 安全体系（AuthorityFilter / SystemActor）",
+      "color": "orange",
+      "items": ["FreeSql", "IEntityDAC", "AuthorityFilter", "SystemActor"]
+    }
+  ],
+  "coreComponents": [
+    {
+      "title": "DomainUser 领域自治",
+      "description": "不进 DI 容器不会串号、不经动态代理、不被运行时反射——代码所写即所得。",
+      "tags": ["领域驱动", "零反射"]
+    },
+    {
+      "title": "Source Generator 管线",
+      "description": "[GenerateController] 一行标注 → 编译期生成 Controller + AOP + GraphQL + REST + Client 五份管道。",
+      "tags": ["编译期生成", "零运行时"]
+    },
+    {
+      "title": "EQR 统一查询",
+      "description": "Entity 写 / VEntity 读，AutoQuery 自动生成分页查询，消除 80% 手写查询 Service。",
+      "tags": ["CQRS", "读写分离"]
+    },
+    {
+      "title": "两道防线",
+      "description": "20+ 编译期诊断拦截结构性错误，运行时拦截授权/验证/事务行为错误。",
+      "tags": ["质量门禁", "fail build"]
+    }
+  ],
+  "dataFlow": ["需求输入", "Agent 编写 Service", "编译期生成", "多协议暴露", "客户端调用"]
 }

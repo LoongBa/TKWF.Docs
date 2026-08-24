@@ -5,10 +5,35 @@
     "installCommand": "dotnet add package TKWF.Domain",
     "description": "核心领域框架包，包含 DomainUser、DomainService、AOP、代码生成等全部核心功能"
   },
-  "packages": [
-    { "name": "TKWF.Domain", "category": "core", "description": "核心领域框架" },
-    { "name": "TKWF.Domain.Web", "category": "web", "description": "Web 项目集成" },
-    { "name": "TKWF.Domain.FreeSql", "category": "orm", "description": "FreeSql ORM 适配" }
+  "installVariants": [
+    { "label": "Package Manager", "command": "Install-Package TKWF.Domain" },
+    { "label": "CLI", "command": "dotnet add package TKWF.Domain" }
   ],
-  "linkToFullList": { "label": "NuGet 包索引", "href": "articles/advanced/packages.md", "type": "docfx" }
+  "stats": [
+    { "label": "最新版本", "value": "VERSION", "note": "对齐 _TKWF" },
+    { "label": ".NET 版本", "value": "10", "note": "目标框架" },
+    { "label": "许可证", "value": "CC BY-NC 4.0", "note": "署名-非商业" }
+  ],
+  "features": [
+    { "icon": "shield", "title": "编译期保障", "description": "20+ 诊断直接 fail build，结构错误编译期暴露" },
+    { "icon": "zap", "title": "高效开发", "description": "一行标注编译期产出全部管道，消除 70% 样板代码" }
+  ],
+  "packages": [
+    { "name": "TKWF.Domain", "category": "core", "description": "核心领域框架（含 DomainUser / SG 管线 / CQRS）" },
+    { "name": "TKWF.Domain.Web", "category": "web", "description": "Web 项目集成" },
+    { "name": "TKWF.Domain.Blazor", "category": "web", "description": "Blazor 组件集成" },
+    { "name": "TKWF.Domain.Maui", "category": "web", "description": "MAUI 移动端集成" },
+    { "name": "TKWF.Domain.FreeSql", "category": "orm", "description": "FreeSql ORM 适配" },
+    { "name": "TKWF.Domain.ApiService.MinimalApi", "category": "api", "description": "REST Minimal API 端点生成" },
+    { "name": "TKWF.Domain.ApiService.HotChocolate", "category": "api", "description": "HotChocolate GraphQL 集成" },
+    { "name": "TKWF.Domain.ApiClient", "category": "client", "description": "强类型 RPC 客户端基础" },
+    { "name": "TKWF.Domain.ApiClient.Rest", "category": "client", "description": "REST 客户端" },
+    { "name": "TKWF.Domain.ApiClient.GraphQL", "category": "client", "description": "GraphQL 客户端" }
+  ],
+  "links": [
+    { "label": "NuGet 页面", "href": "https://www.nuget.org/packages/TKWF.Domain/", "type": "external" },
+    { "label": "完整包索引", "href": "articles/advanced/packages.md", "type": "docfx" },
+    { "label": "查看文档", "href": "articles/intro.md", "type": "docfx" }
+  ],
+  "linkToFullList": { "label": "完整包索引", "href": "articles/advanced/packages.md", "type": "docfx" }
 }
