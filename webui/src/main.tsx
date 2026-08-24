@@ -19,6 +19,14 @@ import "./styles.css";
   root.setAttribute("data-theme", theme);
 })();
 
+// 归一化 /index.html 结尾路径 → 目录路径
+// DocFX 模板左上角"返回首页"链接为 index.html；SPA router 无该路由，
+// 不归一化会落入 notFound 页面
+if (window.location.pathname.endsWith("/index.html")) {
+  const p = window.location.pathname.replace(/\/index\.html$/, "/");
+  window.history.replaceState(null, "", p + window.location.search + window.location.hash);
+}
+
 const router = getRouter();
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
