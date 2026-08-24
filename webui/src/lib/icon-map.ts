@@ -1,0 +1,47 @@
+import {
+  Settings, FileCode, Puzzle, Zap, BarChart3, Link, BookOpen, Bot, Monitor, Plug, Shield, Lock, Database, User, ArrowRight, ArrowDown, Github, ExternalLink, CheckCircle2, XCircle, CalendarDays, Clock, Rocket, Layers, Code2, GitBranch, Workflow, Copy, Check, Download, Package, Lightbulb, AlertTriangle, Microscope, RefreshCw, Menu, X, Sun, Moon
+} from "lucide-react";
+
+export const iconMap = {
+  settings: Settings,
+  "file-code": FileCode,
+  puzzle: Puzzle,
+  zap: Zap,
+  "bar-chart-3": BarChart3,
+  link: Link,
+  "book-open": BookOpen,
+  bot: Bot,
+  monitor: Monitor,
+  plug: Plug,
+  shield: Shield,
+  lock: Lock,
+  database: Database,
+  user: User,
+  "arrow-right": ArrowRight,
+  "arrow-down": ArrowDown,
+  github: Github,
+  "external-link": ExternalLink,
+  "check-circle-2": CheckCircle2,
+  "x-circle": XCircle,
+  "calendar-days": CalendarDays,
+  clock: Clock,
+  rocket: Rocket,
+  layers: Layers,
+  "code-2": Code2,
+  "git-branch": GitBranch,
+  workflow: Workflow,
+  copy: Copy,
+  check: Check,
+  download: Download,
+  package: Package,
+  lightbulb: Lightbulb,
+  "alert-triangle": AlertTriangle,
+  microscope: Microscope,
+  "refresh-cw": RefreshCw,
+  menu: Menu,
+  x: X,
+  sun: Sun,
+  moon: Moon,
+} as const;
+
+export type IconKey = keyof typeof iconMap;
