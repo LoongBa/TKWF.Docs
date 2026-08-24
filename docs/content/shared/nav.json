@@ -1,10 +1,10 @@
-{
+﻿{
   "links": [
     { "label": "首页", "href": "/", "type": "spa" },
     { "label": "NuGet 包", "href": "/nuget", "type": "spa" },
     { "label": "架构详解", "href": "/architecture", "type": "spa" },
     { "label": "最佳实践", "href": "/best-practices", "type": "spa" },
-    { "label": "文档", "href": "articles/intro.md", "type": "docfx" },
+    { "label": "文档", "href": "articles/intro.html", "type": "docfx" },
     { "label": "API 参考", "href": "api/TKWF.Domain.yml", "type": "docfx" }
   ],
   "externalLinks": [

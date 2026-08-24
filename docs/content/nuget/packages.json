@@ -1,4 +1,4 @@
-{
+﻿{
   "intro": "核心包 TKWF.Domain 一行安装即可开始。完整的 NuGet 包清单见二级页面。",
   "corePackage": {
     "name": "TKWF.Domain",
@@ -32,8 +32,8 @@
   ],
   "links": [
     { "label": "NuGet 页面", "href": "https://www.nuget.org/packages/TKWF.Domain/", "type": "external" },
-    { "label": "完整包索引", "href": "articles/advanced/packages.md", "type": "docfx" },
-    { "label": "查看文档", "href": "articles/intro.md", "type": "docfx" }
+    { "label": "完整包索引", "href": "articles/advanced/packages.html", "type": "docfx" },
+    { "label": "查看文档", "href": "articles/intro.html", "type": "docfx" }
   ],
-  "linkToFullList": { "label": "完整包索引", "href": "articles/advanced/packages.md", "type": "docfx" }
+  "linkToFullList": { "label": "完整包索引", "href": "articles/advanced/packages.html", "type": "docfx" }
 }

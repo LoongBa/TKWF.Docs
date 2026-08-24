@@ -1,4 +1,4 @@
-{
+﻿{
   "title": "Agentic Engineering 最友好的框架：TKW.Framework",
   "intro": "业界对 Agentic 友好度 10 维准则评估，TKWF 全维度满分：",
   "frameworks": [
@@ -13,7 +13,7 @@
   ],
   "detailLink": {
     "label": "完整评估报告（10 维逐条详解 + CQRS 架构 + 诚实限制）",
-    "href": "articles/explanation/agentic-evaluation.md",
+    "href": "articles/explanation/agentic-evaluation.html",
     "type": "docfx"
   }
 }
