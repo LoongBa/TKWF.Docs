@@ -1,17 +1,39 @@
-{
+﻿{
   "sections": [
     {
       "title": "推荐做法",
       "icon": "check-circle-2",
       "items": [
-        { "title": "...", "description": "...", "code": "..." }
+        {
+          "title": "一个用例 = 一个 Service 方法",
+          "description": "将需求分解为最小粒度交给 Agent：无需理解全局架构、DI 配置、路由注册，模型更少思考 = 更高可控性 = 更低 Token 消耗。",
+          "code": "[GenerateController]\npublic class OrderService(DomainUser<AppUserInfo> user)\n    : DomainServiceBase<AppUserInfo>(user)\n{\n    // 一个方法解决一个用例，Agent 按方法粒度编排\n    public async Task<OrderDto> CreateAsync(string title) { ... }\n}"
+        },
+        {
+          "title": "声明式标注权限与事务",
+          "description": "AuthorityFilter + Transactional 编译期生成装饰器——零运行时反射，行为在编译期确定。",
+          "code": "[AuthorityFilter(Roles = \"Admin\")]   // 声明式权限\n[Transactional]                        // 声明式事务\npublic async Task<OrderDto> CreateAsync(string title) { ... }"
+        },
+        {
+          "title": "查询统计用 VEntity（读写分离）",
+          "description": "Entity 写模型 / VEntity 读模型类型级分离。调整 ViewSql 即可变更统计视图，StatsDto 自动生成。",
+          "code": "// 读：VEntity + AutoQuery 自动分页\nvar list = await User.Query<OrderSummaryView>()\n    .Where(v => v.Status == \"Paid\")\n    .Page(1, 20).ToListAsync();\n\n// 统计：ViewSql 含 SUM/COUNT - StatsDto 自动生成\nvar stats = await User.Use<OrderViewDataService>()\n    .GetAsync<OrderSummaryStatsDto>();"
+        },
+        {
+          "title": "依赖一律通过 User.Use<T>() 获取",
+          "description": "不修改构造器、不进 DI 容器。User 自动完成认证、租户隔离、审计字段填充。",
+          "code": "var ds = User.Use<OrderDataService>();      // 数据服务\nvar svc = User.Use<ProductService>();       // 其他领域服务\n// 多租户自动过滤，CreateBy/CreateTime 自动审计"
+        }
       ]
     },
     {
       "title": "反模式",
       "icon": "alert-triangle",
       "items": [
-        { "title": "...", "description": "...", "code": "..." }
+        { "title": "不读 *.g.cs / *.biz.cs / DataServices/*.cs", "description": "Agent 守则：只读 .TKWF/{Domain}/ 活文档薄索引（DOMAIN_MAP / DataService_API），减少上下文依赖和 Token 消耗。" , "code": "" },
+        { "title": "不手写 services.AddScoped<T>() 注册", "description": "Service/DataService 由框架自动扫描注册；Controller 由 SG 自动挂载。一行 AddTKWFDomain 即可。" , "code": "" },
+        { "title": "不绕过 User 直接操作 IEntityDAC", "description": "原始 DAC 仅特殊场景使用——绕过 User 将失去认证校验、多租户过滤和审计填充。" , "code": "" },
+        { "title": "不在 Entity 上做复杂查询", "description": "写模型只负责持久化。查询/统计/聚合一律走 VEntity 视图，否则 ViewSql 编译期列名校验形同虚设。" , "code": "" }
       ]
     }
   ]
