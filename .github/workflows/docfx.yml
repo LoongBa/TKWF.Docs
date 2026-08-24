@@ -45,9 +45,33 @@ jobs:
       - name: Sync version numbers
         run: pwsh docs/prebuild.ps1
 
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 11
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+          cache-dependency-path: webui/pnpm-lock.yaml
+
+      - name: Build SPA (webui)
+        run: |
+          pnpm install --frozen-lockfile
+          pnpm build
+        working-directory: webui
+
       - name: Build docs
         run: docfx docs/docfx.json
         working-directory: ./
+
+      - name: Merge SPA into _site
+        run: |
+          # SPA index.html 接管首页；404.html 兜底 /nuget 等 SPA 路由的直链访问
+          cp -r webui/dist/* docs/_site/
+          cp webui/dist/index.html docs/_site/404.html
 
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
