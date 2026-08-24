@@ -43,8 +43,12 @@
             }
           });
         } else {
-          // 非 iframe 环境，使用默认 light 主题
-          applyThemeToDOM('light');
+          // 与 main.tsx 同策略：localStorage 优先，未设置或 'system' 时跟随系统
+          var saved = localStorage.getItem('theme');
+          var theme = (!saved || saved === 'system')
+            ? (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light')
+            : saved;
+          applyThemeToDOM(theme);
         }
       })();
     </script>
