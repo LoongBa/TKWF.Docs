@@ -42,7 +42,7 @@
     ],
     "overwrite": [],
     "sitemap": {
-      "baseUrl": "https://loongba.github.io/TKWF.Docs",
+      "baseUrl": "https://tkwf.loongba.cn",
       "fileOptions": {
         "articles/**/*.md": { "priority": "0.5" },
         "index.md": { "priority": "1.0" }

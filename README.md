@@ -45,7 +45,7 @@
 
 ## 文档站点
 
-在线文档：**[https://loongba.github.io/TKWF.Docs](https://loongba.github.io/TKWF.Docs)**（GitHub Pages）
+在线文档：**[https://tkwf.loongba.cn](https://tkwf.loongba.cn)**（自定义域，经 Cloudflare；旧地址 loongba.github.io/TKWF.Docs 自动重定向）
 
 ### 文档章节
 

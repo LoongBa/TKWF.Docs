@@ -10,9 +10,13 @@ export const getRouter = () => {
     context: { queryClient },
     scrollRestoration: true,
     defaultPreloadStaleTime: 0,
-    // GitHub Pages 项目页部署在 https://loongba.github.io/TKWF.Docs/ 子路径下，
-    // 生产构建需声明 basepath 才能匹配 /nuget 等路由；本地 dev 保持根路径。
-    basepath: import.meta.env.MODE === "production" ? "/TKWF.Docs" : "/",
+    // 双域名自适应：
+    //   loongba.github.io → 项目页子路径 /TKWF.Docs（自定义域生效前的过渡与历史直链）
+    //   tkwf.loongba.cn / localhost → 根路径
+    basepath:
+      typeof window !== "undefined" && window.location.hostname === "loongba.github.io"
+        ? "/TKWF.Docs"
+        : "/",
     // 未匹配路由（含 404.html 兜底进来的坏链）统一渲染，避免空白页
     notFoundMode: "fuzzy",
     defaultNotFoundComponent: () => (
