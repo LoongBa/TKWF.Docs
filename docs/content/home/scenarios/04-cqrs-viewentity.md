@@ -1,6 +1,7 @@
 ---
 order: 4
 badge: "4️⃣"
+tab: CQRS 读写分离
 title: CQRS 读写分离 — VEntity 强大查询 + 统计聚合
 description: Entity 写模型 / VEntity 读模型，table/view 底层分离。VEntity + IQueryable + GraphQL 提供强大查询和统计。
 language: csharp

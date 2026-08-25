@@ -39,14 +39,14 @@ export function ScenariosSection() {
           <TabsList className="grid w-full grid-cols-5 mb-4">
             {scenarios.slice(0, 5).map((s) => (
               <TabsTrigger key={s.frontmatter.order} value={`scenario-${s.frontmatter.order}`} className="text-xs h-auto py-2 whitespace-normal leading-tight">
-                {s.frontmatter.title}
+                {s.frontmatter.tab}
               </TabsTrigger>
             ))}
           </TabsList>
           <TabsList className="grid w-full grid-cols-5">
             {scenarios.slice(5).map((s) => (
               <TabsTrigger key={s.frontmatter.order} value={`scenario-${s.frontmatter.order}`} className="text-xs h-auto py-2 whitespace-normal leading-tight">
-                {s.frontmatter.title}
+                {s.frontmatter.tab}
               </TabsTrigger>
             ))}
           </TabsList>

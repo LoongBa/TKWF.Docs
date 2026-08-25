@@ -1,6 +1,7 @@
 ---
 order: 8
 badge: "8️⃣"
+tab: TS 客户端
 title: 网页端 ts-client — 自动生成的强类型客户端
 description: TS 客户端由 schema.graphql 自动生成强类型定义——无需手写接口、字段名或请求构造。
 language: typescript

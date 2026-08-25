@@ -1,6 +1,7 @@
 ---
 order: 9
 badge: "9️⃣"
+tab: 测试与 Mock
 title: 测试支持 — ts-client-mock 自动生成测试接口 + 语义化测试数据
 description: ts-client-mock 自动生成测试接口，基于语义描述生成测试数据。
 language: typescript

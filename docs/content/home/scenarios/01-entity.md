@@ -1,6 +1,7 @@
 ---
 order: 1
 badge: "1️⃣"
+tab: Agent 编写实体
 title: Agent 编写 Entity → 自动建表建视图 + 自动生成 Dto/DataService/Conditions
 description: 定义实体字段 + ORM 注解，xCodeGen 自动生成 DTO、DataService、Conditions、Dto 映射代码。
 language: csharp

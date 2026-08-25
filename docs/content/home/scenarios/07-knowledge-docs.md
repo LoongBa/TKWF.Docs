@@ -1,6 +1,7 @@
 ---
 order: 7
 badge: "7️⃣"
+tab: 知识驱动文档
 title: 自动更新业务领域知识文档 — Agent 无需读代码
 description: dotnet build → AfterBuild → xCodeGen 自动生成活文档，Agent 只读薄索引。
 language: text

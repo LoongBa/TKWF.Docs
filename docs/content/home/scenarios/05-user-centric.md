@@ -1,6 +1,7 @@
 ---
 order: 5
 badge: "5️⃣"
+tab: User 为中心
 title: 以 User 为中心 + 多租户支持
 description: User.Query<T>()、User.Use<TService>() 统一入口——业务类不需要修改构造器，需要什么通过 User 获取。
 language: csharp

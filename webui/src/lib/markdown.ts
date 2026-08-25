@@ -1,6 +1,7 @@
 export interface ScenarioFrontmatter {
   order: number;
   badge: string;
+  tab: string;
   title: string;
   description: string;
   language: string;

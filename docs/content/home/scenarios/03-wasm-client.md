@@ -1,6 +1,7 @@
 ---
 order: 3
 badge: "3️⃣"
+tab: Wasm 客户端
 title: 客户端 Wasm → 自动调用 WebApi + 增强查询
 description: Wasm 端 User.Use<T>() 调用 Service，User.Query<T>() 链式查询——与进程内 C# API 表面同构。
 language: csharp

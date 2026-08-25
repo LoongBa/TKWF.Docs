@@ -1,6 +1,7 @@
 ---
 order: 2
 badge: "2️⃣"
+tab: Agent 编写服务
 title: Agent 编写 Service → 自动生成 Controller + 自动暴露 WebApi
 description: 公共业务方法自动生成 Controller + AOP 框架支持 + WebApi GraphQL/REST 端点。
 language: csharp

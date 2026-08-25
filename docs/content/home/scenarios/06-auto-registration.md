@@ -1,6 +1,7 @@
 ---
 order: 6
 badge: "6️⃣"
+tab: 自动注册
 title: 自动注册服务和控制器 — 无需复杂容器配置
 description: 配置简单，BlazorWeb/WebApi/Wasm 等项目一行配置，自动注册全部。
 language: csharp
