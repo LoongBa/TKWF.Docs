@@ -2,18 +2,17 @@
 order: 6
 badge: "6️⃣"
 tab: 自动注册
-title: 自动注册服务和控制器 — 无需复杂容器配置
-description: 配置简单，BlazorWeb/WebApi/Wasm 等项目一行配置，自动注册全部。
+title: 自动注册服务和控制器 — 无需配置，不会遗漏
+description: 自动注册全部服务和控制器，减少运行时错误，不给 Agent 犯错误的机会。
 language: csharp
 ---
 
-一行注册全部——自动扫描注册所有 DomainService / DataService。
+项目配置简单、语义化，BlazorWeb/WebApi/Wasm/Console/Test 等项目一行配置。
 
 ```csharp
-// 一行注册全部——自动扫描注册所有 DomainService / DataService
+// 内部自动注册所有 Service / Controller
 builder.Services.AddTKWFDomain<AppUserInfo, AppDomainInitializer>();
 
-// SG 生成的 _GeneratedControllerRegistrations.g.cs 自动挂载全部 Controller
 // 无需 services.AddScoped<OrderService>() — 框架自动注册
-// 无需 app.MapControllers() — Minimal API 端点由 SG2 自动生成
+// 无需 app.MapControllers() — Minimal API 端点由 ApiService 自动生成、提供服务
 ```

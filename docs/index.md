@@ -15,7 +15,7 @@ _layout: landing
     <strong>开发者思考意图 → AI 辅助实现 → 框架约束保障</strong>
   </p>
 
-#### 开发者是灵魂，TKWF 是法宝，AI 是器灵。
+#### Agent 思考越少越可控，框架支撑越多越可靠
 
 <div class="hero-cta">
     <a href="articles/getting-started.md" class="btn btn-primary">🚀 5 分钟快速开始</a>

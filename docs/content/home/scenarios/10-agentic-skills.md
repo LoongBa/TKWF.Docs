@@ -1,12 +1,13 @@
 ---
 order: 10
 badge: "🔟"
+tab: Agentic Skills
 title: Agentic Skills + 人机友好文档
-description: 7 个框架级 Skills，Agent 按 skill 分步完成开发。llms.txt + 速查卡 + 活文档。
+description: 7 个框架级 Skills，指导 Agent 按 skill 分步完成开发。
 language: text
 ---
 
-7 个框架级 Skills，每个 skill ≤400 行。
+7 个框架级 Skills，每个 skill ≤400 行，llms.txt + 速查卡 + 与代码自动保持同步的活文档 —— Agent 思考越少越可控，框架支撑越多越可靠。
 
 ```text
 tkwf-design    → 设计阶段（需求→R/S/DS/U 文档）

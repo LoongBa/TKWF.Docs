@@ -1,13 +1,13 @@
 ---
 order: 8
 badge: "8️⃣"
-tab: TS 客户端
+tab: TypeScript Client
 title: 网页端 ts-client — 自动生成的强类型客户端
-description: TS 客户端由 schema.graphql 自动生成强类型定义——无需手写接口、字段名或请求构造。
+description: 由 schema.graphql 自动生成强类型定义——无需手写接口、字段名或请求构造。
 language: typescript
 ---
 
-TS 客户端由 schema.graphql 自动生成强类型定义——拼错即编译报错。
+拼错即编译报错，避免运行时才报错。并保持了与 C#/Wasm 一致的使用体验，和强大的查询能力。
 
 ```typescript
 // 由 gen-domain-client 从 schema.graphql 自动生成 ts-client.g.ts：

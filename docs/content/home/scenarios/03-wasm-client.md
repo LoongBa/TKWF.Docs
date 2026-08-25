@@ -3,20 +3,20 @@ order: 3
 badge: "3️⃣"
 tab: Wasm 客户端
 title: 客户端 Wasm → 自动调用 WebApi + 增强查询
-description: Wasm 端 User.Use<T>() 调用 Service，User.Query<T>() 链式查询——与进程内 C# API 表面同构。
+description: 进程外 Wasm 端同样使用 User.Use<T>() 调用 Service，使用 User.Query<T>() 链式查询 Entity/VEntity，与进程内调用方式相同，不必学习。
 language: csharp
 ---
 
-Wasm 客户端——与进程内 API 形态一致。
+Wasm 客户端使用方法与进程内体验一致，无需额外学习。仅泛型改为对控制器的接口 IOrderServiceController。
 
 ```csharp
 // Wasm 客户端——与进程内 API 形态一致
-var svc = User.Use<IOrderServiceController>();
+var svc = User.Use<IOrderServiceController>();     // OrderService 对应控制器 OrderServiceController 的接口 IOrderServiceController
 var order = await svc.CreateAsync("买咖啡");        // → GraphQL mutation
 
 var list = await User.Query<Order>()
     .Where(o => o.Status == "Paid")
-    .OrderBy(o => o.CreatedAt)
+    .OrderBy(o => o.CreateTime)
     .Page(1, 20)
     .ToPageAsync();                                  // → GraphQL connection
 

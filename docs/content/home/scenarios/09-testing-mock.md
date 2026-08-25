@@ -2,12 +2,12 @@
 order: 9
 badge: "9️⃣"
 tab: 测试与 Mock
-title: 测试支持 — ts-client-mock 自动生成测试接口 + 语义化测试数据
-description: ts-client-mock 自动生成测试接口，基于语义描述生成测试数据。
+title: 测试支持：ts-client-mock 自动生成测试接口 + 语义化测试数据
+description: 与 ts-client 同步生成的 ts-client-mock 测试接口，使用基于语义描述生成的测试数据，极大简化表现层的测试工作。
 language: typescript
 ---
 
-两级 Mock：离线 MockTransport + HTTP MockHttpServer。
+两级 Mock：离线 MockTransport 测试 + HTTP MockHttpServer 模拟 WebApi，Wasm 客户端也可以用它来测试。
 
 ```typescript
 // MockDataSpec——语义化描述测试数据，非手写死数据
