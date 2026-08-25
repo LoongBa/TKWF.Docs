@@ -25,6 +25,7 @@ const RAW_SCENARIOS = [raw01, raw02, raw03, raw04, raw05, raw06, raw07, raw08, r
 
 export function ScenariosSection() {
   const scenarios = RAW_SCENARIOS.map(parseScenario).sort((a, b) => a.frontmatter.order - b.frontmatter.order);
+  console.log("ScenariosSection: scenarios[0] frontmatter:", scenarios[0]?.frontmatter);
 
   return (
     <section id="scenarios" className="px-6 py-20">
@@ -39,14 +40,14 @@ export function ScenariosSection() {
           <TabsList className="grid w-full grid-cols-5 mb-4">
             {scenarios.slice(0, 5).map((s) => (
               <TabsTrigger key={s.frontmatter.order} value={`scenario-${s.frontmatter.order}`} className="text-xs h-auto py-2 whitespace-normal leading-tight">
-                {s.frontmatter.tab}
+                {s.frontmatter.tab || s.frontmatter.title?.split('→')[0]?.trim() || s.frontmatter.title}
               </TabsTrigger>
             ))}
           </TabsList>
           <TabsList className="grid w-full grid-cols-5">
             {scenarios.slice(5).map((s) => (
               <TabsTrigger key={s.frontmatter.order} value={`scenario-${s.frontmatter.order}`} className="text-xs h-auto py-2 whitespace-normal leading-tight">
-                {s.frontmatter.tab}
+                {s.frontmatter.tab || s.frontmatter.title?.split('→')[0]?.trim() || s.frontmatter.title}
               </TabsTrigger>
             ))}
           </TabsList>
