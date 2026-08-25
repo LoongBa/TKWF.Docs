@@ -37,8 +37,9 @@ function parseFrontmatter(raw: string): { data: Record<string, unknown>; content
   const content = trimmed.substring(endIdx + 3).trim();
 
   // 简易 YAML 解析（仅支持键值对，满足场景文件需求）
+  // 注意：文件可能使用 CRLF，先归一化换行再拆分
   const data: Record<string, unknown> = {};
-  for (const line of yamlBlock.split("\n")) {
+  for (const line of yamlBlock.replace(/\r/g, '').split("\n")) {
     const match = line.match(/^(\w+):\s*(.+)$/);
     if (match) {
       const key = match[1];
