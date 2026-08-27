@@ -4,7 +4,7 @@
 
 [![Build and Deploy Docs](https://github.com/LoongBa/TKWF.Docs/actions/workflows/docfx.yml/badge.svg)](https://github.com/LoongBa/TKWF.Docs/actions/workflows/docfx.yml)
 
-**当前同步版本：V4.9.61**（文档与框架 [LoongBa/TKW.Framework](https://github.com/LoongBa/TKW.Framework) 保持同步）
+**当前同步版本：V4.9.68**（文档与框架 [LoongBa/TKW.Framework](https://github.com/LoongBa/TKW.Framework) 保持同步）
 
 ---
 
@@ -12,9 +12,13 @@
 
 | 版本 | 日期 | 核心内容 |
 |:-----|:-----|:---------|
+| **4.9.68** | 2026-08-27 | 多租户双场景完善（ADR36）：三态作用域 + 授权读写分离（Read/Write）+ 更新路径租户钳制 + 客户端租户传播 |
+| **4.9.67** | 2026-08-27 | GraphQLArgumentSerializer DateTime 序列化时区修复（Kind=Unspecified → 本地时间后缀） |
+| **4.9.66** | 2026-08-27 | 事件机制 V2：DbDistributedLock + Inbox 清理 + _appliedVersions 持久化 + 跨租户事件传播 + Fire-and-Forget |
+| **4.9.65** | 2026-08-27 | 多租户架构（ADR34）：加字段与分库双模式 + 安全闭环 + 静态编译期门控 + 删 SetTestingEntityDAC |
+| **4.9.64** | 2026-08-27 | 事件机制全链路：本地/分布式事件总线 + RabbitMQ + 事务性 Outbox/Inbox + 后台作业 + RPC 侧信道 |
+| **4.9.62** | 2026-08-26 | 收尾修复：ViewSqlColumnValidator NotMapped 检测 + GraphQLValueFormatter 补全 DateTime/Guid + 聚合路径修复 |
 | **4.9.61** | 2026-08-23 | 多 ORM 表结构同步门控分层（ADR30）：SyncTables 从 opt-in 改为固定流程 + AutoMigrateDatabase 转正为生产放行开关 |
-| **4.9.60** | 2026-08-23 | SG 生成代码编译修复：枚举特性参数完整表达式生成 + `[Service]`/`Filter` 命名空间修正（消费项目 DMP-Lite 199 错误全归零） |
-| **4.9.59** | 2026-08-22 | DatabaseProvider 枚举 + ViewSql 方言兼容性检查（覆盖 FreeSql + EF Core 全部数据库类型 26 值枚举） |
 
 > 完整变更历史见 [TKWF CHANGELOG](https://github.com/LoongBa/TKW.Framework/blob/master/docs/CHANGELOG.md)。
 

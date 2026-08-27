@@ -187,6 +187,18 @@ V4.9.21 将初始化器钩子收敛为 **9 个**：
 | `GetGlobalFilters` | 全局 Filter 返回 |
 | `OnServiceProviderBuilt` | 容器构建完成，最后执行 |
 
+### 表结构同步门控（V4.9.61+，ADR30）
+
+V4.9.61 将 `SyncTables` 从 `protected` opt-in（派生类显式调用）改为**固定流程**——由基类在 `ServiceProviderBuiltCallbackAsync` 中自动调用（`OnServiceProviderBuilt → SyncTables → SyncViewsAsync`，保证表先于视图）。门控分层：
+
+| 环境 | 行为 |
+|:-----|:-----|
+| **开发** | 总放行（表结构自动同步） |
+| **生产** | 仅 `AutoMigrateDatabase=true` 放行；否则表结构由 DBA/CI 管理 |
+| 未注册 `ITableStructureSynchronizer` | `LogWarning` 而非静默跳过 |
+
+> **`AutoMigrateDatabase` 语义（V4.9.61 转正）**：从僵尸配置正式转正为生产环境放行开关。开发期无视此开关（总是放行）；生产期默认 `false`（推荐），设 `true` 时仅 ORM 适配包声明生产安全的策略（如 EF Core Migrations）才执行。生产模板 `AutoMigrateDatabase: true → false`（推荐不走框架迁移）。
+
 ## 错误处理
 
 Web 集成内置全局异常处理中间件，自动将领域异常映射为 HTTP 状态码：

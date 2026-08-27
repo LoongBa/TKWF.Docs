@@ -1,11 +1,11 @@
 ---
 title: 事件总线与消息基础设施
-description: TKWF 事件总线与消息基础设施设计：领域事件、本地/分布式事件总线、后台作业、Outbox/Inbox、EntityHistory——对标 ABP，设计完成实施规划中
+description: TKWF 事件总线与消息基础设施：领域事件、本地/分布式事件总线、后台作业、Outbox/Inbox、EntityHistory——对标 ABP，V4.9.64/66 已实施
 ---
 
 # 事件总线与消息基础设施
 
-> **⚠️ 状态提示**：本文描述的是一套**设计完成、实施规划中**的基础设施（对应 `_TKWF/docs/D15` 设计方案与 ADR21-25）。当前框架已实施的只有其底层依赖——ADR26 UoW 事务管理（V4.9.52）。各模块标注了 ADR 状态，请勿按"已可用功能"使用。
+> **✅ 状态提示**：本文描述的是一套**已实施**的事件与消息基础设施（对应 `_TKWF/docs/D15` 设计方案与 ADR21-26）。V4.9.64 完成事件机制全链路（W2 本地事件总线 + W4 SG 派发表 + W5 EntityHistory + W7 后台作业 + W8 RabbitMQ 分布式 + W9 Outbox/Inbox + W10 RPC 侧信道）；V4.9.66 增强（DbDistributedLock + Inbox 清理 + 跨租户事件传播 + Fire-and-Forget 发布）。框架能力均已可用，可按本文所述使用。
 
 ---
 
@@ -44,12 +44,12 @@ graph TD
 
 | 模块 | 对应 ADR | 状态 | 一句话 |
 |:--|:--|:--|:--|
-| 领域事件 | ADR21 | 提议 | 聚合根内 `AddLocalEvent`，事务提交后派发 |
-| 本地/分布式事件总线 | ADR22 | 提议 | 总线抽象 + IEventTransport 传输抽象 |
-| 后台作业 | ADR23 | 提议 | IBackgroundJobManager + SystemActor 自动绑定 |
-| Outbox/Inbox | ADR24 | 提议 | 事务性消息 + 幂等消费 + 防乱序 |
-| EntityHistory | ADR25 | 提议 | 属性级 Diff + 事件驱动 |
-| **UoW 事务** | **ADR26** | **✅ 已实施** | **事件派发依赖的原子性地基 |
+| 领域事件 | ADR21 | ✅ 已实施 | 聚合根内 `AddLocalEvent`，事务提交后派发 |
+| 本地/分布式事件总线 | ADR22 | ✅ 已实施 | 总线抽象 + IEventTransport 传输抽象（RabbitMQ 实现） |
+| 后台作业 | ADR23 | ✅ 已实施 | IBackgroundJobManager + SystemActor 自动绑定 + tenantId 上下文 |
+| Outbox/Inbox | ADR24 | ✅ 已实施 | 事务性消息 + 幂等消费 + 防乱序 + Inbox 清理 |
+| EntityHistory | ADR25 | ✅ 已实施 | 属性级 Diff + ChangesJson 单行 + 事件驱动 |
+| **UoW 事务** | **ADR26** | **✅ 已实施** | **事件派发依赖的原子性地基（V4.9.52）** |
 
 ---
 
@@ -202,24 +202,34 @@ public class Account : EntityBase
 
 ---
 
-## 实施规划
+## 实施记录
 
-按依赖顺序：
+已按依赖顺序全部落地：
 
 ```
-V4.9.52  ADR26 UoW 事务迁移        ✅ 已实施
+V4.9.52  ADR26 UoW 事务迁移                    ✅ 已实施
     ↓
-下一步  ADR21 领域事件（本地）      ← 依赖 UoW 的事务提交后派发时机
+V4.9.64  ADR21 领域事件（本地） + ADR22 事件总线 + ADR23 后台作业 + ADR24 Outbox/Inbox + ADR25 EntityHistory
+         + W8 RabbitMQ 分布式传输 + W10 RPC 侧信道（CollectedEvents 快照 + SG Decorator 生成）
     ↓
-ADR22 事件总线抽象 + IEventTransport
-    ↓
-ADR23 后台作业（SystemActor 绑定）
-    ↓
-ADR24 Outbox/Inbox（依赖 21/22）
-ADR25 EntityHistory 增强
+V4.9.66  事件机制 V2 增强：DbDistributedLock（DB 分布式锁）+ InboxCleanupService（TTL 清理）
+         + _appliedVersions 持久化（InboxDbVersionStore）+ 跨租户事件上下文传播 + 后台作业 tenantId
+         + PostAsync Fire-and-Forget 发布 + EventTypeResolver 跨程序集解析
 ```
 
-> 每个 ADR 实施前需独立评审（对标 ABP 对标分析 + Oracle 架构评审），实施拆分到 `02-迭代开发/V4/` 的版本开发方案。
+**V4.9.66 关键增强**：
+
+| 能力 | 说明 |
+|:--|:--|
+| `ILocalEventBus.PostAsync` | Fire-and-Forget 发布，绕过 AOP Bag 直接派发，永不重抛 |
+| `DbDistributedLock` | DB 分布式锁（条件 UPDATE + INSERT-SELECT 两步法），跨方言可移植 |
+| `InboxCleanupService` | Inbox 过期记录 TTL 清理 |
+| `IInboxVersionStore` | `_appliedVersions` 持久化（内存缓存 + 条件 Update 双写） |
+| `ITenantScopeRestorer` | 跨租户事件上下文传播（Outbox/Inbox 记录含 TenantId） |
+| `IBackgroundJobManager.EnqueueAsync` | 增加可选 `tenantId` 参数，执行时恢复租户上下文 |
+| `EventTypeResolver` | 跨程序集事件类型解析（兜底扫描已加载程序集） |
+
+> 每个 ADR 实施前均独立评审（对标 ABP + Oracle 架构评审），实施拆分在 `02-迭代开发/V4/` 的版本开发方案中。
 
 ---
 

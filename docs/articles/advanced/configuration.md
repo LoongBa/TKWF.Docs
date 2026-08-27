@@ -159,6 +159,8 @@ cfg.SetExcludedPathPrefixes("/scalar", "/public");
 | | `EnableOpenApi` | 自动生成 OpenAPI |
 | **Web** | `CorsOrigins` | 允许的 CORS 来源 |
 | **Data** | `UseFreeSqlEntityDAC` | FreeSql + 连接串模板（V4.9.21+） |
+| | `AutoMigrateDatabase` | 表结构同步门控（V4.9.61+）：生产放行开关，默认 `false`（表结构由 DBA/CI 管理）；`true` 时仅 ORM 适配包声明生产安全的策略（如 EF Core Migrations）才执行 |
+| | `ConnectionStringTemplate` | 连接串模板（含 `{0}` 占位，分库模式租户替换） |
 
 ## 环境配置
 

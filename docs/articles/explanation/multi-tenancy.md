@@ -80,6 +80,13 @@ public interface ITenantContext
 
 > **设计不变量**：租户确定之后的下游行为（读过滤 / 写赋值 / 连接串解析 / 更新校验）**不区分 A/B**——两场景仅在"提取来源 + 授权实现"两处分叉。机制层不得感知场景。
 
+### V4.9.68 双场景完善
+
+- **授权读写分离**：`TenantAccessKind{Read, Write}` + `ITenantAuthorization` 分维度重载（默认实现 kind-agnostic，零破坏）。中间件授权门查 **Read**、写路径查 **Write**——成员只读用户可读不可写、读写成员可写。
+- **null-user 裁决归一**：授权门不再对未解析用户先行硬抛，裁决权归授权层（默认实现依旧 fail-closed）；匿名场景可由业务自定义授权放行。
+- **租户 ID 唯一解析**：`TenantIdentity`（long/数字串且 >0）收敛提取器/上下文/中间件/初始化器四处解析，消除 `TenantId==0` 哨兵碰撞与负数注入。
+- **客户端租户传播**：`ApiServiceContext.CurrentTenantId` + `BeginTenantScope`；`RestClient`/`GraphQLClient` 非 null 时附加 `X-Tenant-Id` 请求头（与服务端内置提取器协议闭环）。
+
 ## 加字段模式（共享库行级隔离）
 
 ### 实体声明
@@ -130,6 +137,8 @@ protected override void ConfigureGlobalFilters(FilterBuilder filters)
 ### 更新路径租户校验
 
 所有更新路径（单条/批量）在写入前**重读 + 断言 `TenantId`**，防止跨租户更新 IDOR。
+
+> **V4.9.68 更新路径租户钳制（安全修复）**：更新校验后**覆写入参 `TenantId` 为当前已验证租户**。行为变化——更新载荷中的 `TenantId` 字段从此**无效、不再透传**，消除"租户 42 用户将自己实体改挂租户 99"的跨租户转移漏洞。
 
 ## 分库模式（Database-per-Tenant）
 
@@ -191,6 +200,8 @@ await using (user.BeginSystemScope())
 ```
 
 > **"读可宽、写必窄"**：SystemActor 未作用域化时读放行全租户（管理视图/报表）；**任何写操作必须显式 `ExecuteInTenantAsync` 作用于单租户**。
+
+> **V4.9.68 三态作用域**：`TenantScope{Kind: None/Specific/Suppress}` 显式三态持有着，修复 `ExecuteWithoutTenantAsync` 在 ambient 含租户时穿透（契约失真）；`TenantScopeManager.BeginTenantScope(long?)` 提供更精细的作用域控制，`ITenantScopeRestorer` 收敛为薄封装。
 
 ## 安全要点
 
