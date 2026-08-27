@@ -189,15 +189,17 @@ V4.9.21 将初始化器钩子收敛为 **9 个**：
 
 ### 表结构同步门控（V4.9.61+，ADR30）
 
-V4.9.61 将 `SyncTables` 从 `protected` opt-in（派生类显式调用）改为**固定流程**——由基类在 `ServiceProviderBuiltCallbackAsync` 中自动调用（`OnServiceProviderBuilt → SyncTables → SyncViewsAsync`，保证表先于视图）。门控分层：
+> **这是什么？** 框架启动时自动创建/更新数据库表结构（FreeSql `SyncStructure` / EF Core `MigrateAsync`），确保表与实体定义一致。V4.9.61 重构了这个流程的触发逻辑和门控策略。
+
+V4.9.61 将 `SyncTables` 从 `protected` opt-in（派生类需显式调用）改为**固定流程**——由基类在 `ServiceProviderBuiltCallbackAsync` 中自动调用（`OnServiceProviderBuilt → SyncTables → SyncViewsAsync`，保证表先于视图创建）。门控分层：
 
 | 环境 | 行为 |
 |:-----|:-----|
-| **开发** | 总放行（表结构自动同步） |
+| **开发** | 总放行（表结构自动同步，开发者无需手动建表） |
 | **生产** | 仅 `AutoMigrateDatabase=true` 放行；否则表结构由 DBA/CI 管理 |
-| 未注册 `ITableStructureSynchronizer` | `LogWarning` 而非静默跳过 |
+| 未注册 `ITableStructureSynchronizer` | `LogWarning` 而非静默跳过（防配置遗漏） |
 
-> **`AutoMigrateDatabase` 语义（V4.9.61 转正）**：从僵尸配置正式转正为生产环境放行开关。开发期无视此开关（总是放行）；生产期默认 `false`（推荐），设 `true` 时仅 ORM 适配包声明生产安全的策略（如 EF Core Migrations）才执行。生产模板 `AutoMigrateDatabase: true → false`（推荐不走框架迁移）。
+> **`AutoMigrateDatabase` 语义（V4.9.61 转正）**：此前此配置项是"僵尸"（写了但无效果）。V4.9.61 正式转正为**生产环境放行开关**。开发期无视此开关（总是放行）；生产期默认 `false`（推荐——表结构应由 DBA/CI 管理），设 `true` 时仅 ORM 适配包声明生产安全的策略（如 EF Core Migrations）才执行。
 
 ## 错误处理
 

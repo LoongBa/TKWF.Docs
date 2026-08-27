@@ -30,6 +30,19 @@ TKWF 提供完整的**多租户（Multi-Tenant）SaaS 架构**支持，通过"�
 
 两种模式都是框架的一等公民，通过"注册行为"选型，且**可正交组合**（`IEntityTenant` 声明"此表按租户行级隔离"，与"表在哪个库"无关）。
 
+### 选型决策树
+
+```
+需要租户间数据隔离吗？
+├─ 否 → 不配置多租户（默认单库直连）
+└─ 是 → 租户数据量大 / 合规要求物理隔离？
+         ├─ 是 → 分库模式（§分库模式）
+         └─ 否 → 加字段模式（§加字段模式）
+                  └─ 还有平台级共享表（租户目录/字典）？
+                            ├─ 是 → 混合模式（§混合模式）
+                            └─ 否 → 纯加字段即可
+```
+
 ## 租户识别与授权
 
 ### 提取链路
@@ -68,9 +81,16 @@ public interface ITenantContext
 
 ## 租户确定场景：身份租户（A）与目标租户（B）
 
-多租户机制不仅回答"数据如何隔离"，还须回答"租户 ID 从何确定"。两种场景都是一等公民：
+> **什么是"租户确定场景"？** 上文讲了"数据如何隔离"（加字段/分库）。本节回答另一个问题："**租户 ID 从哪来**"——每次请求，系统怎么知道当前是哪个租户？
+>
+> 框架支持两种一等公民场景，区别在于"租户 ID 的来源"：
+
+**场景 A（身份租户）**：用户登录后租户就固定了——"你是哪个公司的员工"在登录时确定，之后所有操作都在你公司名下。典型如企业 SaaS。
+
+**场景 B（目标租户）**：同一个用户可以访问不同租户的数据——"你打开了哪个商户的页面"每次请求都变。典型如平台运营方管理多个商户。
 
 | | **场景 A：身份租户** | **场景 B：目标租户** |
+|---|---|---|
 |---|---|---|
 | **语义** | 登录后租户固定，租户是**用户身份属性** | 租户是**请求目标属性**，每请求可能指向不同租户 |
 | **典型例子** | 企业 SaaS：员工登录后归属固定租户 | 前端用户访问不同商户页面，按目标切换 |
@@ -82,10 +102,13 @@ public interface ITenantContext
 
 ### V4.9.68 双场景完善
 
-- **授权读写分离**：`TenantAccessKind{Read, Write}` + `ITenantAuthorization` 分维度重载（默认实现 kind-agnostic，零破坏）。中间件授权门查 **Read**、写路径查 **Write**——成员只读用户可读不可写、读写成员可写。
-- **null-user 裁决归一**：授权门不再对未解析用户先行硬抛，裁决权归授权层（默认实现依旧 fail-closed）；匿名场景可由业务自定义授权放行。
-- **租户 ID 唯一解析**：`TenantIdentity`（long/数字串且 >0）收敛提取器/上下文/中间件/初始化器四处解析，消除 `TenantId==0` 哨兵碰撞与负数注入。
-- **客户端租户传播**：`ApiServiceContext.CurrentTenantId` + `BeginTenantScope`；`RestClient`/`GraphQLClient` 非 null 时附加 `X-Tenant-Id` 请求头（与服务端内置提取器协议闭环）。
+> V4.9.65 落地了多租户基本架构。V4.9.68 针对生产场景做了 5 项安全强化：
+
+- **授权读写分离**——之前"读和写用同一套授权"。现在拆为 `Read`/`Write` 两维度：成员只读用户可查不可改、读写成员可改。中间件授权门查 **Read**（能否进入）、写路径查 **Write**（能否写入）。
+- **null-user 裁决归一**——之前授权门对"未登录用户"先行硬抛异常。现在把裁决权交给授权层——默认实现仍 fail-closed（拒绝），但业务可自定义放行匿名场景（如公开 API）。
+- **租户 ID 唯一解析**——新增 `TenantIdentity` 类型，统一四处（提取器/上下文/中间件/初始化器）的租户 ID 解析逻辑，消除 `TenantId==0` 哨兵碰撞与负数注入漏洞。
+- **客户端租户传播**——C# 客户端/TS 前端调用远程 API 时，自动在请求头附加 `X-Tenant-Id`（与服务端内置提取器协议闭环）。`RestClient`/`GraphQLClient` 非 null 时自动附加，无需业务手动处理。
+- **更新路径租户钳制**——见下方「更新路径租户校验」章节。
 
 ## 加字段模式（共享库行级隔离）
 
@@ -138,7 +161,21 @@ protected override void ConfigureGlobalFilters(FilterBuilder filters)
 
 所有更新路径（单条/批量）在写入前**重读 + 断言 `TenantId`**，防止跨租户更新 IDOR。
 
-> **V4.9.68 更新路径租户钳制（安全修复）**：更新校验后**覆写入参 `TenantId` 为当前已验证租户**。行为变化——更新载荷中的 `TenantId` 字段从此**无效、不再透传**，消除"租户 42 用户将自己实体改挂租户 99"的跨租户转移漏洞。
+**V4.9.68 租户钳制（安全修复）**：更新校验后**覆写入参 `TenantId` 为当前已验证租户**。
+
+> **行为变化**：更新载荷中的 `TenantId` 字段从此**无效、不再透传**。
+>
+> **为什么这样设计**：之前用户可以在更新载荷中携带任意 `TenantId`——比如"租户 42 的用户把自己订单改挂租户 99"——这是跨租户转移漏洞。钳制后，写入的 `TenantId` 由框架强制覆盖为当前已验证租户，消除伪造可能。
+
+**三态作用域（V4.9.68）**：`TenantScope{Kind: None/Specific/Suppress}` 提供显式三态控制：
+
+| 状态 | 语义 | 用途 |
+|:--|:--|:--|
+| `None` | 无租户 | `ExecuteWithoutTenantAsync`（仅访问平台表） |
+| `Specific` | 指定租户 | `ExecuteInTenantAsync(tenantId, ...)`（以某租户身份执行） |
+| `Suppress` | 抑制租户 | 修复 `ExecuteWithoutTenantAsync` 在 ambient 含租户时穿透的契约失真 |
+
+`TenantScopeManager.BeginTenantScope(long?)` 是底层入口，`ITenantScopeRestorer` 收敛为薄封装（供 Outbox/Inbox 跨租户事件恢复上下文使用）。
 
 ## 分库模式（Database-per-Tenant）
 
@@ -200,8 +237,6 @@ await using (user.BeginSystemScope())
 ```
 
 > **"读可宽、写必窄"**：SystemActor 未作用域化时读放行全租户（管理视图/报表）；**任何写操作必须显式 `ExecuteInTenantAsync` 作用于单租户**。
-
-> **V4.9.68 三态作用域**：`TenantScope{Kind: None/Specific/Suppress}` 显式三态持有着，修复 `ExecuteWithoutTenantAsync` 在 ambient 含租户时穿透（契约失真）；`TenantScopeManager.BeginTenantScope(long?)` 提供更精细的作用域控制，`ITenantScopeRestorer` 收敛为薄封装。
 
 ## 安全要点
 

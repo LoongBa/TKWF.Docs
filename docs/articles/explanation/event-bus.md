@@ -9,20 +9,25 @@ description: TKWF 事件总线与消息基础设施：领域事件、本地/分�
 
 ---
 
-## 问题的提出：副作用传播困境
+## 为什么需要事件机制
 
-TKWF.Domain V4 以 `DomainUser` 非空执行流 + AOP 静态拦截器 + SG 编译时生成装饰器为核心架构。业务方法执行后，状态变更的影响范围**仅限于当前方法返回值**——没有机制让"领域行为"自动触发后续处理。
+TKWF.Domain 以 `DomainUser` 非空执行流 + AOP 静态拦截器为核心架构。业务方法执行后，状态变更的影响范围**仅限于当前方法返回值**——没有机制让"领域行为"自动触发后续处理。
 
-典型场景：
+**什么是"副作用"？** 订单创建后要发通知、实体变更后要刷缓存、跨服务要通知库存扣减——这些都是"业务方法完成后的后续处理"，统称**副作用（side effect）**。
 
-1. 订单创建后需发通知 → 业务方法内手动调 `INotificationService`，业务逻辑与基础设施耦合
-2. 实体变更后需刷新缓存 → 业务方法内手动调 `IContentCache.Invalidate`，容易遗漏
-3. 跨服务通知（订单→库存扣减）→ 直接调下游 Service，耦合且无事务边界保障
-4. 定时任务（超时订单取消）→ 无框架级后台作业抽象，每个宿主自行集成 Hangfire
-5. 消息消费（MQ 消费者处理外部事件）→ 有 `StandaloneDomainUserAccessor` 接入点但无统一作业管理器
-6. 合规审计需属性级 diff → `EntityHistoryFilter` 只记整体操作，属性级字段空置
+没有事件机制时，这些副作用只能写在业务方法里：
 
-这些场景的共同特征：**领域行为完成后，需触发一个或多个后续处理（副作用），但当前框架无统一机制管理副作用的生命周期。**
+| 场景 | 无事件机制（耦合） | 有事件机制（解耦） |
+|:--|:--|:--|
+| 订单创建后发通知 | 业务方法内手动调 `INotificationService` | `AddLocalEvent(OrderCompleted)`，处理器自动触发 |
+| 实体变更后刷缓存 | 业务方法内手动调 `IContentCache.Invalidate` | `EntityChangedEvent` 自动派发，缓存处理器自动刷新 |
+| 跨服务通知库存 | 直接调下游 `InventoryService`，耦合+无事务保障 | 经分布式事件总线发布，下游异步消费 |
+| 定时任务（超时取消） | 每个宿主自行集成 Hangfire | `IBackgroundJobManager` 统一抽象，SystemActor 自动绑定 |
+| 属性级审计 diff | `EntityHistoryFilter` 只记整体操作 | `ChangesJson` 单行存储属性级 diff + 事件驱动 |
+
+**核心痛点**：业务逻辑与基础设施耦合——改通知方式要改业务代码，漏刷缓存就出 bug。
+
+事件机制把"发生了什么"（领域事件）和"怎么处理"（事件处理器）**分离**，由框架负责派发、重试、异常隔离。
 
 ---
 
@@ -53,61 +58,78 @@ graph TD
 
 ---
 
-## 领域事件（ADR21）
+## 快速开始：3 步使用领域事件
 
-**目标**：让聚合根能表达"发生了什么"，由框架统一负责派发。
+> 领域事件是最常用的模块。以下 3 步覆盖 80% 场景。分布式/后台作业等高级能力见后续章节。
+
+**第 1 步：定义事件**——一个 POCO 类，描述"发生了什么"：
 
 ```csharp
-public class Order : AggregateRoot
+// 领域事件就是一个普通 POCO
+public record OrderCompletedEvent(long OrderId);
+```
+
+**第 2 步：在聚合根中发布事件**——调用 `AddLocalEvent` 声明事件：
+
+```csharp
+public class Order : AggregateRoot        // 聚合根基类提供 AddLocalEvent
 {
     public void Complete()
     {
         Status = OrderStatus.Completed;
-        AddLocalEvent(new OrderCompletedEvent(Id));  // 声明"我完成了"
+        AddLocalEvent(new OrderCompletedEvent(Id));  // 声明"订单完成了"
     }
-}
-
-// 事件处理器——SG [DomainEventHandler] 自动注册
-[DomainEventHandler]
-public class OrderCompletedHandler : IDomainEventHandler<OrderCompletedEvent>
-{
-    public Task HandleAsync(OrderCompletedEvent e, CancellationToken ct)
-        => _notificationService.NotifyAsync(e.OrderId, ct);
 }
 ```
 
-**派发时机设计**（关键决策）：
+**第 3 步：编写处理器**——标注 `[DomainEventHandler]`，SG 编译期自动注册到总线：
 
-| 时机 | 行为 | 理由 |
+```csharp
+[DomainEventHandler]                          // ← SG 自动注册，无需手动 Register
+public class OrderCompletedHandler : IDomainEventHandler<OrderCompletedEvent>
+{
+    public async Task HandleAsync(OrderCompletedEvent e, CancellationToken ct)
+    {
+        await _notificationService.NotifyAsync(e.OrderId, ct);  // 发通知
+        await _cache.InvalidateAsync($"order:{e.OrderId}", ct); // 刷缓存
+    }
+}
+```
+
+完成。框架在事务提交后自动派发事件、调用处理器。异常隔离——处理器报错不会让业务方法 500。
+
+---
+
+## 领域事件（ADR21）
+
+> 基本用法见上文「快速开始」。本节解释**派发时机**这一核心设计决策。
+
+**派发时机**（关键决策）：事件什么时候派发——是在事务提交前还是提交后？
+
+| 时机 | 行为 | 适用场景 |
 |:--|:--|:--|
-| Pre-commit 派发 | `EventDispatchFilter` 在 PostProceed**之前** | 事件处理器可参与当前事务 |
-| Post-commit 派发 | `StaticDomainInterceptor` 在 `CommitAsync` **之后** | 事件处理器读到的数据是已提交的 |
+| **Pre-commit**（提交前） | `EventDispatchFilter` 在 AOP PostProceed 阶段、事务 `CommitAsync` 之前派发 | 处理器需参与当前事务（如写审计日志到同事务） |
+| **Post-commit**（提交后） | `StaticDomainInterceptor` 在 `CommitAsync` 之后派发 | 处理器读到的数据是已提交的（如发通知、刷缓存） |
 
-**异常隔离**：事件处理器异常**不抛给调用方**（业务方法已完成），由框架记录日志。这防止"订单已完成但发通知失败导致整个请求报 500"。
+框架默认使用 **Post-commit**——确保处理器读到的是持久化后的数据。需要 Pre-commit 时通过 AOP 过滤器链配置。
 
-SG `[DomainEventHandler]` 自动注册到总线，业务无需手动 `Register`。
+**异常隔离**：事件处理器异常**不抛给调用方**（业务方法已完成），由框架记录日志。这防止"订单已完成但发通知失败导致整个请求报 500"——用户体验上，订单完成是成功的，通知重试由框架负责。
 
 ---
 
 ## 事件总线（ADR22）
 
-**目标**：本地调用与跨进程消息统一抽象。
+**目标**：本地调用与跨进程消息统一抽象。领域事件在**进程内**派发；分布式场景需跨进程投递。
 
 ```
 业务方法
   └─> IDistributedEventBus.PublishAsync(e)
-        ├─> LocalDistributedEventBus（进程内，TryRegister 等价，本地事件处理器直连）
+        ├─> LocalDistributedEventBus（进程内，本地事件处理器直连）
         └─> IEventTransport.PublishAsync（可插拔传输层）
-              └─> CAP（可选） / Kafka / RabbitMQ / 自定义
+              └─> RabbitMQ（已实现）/ 自定义（Kafka 等）
 ```
 
-**CAP 的定位（重要评估结论）**：调研了 DotNetCore.CAP（v10.0.2，MIT，7K+ stars）后确认——CAP 有 3 个关键 gap：
-
-1. 不支持 `TransactionScope`（TKWF 原事务机制）
-2. 不支持 FreeSql（对接成本高）
-3. 无 Inbox/幂等消费
-
-因此 **CAP 仅作为可选传输层**（其发布订阅协议可复用），不作为 Outbox/Inbox 引擎。
+**架构决策**：调研 DotNetCore.CAP 后确认，CAP 有 3 个 gap（不支持 TransactionScope、不支持 FreeSql、无 Inbox 幂等），因此 **TKWF 自研 Outbox/Inbox 引擎**，传输层仅复用其发布订阅协议。RabbitMQ 是 V4.9.64 落地的首个 `IEventTransport` 实现。
 
 ---
 
