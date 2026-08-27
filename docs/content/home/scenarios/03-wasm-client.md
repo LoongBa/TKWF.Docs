@@ -11,7 +11,7 @@ Wasm 客户端使用方法与进程内体验一致，无需额外学习。仅泛
 
 ```csharp
 // Wasm 客户端——与进程内 API 形态一致
-var svc = User.Use<IOrderServiceController>();     // OrderService 对应控制器 OrderServiceController 的接口 IOrderServiceController
+var svc = User.Use<IOrderServiceController>();     // OrderService 对应控制器接口 IOrderServiceController
 var order = await svc.CreateAsync("买咖啡");        // → GraphQL mutation
 
 var list = await User.Query<Order>()

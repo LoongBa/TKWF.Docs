@@ -20,6 +20,8 @@
       href: security/authorization.md
     - name: Session 管理
       href: security/session.md
+    - name: 多租户
+      href: explanation/multi-tenancy.md
 - name: 🌐 传输协议
   href: transport/graphql.md
   items:
