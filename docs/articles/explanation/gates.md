@@ -127,6 +127,41 @@ ProjectMetaContext.ValidateRuntimeGates(RuntimeGateOptions)
 
 ---
 
+## ④ 编译期 DI 依赖验证（V4.9.75，`TKWF_DI001`）
+
+扩展机制收尾新增的**编译期诊断**——SG1 扫描服务类构造函数，请求的接口若无框架特性注册且不在白名单，输出 `TKWF_DI001`：
+
+```
+TKWF_DI001: 'OrderService' 请求服务接口 'ICacheService' 但无框架特性注册
+            （[DomainService] 等）——若为运行时手写注册请忽略；
+            如需编译期校验可升级 TKWF_DI001_Severity=Error
+```
+
+| 项 | 说明 |
+|:--|:--|
+| 信号源 | `ClassMetadata.ConstructorParameterTypes`（SG 扫描构造函数参数类型） |
+| 判定 | 参数接口无框架特性注册（`[DomainService]` 等 `ImplementedInterfaces`）且不在白名单 |
+| 白名单 | `System.` / `Microsoft.` / `TKW.Framework.` 前缀，及泛型/基类/`IEnumerable` 场景 |
+| 默认级别 | **`Warning`**（不破坏既有编译） |
+| 升级方式 | `.csproj` 加 `<TKWF_DI001_Severity>Error</TKWF_DI001_Severity>` |
+| 边界 | 不验证**运行时手写注册**（SG 看不到运行时代码） |
+
+> 这是门控体系首次覆盖"**构造依赖能否被满足**"——此前只能靠启动时 DI 解析异常暴露，现在编译期即报。dry-run 全仓零误报。
+
+### GateRules 扩展归属关联（`SourceExtension`）
+
+`RuntimeGateRule` 新增 `SourceExtension` 属性，SG1 按**程序集归属**把特征门控规则关联到同程序集的扩展：
+
+```
+特征类型.ContainingAssembly == 扩展初始化器.ContainingAssembly
+  → rule.SourceExtension = 该扩展名
+  → 无匹配 → null（框架行为不变）
+```
+
+`OnValidateRuntimeGatesAsync` 据此判断：`Disable("Permissions")` 后，Permissions 扩展的 **Warning 级**规则跳过（不再误报），但 **Error 级不跳过**——安全门控不被弱化为 fail-open。框架内置的 3 条多租户门控 `SourceExtension = null`，行为完全不变。
+
+---
+
 ## 严重级别
 
 `RuntimeGateOptions.DefaultSeverity` 控制门控不通过时的行为：
@@ -163,6 +198,7 @@ override `ProjectMetaContextBase.ValidateRuntimeGates`，在基类调用后追�
 | V4.9.61 | 表结构同步门控 | ADR30 |
 | V4.9.65 | 多租户运行时门控 | ADR34 |
 | V4.9.70 | 统一门控体系（GateRules + 12 缺口） | ADR35 |
+| V4.9.75 | 编译期 DI 依赖验证（`TKWF_DI001`）+ `SourceExtension` 扩展归属关联 | ADR37（决策 5 能力废弃）|
 
 ---
 

@@ -227,14 +227,17 @@ public class PermissionExtensionInitializer : ExtensionInitializer<MyUserInfo>
     // 2. 注册 DI 服务（DI 容器构建前）
     public override void ConfigureServices(IServiceCollection services)
     {
-        services.AddScoped<IPermissionChecker, DefaultPermissionChecker>();
-        services.AddScoped<IPermissionStore, EfCorePermissionStore>();
+        services.AddScoped<IPermissionChecker, PermissionChecker<MyUserInfo>>();
+        services.AddScoped<IPermissionDefinitionRepository, InMemoryPermissionDefinitionRepository>();
+        // 注意：IPermissionStore 不由本扩展注册——
+        // 官方 FreeSql 实现 FreeSqlPermissionStore 在 TKWF.Domain.FreeSql 包内条件注册
+        // （已注册 IFreeSql → FreeSqlPermissionStore；否则回退 NoOp，避免本包强依赖 FreeSql）
     }
 
     // 3. 注册 AOP 过滤器（FilterBuilder 构建阶段）
     public override void ConfigureFilters(FilterBuilder<MyUserInfo> builder)
     {
-        builder.Add<PermissionFilter>(FilterTier.Security);
+        builder.Add<PermissionFilter<MyUserInfo>>(FilterTier.Security);
     }
 
     // 4. 种子数据 / 运行时初始化（系统就绪后）
@@ -249,13 +252,15 @@ public class PermissionExtensionInitializer : ExtensionInitializer<MyUserInfo>
 
 ```
 TKWF.Ext.Permissions/
-├── TKWFExtension + ExtensionInitializer<TUserInfo>
-├── IPermissionChecker.cs
-├── DefaultPermissionChecker.cs
-├── PermissionFilter.cs（DomainFilterAttribute）
-├── EfCorePermissionStore.cs（表结构）
-└── TKWF.Ext.Permissions.csproj
+├── PermissionExtensionInitializer<TUserInfo>.cs（[TKWFExtension] + 三钩子）
+├── IPermissionChecker.cs / PermissionChecker<TUserInfo>.cs
+├── IPermissionStore.cs / NoOpPermissionStore.cs（默认回退，非持久化）
+├── PermissionDefinition.cs / IPermissionDefinitionContributor.cs
+├── PermissionFilter<TUserInfo>.cs（DomainFilterAttribute，Tier-S）
+└── TKWF.Ext.Permissions.csproj（零 ORM 依赖；FreeSql 持久化在 TKWF.Domain.FreeSql 包）
 ```
+
+> **包边界（Oracle H4，V4.9.75）**：`FreeSqlPermissionStore` 刻意**不进** Permissions 包——否则权限包强依赖 FreeSql，会污染所有非 FreeSql 宿主。持久化实现随 ORM 包走，权限包只定义契约 + 回退实现。
 
 ---
 
@@ -265,11 +270,14 @@ TKWF.Ext.Permissions/
 |:--|:--|:--|:--|
 | **Phase 1 基座** | V4.9.70 | 扩展契约 + FilterBuilder.Add\<T\>(FilterTier) + SG1 发现注册表 + 门控衔接 | ✅ 已实施 |
 | **Phase 2 接线基座** | V4.9.71 | 三钩子实际接线 + 扩展清单 API + 按需启停 + Enable/Disable | ✅ 已实施 |
-| **Phase 2 业务模块** | V4.9.72+ | Permissions / Navigation 首批验证模块（独立扩展包） | 🔲 待实施 |
-| **Phase 3 能力引用** | 未来 | `RequiresCapability` / `ProvidesCapability` + SG 编译期校验 | 🔲 待引入 |
-| **Phase 3 扩展单例** | 未来 | 跨钩子共享实例 + DI 解析扩展 | 🔲 待引入 |
+| **Phase 2 业务模块** | V4.9.72-74 | Permissions（ADR38，权限持久化 V4.9.75）+ Navigation（ADR39）首批验证模块 | ✅ 已实施 |
+| **收尾** | V4.9.75 | GateRules `SourceExtension` 程序集归属关联 + DI 全图验证（`TKWF_DI001`）+ `FreeSqlPermissionStore` | ✅ 已实施 |
+| ~~Phase 3 能力引用~~ | — | `RequiresCapability` / `ProvidesCapability` + SG 编译期校验 | ⛔ 已废弃（ADR37 决策 5） |
+| Phase 3 扩展单例 | 未来 | 跨钩子共享实例 + DI 解析扩展 | 🔲 待引入 |
 
-> **结论**：扩展机制接线基座已可用——现在就可以开发自己的扩展。首批框架组业务模块（Permissions/Navigation）将在 V4.9.72+ 落地，届时可参考实现。
+> **结论**：扩展机制基座 + 接线 + 首批业务模块 + 收尾校验全部落地——现在就可以开发自己的扩展，并直接参考官方 `TKWF.Ext.Permissions` / `TKWF.Ext.Navigation` 实现。
+
+> ⛔ **能力引用机制（ADR37 决策 5，V4.9.75 正式废弃）**：`RequiresCapability` / `ProvidesCapability` 声明式软依赖原计划 V4.9.75+ 引入，因 **YAGNI 持续成立**（无真实软依赖案例）+ **编译期 ProjectReference 已覆盖依赖声明**（ADR39 Navigation 的依赖即 `ProjectReference`）而废弃。`FrameworkCapability` 常量保留仅供向后兼容引用。**显式 ProjectReference 优先于运行时能力发现**——接口是契约、DI 注册是能力提供。
 
 ---
 
