@@ -23,7 +23,7 @@ description: TKWF 源文档 D/G/T/xCodeGen 系列与公开文章的完整映射�
 | `D05-宿主集成与配置V2-Web-Blazor-MAUI-Testing.md` | [配置参考](../advanced/configuration.md) | 宿主集成与 cfg 强契约 |
 | `D06-领域数据服务与数据存取设计.md` | [数据层架构](../explanation/data-layer-architecture.md) | DataService 数据存取、IEntityDAC 抽象、ITransactionManager 事务管理（V4.9.52 ADR26）、多 ORM 兼容策略（BCL 标准属性 + EF Core 适配层，V4.9.54 ADR27）、简化双标注策略（V4.9.58 ADR28/29）、DatabaseProvider 方言检查（V4.9.59）。v1.4 |
 | `D06B-条件表达式构建器设计.md` | [条件构建器](../advanced/conditions-builder.md) | PredicateBuilderBase、Entity.Conditions 静态类、xCodeGen + SG1 双重生成 |
-| `D06C-Entity映射与DB Schema-设计方案.md` | — | Entity 映射策略：ORM 特性体系（Table/Column/Index/Navigate）、接口标记 vs 基类继承、查询条件生成管线（三阶段 SearchGroup 提取） |
+| `D06C-Entity映射与DB Schema-设计方案.md` | [VEntity 读写分离（CQRS）](../explanation/cqrs-read-write.md) · [VEntity 统计与聚合](../explanation/ventity-aggregate.md) | Entity 映射策略：ORM 特性体系（Table/Column/Index/Navigate）、接口标记 vs 基类继承、查询条件生成管线（三阶段 SearchGroup 提取） |
 | `D07-三层SG-原则和设计方案.md` | [代码生成管线](../core-concepts/code-generation.md) | 三层 SG 管线：SG1 元数据提取 → SG2 服务端生成 → SG3 客户端生成；ProjectMetaContext 唯一元数据源。V4.9.32 IsExposed 暴露过滤；V4.9.34 EntityFieldList 字段白名单；V4.9.35 Phase-C 实体连接 resolver + IsGraphQLQueryable 三侧过滤 |
 | `D08-框架CI-CD与脚本架构.md` | — | 三仓库 CI/CD 管线、三引用模式（NuGet/DLL/Project）、MSBuild 基础设施、§九 Schema 导出管线（buildSchema.ps1） |
 
@@ -46,7 +46,7 @@ description: TKWF 源文档 D/G/T/xCodeGen 系列与公开文章的完整映射�
 | `G07C-RPC-远程过程调用-TS前端-ts-client-使用指南.md` | — | TS 前端 @tkwf/tsclient 客户端（独立仓库 tkwf-tsclient，V1.0.5：Tkwf 门面工厂入口，transport 注入点，移除 Call()/ChainableBuilder） |
 | `G07C-RPC-远程过程调用-TS前端增强查询-QueryBuilder-使用指南.md` | — | TS 前端增强查询：QueryBuilder 链式查询（where/orderBy/select/page/toPageAsync） |
 | `G07C-ts-client-优势分析.md` | — | ts-client 优势分析：为何选择 @tkwf/tsclient 而非传统 fetch/axios/graphql-codegen |
-| `G07D-RPC-远程过程调用-TS前端测试-ts-client-mock-使用指南.md` | — | TS 前端 Mock 测试：@tkwf/tsclient-mock（v1.4.3：MockTransport 注入、createMockDb、场景切换、策略化数据生成、录制回放、HTTP server、gen-seed CLI） |
+| `G07D-RPC-远程过程调用-TS前端测试-ts-client-mock-使用指南.md` | [ts-client-mock 前端 Mock 测试](../client/ts-client-mock.md) · [如何编写 Mock 数据](../client/mock-data-authoring.md) | TS 前端 Mock 测试：@tkwf/tsclient-mock（v1.4.3：MockTransport 注入、createMockDb、场景切换、策略化数据生成、录制回放、HTTP server、gen-seed CLI） |
 | `G07E-RPC-远程过程调用-错误处理指南.md` | [异常处理](../advanced/error-handling.md) | 异常映射表、Middleware、Problem Details |
 
 ## 安全、限流与多租户
@@ -59,7 +59,7 @@ description: TKWF 源文档 D/G/T/xCodeGen 系列与公开文章的完整映射�
 | `D10C-Web服务端错误处理机制-设计方案.md` | — | （D10 子方案）ASP.NET Core 服务端错误输出：DomainErrorFilter、WebExceptionMiddleware、IErrorScope |
 | `D10D-限流架构-设计方案.md` | [全局过滤器体系](../core-concepts/filters.md) | 限流架构：V4.9.26 退役自定义 IRateLimiter → 官方 System.Threading.RateLimiting。PartitionedRateLimiter 分区限流、EnforceAsync 扩展方法、AOP 集成、429 错误码映射 |
 | `D11-系统角色-SystemActor-设计方案.md` | [SystemActor 体系](../explanation/system-actor-explained.md) | 系统角色：BeginSystemScopeAsync、scope.System/scope.IsSystem、IEntityActorAuditable、[DenySystemActor]、StandaloneDomainUserAccessor（ADR 14/15/16） |
-| `D13-多租户：加字段与分库双模式设计方案.md` | [多租户](../explanation/multi-tenancy.md) | 多租户架构（v2.2）：加字段（共享库行级隔离）与分库（Database-per-Tenant）双模式、租户识别与授权（ITenantContext/ITenantAuthorization）、身份租户（A）与目标租户（B）双场景、跨租户作用域（ExecuteInTenantAsync）、运行时门控 |
+| `D13-多租户：加字段与分库双模式设计方案.md` | [多租户](../explanation/multi-tenancy.md) · [门控机制](../explanation/gates.md) | 多租户架构（v2.2）：加字段（共享库行级隔离）与分库（Database-per-Tenant）双模式、租户识别与授权（ITenantContext/ITenantAuthorization）、身份租户（A）与目标租户（B）双场景、跨租户作用域（ExecuteInTenantAsync）、运行时门控 |
 | `G13-多租户使用指南.md` | [多租户](../explanation/multi-tenancy.md) | 多租户消费方实操手册：双模式选型决策树、加字段/分库/混合快速开始、跨租户操作、安全要点、测试要点 |
 
 ## 数据与查询
@@ -69,7 +69,7 @@ description: TKWF 源文档 D/G/T/xCodeGen 系列与公开文章的完整映射�
 | `G07-查询执行路径总览.md` | — | 三种运行环境（进程内/Wasm/TS）× 两种查询模式（Query/Use）完整对比总览 |
 | `G06-领域数据服务与数据存取使用指南.md` | [DataService](../core-concepts/data-services.md) | 数据服务使用 |
 | `G06B-条件表达式构建器使用指南.md` | [条件构建器](../advanced/conditions-builder.md) | Conditions 条件工厂 API、Expression 两阶段构建、并发隔离 |
-| `G06C-Entity映射与查询条件配置指南.md` | — | 数据库映射（Table/Column/Index）+ Conditions 生成配置（DtoField/SearchGroup/Index 派生） |
+| `G06C-Entity映射与查询条件配置指南.md` | [VEntity 读写分离（CQRS）](../explanation/cqrs-read-write.md) · [VEntity 统计与聚合](../explanation/ventity-aggregate.md) | 数据库映射（Table/Column/Index）+ Conditions 生成配置（DtoField/SearchGroup/Index 派生） |
 
 ## 测试基础设施
 
@@ -90,10 +90,10 @@ description: TKWF 源文档 D/G/T/xCodeGen 系列与公开文章的完整映射�
 
 | 源文档 | 公开文章 | 说明 |
 |:-------|:---------|:-----|
-| `D15-事件总线与消息基础设施-设计方案.md` | [事件总线与消息基础设施](../explanation/event-bus.md) | 事件总线与消息基础设施：领域事件（AddLocalEvent）、本地/分布式事件总线、后台作业管理器、Outbox/Inbox 事务性消息、EntityHistory 属性级 Diff。对标 ABP 事件/消息体系 11 维功能。与 ADR21-25 互补（ADR 讲 HOW，D15 讲 WHY+WHAT）。V4.9.52 ADR26 已实施 |
+| `D15-事件总线与消息基础设施-设计方案.md` | [事件总线与消息基础设施](../explanation/event-bus.md) · [后台作业](../explanation/background-jobs.md) · [事件的表现层消费](../explanation/event-consumption.md) | 事件总线与消息基础设施：领域事件（AddLocalEvent）、本地/分布式事件总线、后台作业管理器、Outbox/Inbox 事务性消息、EntityHistory 属性级 Diff。对标 ABP 事件/消息体系 11 维功能。与 ADR21-25 互补（ADR 讲 HOW，D15 讲 WHY+WHAT）。V4.9.52 ADR26 已实施 |
 | `D15-事件机制-架构复盘总结.md` | [事件总线与消息基础设施](../explanation/event-bus.md) | V4.9.64 事件机制完整架构复盘总结：W2 本地事件总线 + W4 SG 静态派发表 + W5 EntityHistory + W7 后台作业 |
 | `G15-事件机制-使用指南.md` | [事件总线与消息基础设施](../explanation/event-bus.md) | 事件机制消费方实操手册（v1.0）：三种派发模式（阻塞post-commit/异步Outbox/fire-and-forget）+ API参考 + 8个场景示例 + 反模式 + FAQ + 选型决策树 |
-| `D17-TKWF扩展机制与业务模块全景-设计方案.md` | — | TKWF V5 扩展机制架构：编译期发现（vs ABP 运行时 DI）、业务模块全景（菜单/权限/审计/设置）、ADR35 统一门控 + 编译期验证三件套。草案 v4 |
+| `D17-TKWF扩展机制与业务模块全景-设计方案.md` | [扩展机制：如何使用](../explanation/extensions-usage.md) · [扩展机制：如何开发扩展](../explanation/extensions-development.md) · [扩展子系列](../explanation/extensions/index.md) | TKWF V5 扩展机制架构：编译期发现（vs ABP 运行时 DI）、业务模块全景（菜单/权限/审计/设置）、ADR35 统一门控 + 编译期验证三件套。草案 v4 |
 
 ## 国际化（i18n）
 
