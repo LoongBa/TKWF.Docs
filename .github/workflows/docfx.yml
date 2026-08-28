@@ -43,7 +43,7 @@ jobs:
         run: dotnet tool update -g docfx
 
       - name: Sync version numbers
-        run: pwsh docs/prebuild.ps1
+        run: pwsh docs/prebuild.ps1 -TkwfRoot src/TKW.Framework
 
       - name: Setup pnpm
         uses: pnpm/action-setup@v4
