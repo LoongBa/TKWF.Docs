@@ -1,17 +1,17 @@
 [
   {
-    "version": "4.9.68",
-    "date": "2026-08-27",
-    "description": "多租户双场景完善（D13 §1.4 场景 A 身份租户 / 场景 B 目标租户契约）：三态作用域修复逃生口语义 + 授权读写分离 + 更新路径租户钳制 + 客户端租户传播。 参考：v4.9.68-多租户双场景完善-开发方案.md / ADR36-租户三态作用域与授权读写分离.md"
+    "version": "4.9.74",
+    "date": "2026-08-28",
+    "description": "扩展机制业务模块 Phase 2（ADR39）：第二个 TKWF.Ext.* 业务扩展包落地——**TKWF.Ext.Navigation** 菜单扩展（菜单数据模型 + 贡献机制 + IMenuManager 权限过滤）；SG 菜单贡献者注册生成；菜单与 Permissions 集成（编译期依赖 + checker 缺失降级）。 参考：v4.9.74-Navigation扩展核心-开发方案.md / ADR39-Navigation扩展架构决策 / D17-TKWF扩展机制与业务模块全景（§5.2 落地标注）"
   },
   {
-    "version": "4.9.67",
-    "date": "2026-08-27",
-    "description": "GraphQLArgumentSerializer DateTime 序列化时区修复：`Kind=Unspecified` 输出缺时区后缀，导致 HotChocolate 16 DateTimeType 输入校验失败。 来源：DMP-Lite AdminUI 门店排行页报 `DateTime cannot coerce the given literal of type StringValue to a runtime value`。"
+    "version": "4.9.73",
+    "date": "2026-08-28",
+    "description": "扩展机制遗留收尾——处置 V4.9.72 审核报告全部遗留问题/建议：修复 E1（SG 特征门控扫描 `Contains` 逻辑反转，V4.9.70 静默缺陷）；补 G2（SG 生成代码真实消费者编译验证，堵 V4.9.71 命名空间笔误类缺陷）；G1 评估决策 + L1-L3 低成本修复；文档站 V1.2.1 单独提交。 参考：v4.9.73-扩展机制遗留收尾-开发方案.md / ADR38（D7 评估结论）/ v4.9.72-Permissions扩展核心-审核报告.md"
   },
   {
-    "version": "4.9.66",
-    "date": "2026-08-27",
-    "description": "事件机制 V2 增强：IDistributedLock 真实实现、Inbox 清理、_appliedVersions 持久化、跨租户事件上下文传播、后台作业租户上下文、Fire-and-Forget 发布、端到端集成测试。 参考：v4.9.66-事件机制V2-开发方案.md / v4.9.66-事件机制V2-审核报告.md"
+    "version": "4.9.72",
+    "date": "2026-08-28",
+    "description": "扩展机制业务模块 Phase 1（ADR38）：首个 TKWF.Ext.* 业务扩展包落地——**TKWF.Ext.Permissions** 细粒度权限管理（权限定义 + 权限检查器 + RequirePermission 过滤器）；SG1 权限贡献者注册生成 + 跨程序集扩展发现机制固化；修复 V4.9.71 遗留生成代码命名空间笔误。 参考：v4.9.72-Permissions扩展核心-开发方案.md / ADR38-扩展包发现机制与跨程序集过滤器DI通道 / D17-TKWF扩展机制与业务模块全景（§5.1 修正）"
   }
 ]

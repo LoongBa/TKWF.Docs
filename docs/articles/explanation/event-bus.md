@@ -702,11 +702,11 @@ handler 需要事务一致吗？（commit 失败时事件不能发）
 > ---
 >
 > **引用**
-> - 设计方案：[D15-事件总线与消息基础设施-设计方案](../_TKWF/docs/D15-事件总线与消息基础设施-设计方案.md) §4.5（派发语义与设计取舍）
-> - ADR21：[领域事件与本地事件总线](../_TKWF/docs/02-迭代开发/ADR/ADR21-领域事件与本地事件总线.md)
-> - ADR22：[分布式事件总线抽象](../_TKWF/docs/02-迭代开发/ADR/ADR22-分布式事件总线抽象.md)
-> - ADR23：[后台作业基础设施](../_TKWF/docs/02-迭代开发/ADR/ADR23-后台作业基础设施.md)
-> - ADR24：[事务性 Outbox/Inbox 模式](../_TKWF/docs/02-迭代开发/ADR/ADR24-事务性OutboxInbox模式.md)
-> - ADR25：[EntityHistory 属性级 Diff 与事件驱动](../_TKWF/docs/02-迭代开发/ADR/ADR25-EntityHistory属性级Diff与事件驱动.md)
-> - ADR26：[UoW 事务迁移](../_TKWF/docs/02-迭代开发/ADR/ADR26-UoW事务迁移.md)
-> - AOP 使用指南：[G04-AOP拦截器使用指南](./G04-AOP拦截器使用指南.md)
+> - 设计方案：[D15-事件总线与消息基础设施-设计方案](https://github.com/LoongBa/TKW.Framework/blob/master/docs/D15-%E4%BA%8B%E4%BB%B6%E6%80%BB%E7%BA%BF%E4%B8%8E%E6%B6%88%E6%81%AF%E5%9F%BA%E7%A1%80%E8%AE%BE%E6%96%BD-%E8%AE%BE%E8%AE%A1%E6%96%B9%E6%A1%88.md) §4.5（派发语义与设计取舍）
+> - ADR21：[领域事件与本地事件总线](https://github.com/LoongBa/TKW.Framework/blob/master/docs/02-%E8%BF%AD%E4%BB%A3%E5%BC%80%E5%8F%91/ADR/ADR21-%E9%A2%86%E5%9F%9F%E4%BA%8B%E4%BB%B6%E4%B8%8E%E6%9C%AC%E5%9C%B0%E4%BA%8B%E4%BB%B6%E6%80%BB%E7%BA%BF.md)
+> - ADR22：[分布式事件总线抽象](https://github.com/LoongBa/TKW.Framework/blob/master/docs/02-%E8%BF%AD%E4%BB%A3%E5%BC%80%E5%8F%91/ADR/ADR22-%E5%88%86%E5%B8%83%E5%BC%8F%E4%BA%8B%E4%BB%B6%E6%80%BB%E7%BA%BF%E6%8A%BD%E8%B1%A1.md)
+> - ADR23：[后台作业基础设施](https://github.com/LoongBa/TKW.Framework/blob/master/docs/02-%E8%BF%AD%E4%BB%A3%E5%BC%80%E5%8F%91/ADR/ADR23-%E5%90%8E%E5%8F%B0%E4%BD%9C%E4%B8%9A%E5%9F%BA%E7%A1%80%E8%AE%BE%E6%96%BD.md)
+> - ADR24：[事务性 Outbox/Inbox 模式](https://github.com/LoongBa/TKW.Framework/blob/master/docs/02-%E8%BF%AD%E4%BB%A3%E5%BC%80%E5%8F%91/ADR/ADR24-%E4%BA%8B%E5%8A%A1%E6%80%A7OutboxInbox%E6%A8%A1%E5%BC%8F.md)
+> - ADR25：[EntityHistory 属性级 Diff 与事件驱动](https://github.com/LoongBa/TKW.Framework/blob/master/docs/02-%E8%BF%AD%E4%BB%A3%E5%BC%80%E5%8F%91/ADR/ADR25-EntityHistory%E5%B1%9E%E6%80%A7%E7%BA%A7Diff%E4%B8%8E%E4%BA%8B%E4%BB%B6%E9%A9%B1%E5%8A%A8.md)
+> - ADR26：[UoW 事务迁移](https://github.com/LoongBa/TKW.Framework/blob/master/docs/02-%E8%BF%AD%E4%BB%A3%E5%BC%80%E5%8F%91/ADR/ADR26-UoW%E4%BA%8B%E5%8A%A1%E8%BF%81%E7%A7%BB.md)
+> - AOP 使用指南：[G04-AOP拦截器使用指南](https://github.com/LoongBa/TKW.Framework/blob/master/docs/G04-AOP%E6%8B%A6%E6%88%AA%E5%99%A8%E4%BD%BF%E7%94%A8%E6%8C%87%E5%8D%97.md)

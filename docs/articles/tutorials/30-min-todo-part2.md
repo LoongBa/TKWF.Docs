@@ -169,6 +169,6 @@ curl https://localhost:5001/api/todo/delete-all \
 
 ## 进一步阅读
 
-- [多形态客户端认证架构](../core-concepts/authentication.md) — 三种认证形态详解
+- [多形态客户端认证架构](../security/authentication.md) — 三种认证形态详解
 - [AOP 拦截器使用指南](../core-concepts/filters.md) — AuthorityFilter / LoggingFilter / EntityHistoryFilter
 - [30 分钟实战 Part 3：多协议暴露](./30-min-todo-part3.md) — GraphQL/REST/RPC 三协议暴露 + 客户端

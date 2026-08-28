@@ -187,4 +187,4 @@ public class OrderServiceTests
 
 - [传输协议选型](./choose-transport.md) — GraphQL vs REST vs RPC 选型
 - [控制器路径选型](./choose-controller-path.md) — 自动生成 vs 手写 Controller
-- [多形态客户端认证架构](../core-concepts/authentication.md) — 三种认证形态详解
+- [多形态客户端认证架构](../security/authentication.md) — 三种认证形态详解

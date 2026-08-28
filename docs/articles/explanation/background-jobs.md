@@ -271,10 +271,10 @@ public class SyncInventoryJob : IBackgroundJob
 
 ## 相关文档
 
-- [ADR23 后台作业基础设施](../_TKWF/docs/02-迭代开发/ADR/ADR23-后台作业基础设施.md)
-- [D15 §5.4](../_TKWF/docs/D15-事件总线与消息基础设施-设计方案.md#54-后台作业)
-- [G15 §4.6](../_TKWF/docs/G15-事件机制-使用指南.md#46-后台作业内的事件派发)
-- [G15 §5.2](../_TKWF/docs/G15-事件机制-使用指南.md#52-非-aop-路径)
+- [ADR23 后台作业基础设施](https://github.com/LoongBa/TKW.Framework/blob/master/docs/02-%E8%BF%AD%E4%BB%A3%E5%BC%80%E5%8F%91/ADR/ADR23-%E5%90%8E%E5%8F%B0%E4%BD%9C%E4%B8%9A%E5%9F%BA%E7%A1%80%E8%AE%BE%E6%96%BD.md)
+- [D15 §5.4](https://github.com/LoongBa/TKW.Framework/blob/master/docs/D15-%E4%BA%8B%E4%BB%B6%E6%80%BB%E7%BA%BF%E4%B8%8E%E6%B6%88%E6%81%AF%E5%9F%BA%E7%A1%80%E8%AE%BE%E6%96%BD-%E8%AE%BE%E8%AE%A1%E6%96%B9%E6%A1%88.md#54-%E5%90%8E%E5%8F%B0%E4%BD%9C%E4%B8%9A)
+- [G15 §4.6](https://github.com/LoongBa/TKW.Framework/blob/master/docs/G15-%E4%BA%8B%E4%BB%B6%E6%9C%BA%E5%88%B6-%E4%BD%BF%E7%94%A8%E6%8C%87%E5%8D%97.md#46-%E5%90%8E%E5%8F%B0%E4%BD%9C%E4%B8%9A%E5%86%85%E7%9A%84%E4%BA%8B%E4%BB%B6%E6%B4%BE%E5%8F%91)
+- [G15 §5.2](https://github.com/LoongBa/TKW.Framework/blob/master/docs/G15-%E4%BA%8B%E4%BB%B6%E6%9C%BA%E5%88%B6-%E4%BD%BF%E7%94%A8%E6%8C%87%E5%8D%97.md#52-%E9%9D%9E-aop-%E8%B7%AF%E5%BE%84)
 
 ---
 
