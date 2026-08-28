@@ -92,6 +92,7 @@ description: TKWF 源文档 D/G/T/xCodeGen 系列与公开文章的完整映射�
 |:-------|:---------|:-----|
 | `D15-事件总线与消息基础设施-设计方案.md` | [事件总线与消息基础设施](../explanation/event-bus.md) | 事件总线与消息基础设施：领域事件（AddLocalEvent）、本地/分布式事件总线、后台作业管理器、Outbox/Inbox 事务性消息、EntityHistory 属性级 Diff。对标 ABP 事件/消息体系 11 维功能。与 ADR21-25 互补（ADR 讲 HOW，D15 讲 WHY+WHAT）。V4.9.52 ADR26 已实施 |
 | `D15-事件机制-架构复盘总结.md` | [事件总线与消息基础设施](../explanation/event-bus.md) | V4.9.64 事件机制完整架构复盘总结：W2 本地事件总线 + W4 SG 静态派发表 + W5 EntityHistory + W7 后台作业 |
+| `G15-事件机制-使用指南.md` | [事件总线与消息基础设施](../explanation/event-bus.md) | 事件机制消费方实操手册（v1.0）：三种派发模式（阻塞post-commit/异步Outbox/fire-and-forget）+ API参考 + 8个场景示例 + 反模式 + FAQ + 选型决策树 |
 | `D17-TKWF扩展机制与业务模块全景-设计方案.md` | — | TKWF V5 扩展机制架构：编译期发现（vs ABP 运行时 DI）、业务模块全景（菜单/权限/审计/设置）、ADR35 统一门控 + 编译期验证三件套。草案 v4 |
 
 ## 国际化（i18n）
