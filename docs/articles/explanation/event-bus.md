@@ -329,51 +329,12 @@ services.AddRabbitMqEventBus(options =>
 });
 ```
 
-### 4.6 后台作业内的事件派发
+### 4.6 后台作业 / 运行时订阅
 
-```csharp
-[BackgroundJob]
-public class OrderTimeoutJob : IBackgroundJob
-{
-    private readonly ILocalEventBus _eventBus;
+后台作业内的事件派发、运行时订阅（Blazor / 测试 / SignalR）已拆分为独立专题：
 
-    public async Task ExecuteAsync(object args, CancellationToken ct)
-    {
-        var orderId = (long)args;
-        // 非 AOP 路径：AopContextAccessor.Current == null → 立即派发
-        // 如需事务一致，标注 [Transactional] 让 AOP 管线接管
-        await _eventBus.PublishAsync(new OrderTimeoutEvent(orderId));
-    }
-}
-
-// 入队——延迟 30 分钟执行
-await _jobManager.EnqueueAsync<OrderTimeoutJob>(orderId, delay: TimeSpan.FromMinutes(30));
-```
-
-### 4.6 运行时订阅（Blazor / 测试 / SignalR）
-
-```csharp
-// Blazor 组件——订阅事件刷新 UI
-@code {
-    private IDisposable? _subscription;
-
-    protected override void OnInitialized()
-    {
-        _subscription = LocalEventBus.Subscribe<OrderCreatedEvent>(new Handler(this));
-    }
-
-    public void Dispose() => _subscription?.Dispose();
-
-    private class Handler(OrderList parent) : ILocalEventHandler<OrderCreatedEvent>
-    {
-        public Task HandleEventAsync(OrderCreatedEvent eventData)
-        {
-            parent.StateHasChanged();
-            return Task.CompletedTask;
-        }
-    }
-}
-```
+- **后台作业内派发**（含 `[Transactional]` 事务一致用法）→ [后台作业](./background-jobs.md)
+- **运行时订阅**（Blazor 组件 / 测试捕获 / SignalR 规划）→ [事件的表现层消费](./event-consumption.md)
 
 ### 4.7 多 handler 处理同一事件
 
@@ -435,15 +396,13 @@ PostProceed (EventDispatchFilter)
 
 ### 5.2 非 AOP 路径
 
-后台作业、MQ 消费者、测试代码中 `AopContextAccessor.Current == null`：
+后台作业、MQ 消费者、测试代码中 `AopContextAccessor.Current == null` 时，事件派发不再收集到 Bag，而是立即执行：
 
-| 调用 | 行为 |
-|:--|:--|
-| `PublishAsync` | 立即派发（不收集到 Bag） |
-| `PostAsync` | 立即派发（与 `PublishAsync` 行为一致——都同步派发） |
-| `AddEvent`（聚合根） | 事件留在 `_events` 列表，需手动调用 `ILocalEventBus` 派发 |
+- `PublishAsync` → 立即派发（不收集到 Bag）
+- `PostAsync` → 立即派发（与 `PublishAsync` 行为一致）
+- `AddEvent`（聚合根）→ 事件留在 `_events` 列表，需手动调用 `ILocalEventBus` 派发
 
-> 后台作业内如需事务一致的事件派发，在作业方法上标注 `[Transactional]`，AOP 管线接管收集与 post-commit 派发。
+> 后台作业内如需事务一致的事件派发，在作业方法上标注 `[Transactional]`，AOP 管线接管收集与 post-commit 派发。完整讨论见 [后台作业](./background-jobs.md)。
 
 ### 5.3 Outbox 启用与配置
 
@@ -479,8 +438,6 @@ public record OrderConfirmedEvent(...);
 
 事件名用于：RabbitMQ routing key、Outbox 表 `EventName` 列、Inbox 幂等匹配。
 
-### 5.5 事件名自定义
-
 ### 5.5 测试事件
 
 ```csharp
@@ -514,21 +471,9 @@ private class CaptureHandler(List<OrderCreatedEvent> captured) : ILocalEventHand
 
 ### 5.6 RPC 事件侧信道
 
-RPC 调用时，服务端事件通过 RPC 响应体自动携带回调用方（ADR33）：
+RPC 调用时，服务端事件通过 RPC 响应体自动携带回调用方（ADR33）。详见 [事件的表现层消费](./event-consumption.md)——该文覆盖 `X-TKWF-Events` 响应头、`extensions.tkwf.events` 扩展字段、4KB 截断与 SignalR 规划。
 
-```csharp
-// 服务端——正常发布事件
-public async Task<Order> CreateOrderAsync(...)
-{
-    await _eventBus.PublishAsync(new OrderCreatedEvent(...));
-    return order;
-}
-
-// 调用方（Wasm/TS 客户端）——自动接收并本地派发
-// 无需额外代码，DomainClient RPC 管线自动处理
-```
-
-> RPC 侧信道仅携带非 `[DistributedEvent]` 的本地事件——分布式事件走 Outbox/broker，不走 RPC。
+> 提醒：RPC 侧信道仅携带非 `[DistributedEvent]` 的本地事件——分布式事件走 Outbox/broker，不走 RPC。
 
 ---
 
@@ -676,7 +621,7 @@ handler 异常被 per-handler try/catch 捕获，log + `IEventDispatchDiagnostic
 
 **Q6：后台作业内怎么发事件？**
 
-直接调 `PublishAsync`——非 AOP 路径立即派发。如需事务一致，在作业方法上标注 `[Transactional]`，AOP 管线接管收集与 post-commit 派发。
+直接调 `PublishAsync`——非 AOP 路径立即派发。如需事务一致，在作业方法上标注 `[Transactional]`，AOP 管线接管收集与 post-commit 派发。完整讨论见 [后台作业](./background-jobs.md)。
 
 **Q7：实体不继承 AggregateRoot 怎么发事件？**
 
@@ -740,9 +685,18 @@ handler 需要事务一致吗？（commit 失败时事件不能发）
 
 ---
 
+## 十一、进一步阅读
+
+| 文章 | 说明 |
+|:--|:--|
+| [后台作业](./background-jobs.md) | `[BackgroundJob]` + `IBackgroundJobManager`、SystemActor 绑定、租户恢复、作业内事件派发 |
+| [事件的表现层消费](./event-consumption.md) | 运行时订阅（Blazor/测试）、RPC 侧信道（X-TKWF-Events）、SignalR 规划 |
+| [门控机制](./gates.md) | 事件机制相关运行时门控（Outbox 未配置、事件未接线、双标注不一致等） |
+
 ---
 
 > **版本历史**
+> - v1.2 (2026-08-28): 拆出 B1/B2 后精修——后台作业 / RPC 侧信道 / 运行时订阅章节改为"进一步阅读"链接，修复 §5.5 重复编号
 > - v1.1 (2026-08-28): 基于 G15 v1.0 重写为公开文档站文章，增加快速入门、API 参考、完整示例、最佳实践、反模式、FAQ、决策树
 >
 > ---
