@@ -12,17 +12,39 @@
 # 依赖: ../_TKWF 仓库已 checkout（CI 中由 workflow 控制）
 
 param(
-    [string]$TkwfRoot = "../_TKWF",
+    [string]$TkwfRoot = "",
     [string]$DocsRoot = "docs"
 )
 
 $ErrorActionPreference = "Stop"
 
+# ---- 0. 定位 _TKWF 仓库 ----
+# 留空时自动探测：本地兄弟目录 ../_TKWF，CI 中 workflow 检出位置 src/TKW.Framework。
+# 此前固定默认 "../_TKWF" 导致 CI 静默跳过全部版本同步（CHANGELOG 实际在 src/TKW.Framework/docs/）。
+if (-not $TkwfRoot) {
+    foreach ($candidate in @("../_TKWF", "src/TKW.Framework")) {
+        if (Test-Path (Join-Path $candidate "docs" "CHANGELOG.md")) {
+            $TkwfRoot = $candidate
+            break
+        }
+    }
+    if (-not $TkwfRoot) { $TkwfRoot = "../_TKWF" }
+}
+Write-Host "TKWF 仓库: $TkwfRoot"
+
+# 逐字写入——Set-Content -Value 会把以换行结尾的字符串当成"末尾空行"，再追加一个 OS 换行符，
+# 导致每次运行都给文件累积一个空行（非幂等）。UTF8Encoding($false) 不写 BOM，保留文件既有换行风格。
+function Write-FileVerbatim {
+    param([string]$Path, [string]$Content)
+    $utf8NoBom = New-Object System.Text.UTF8Encoding($false)
+    [System.IO.File]::WriteAllText($Path, $Content, $utf8NoBom)
+}
+
 # ---- 1. 读取 CHANGELOG ----
 $changelog = Join-Path $TkwfRoot "docs" "CHANGELOG.md"
 if (-not (Test-Path $changelog)) {
-    Write-Warning "未找到 CHANGELOG: $changelog，跳过版本同步"
-    exit 0
+    Write-Error "未找到 CHANGELOG: $changelog —— 版本同步失败（请以 -TkwfRoot 指定 _TKWF 仓库路径）"
+    exit 1
 }
 
 $content = Get-Content $changelog -Raw
@@ -68,7 +90,7 @@ $llms = Join-Path $DocsRoot "llms.txt"
 if (Test-Path $llms) {
     $llmsContent = Get-Content $llms -Raw
     $llmsContent = $llmsContent -replace '- 当前同步版本：V[\d\.]+', "- 当前同步版本：V$newestVer"
-    Set-Content $llms -Value $llmsContent -Encoding UTF8
+    Write-FileVerbatim $llms $llmsContent
     Write-Host "  ✅ llms.txt  → V$newestVer"
 }
 
@@ -106,7 +128,7 @@ if (Test-Path $index) {
     $indexContent = $indexContent -replace 'badge/version-[\d\.]+-green', "badge/version-$newestVer-green"
     $indexContent = $indexContent -replace 'alt="Version [\d\.]+"', "alt=`"Version $newestVer`""
 
-    Set-Content $index -Value $indexContent -Encoding UTF8
+    Write-FileVerbatim $index $indexContent
     Write-Host "  ✅ index.md Hero badge → V$newestVer"
 }
 
@@ -119,7 +141,7 @@ if (Test-Path $sdm) {
         # 在末尾追加
         $sdmContent = $sdmContent.TrimEnd() + "`n`n---`n`n> 对齐 TKWF：V$newestVer · $(Get-Date -Format 'yyyy-MM-dd')`n"
     }
-    Set-Content $sdm -Value $sdmContent -Encoding UTF8
+    Write-FileVerbatim $sdm $sdmContent
     Write-Host "  ✅ source-doc-map.md → V$newestVer"
 }
 
