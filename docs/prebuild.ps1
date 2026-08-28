@@ -77,21 +77,29 @@ $index = Join-Path $DocsRoot "index.md"
 if (Test-Path $index) {
     $indexContent = Get-Content $index -Raw
 
+    # 探测文件换行风格（混合换行时以多数为准）——避免写入破坏既有风格
+    $crlfCount = [regex]::Matches($indexContent, "`r`n").Count
+    $lfOnlyCount = [regex]::Matches($indexContent, "(?<!`r)`n").Count
+    $fileNl = if ($crlfCount -gt $lfOnlyCount) { "`r`n" } else { "`n" }
+
     $tableRows = ""
     # 从新到旧排列（$latest[0] 最新）
     for ($i = 0; $i -lt $latest.Count; $i++) {
         $e = $latest[$i]
         $shortDesc = $e.Desc
         if ($shortDesc.Length -gt 80) { $shortDesc = $shortDesc.Substring(0, 80) + "…" }
-        $tableRows += "| **$($e.Ver)** | $($e.Date) | $shortDesc |`n"
+        $tableRows += "| **$($e.Ver)** | $($e.Date) | $shortDesc |$fileNl"
     }
 
     # 替换版本动态区块中的表格（从 ## 最近版本动态 标题后到 CHANGELOG 链接前）
-    $tablePattern = '(?s)(?<=## 最近版本动态\n\n).*?(?=\n> 完整变更历史)'
+    # \r?\n 兼容 CRLF/LF/混合换行——固定宽度前瞻（(?<=) 不支持 [\r\n]+）
+    $tablePattern = '(?s)(?<=## 最近版本动态\r?\n\r?\n).*?(?=\r?\n> 完整变更历史)'
     if ($indexContent -match $tablePattern) {
-        $newBlock = "| 版本 | 日期 | 核心内容 |`n|:-----|:-----|:---------|`n$tableRows`n"
+        $newBlock = "| 版本 | 日期 | 核心内容 |$fileNl|:-----|:-----|:---------|$fileNl$tableRows"
         $indexContent = $indexContent -replace $tablePattern, $newBlock
         Write-Host "  ✅ index.md  → V$newestVer 及前 2 版本"
+    } else {
+        Write-Warning "  ⚠️ index.md  未匹配到「最近版本动态」表格区块，表格未更新（请检查标题文本）"
     }
 
     # 同步 Hero 区版本 badge（区块 1）
