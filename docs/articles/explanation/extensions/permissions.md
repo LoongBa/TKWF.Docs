@@ -354,7 +354,7 @@ TKWF 核心理念是"编译期确定性"——SG1 编译期扫描 `[PermissionCo
 | 文章 | 说明 |
 |:--|:--|
 | [导航扩展](./navigation.md) | 菜单项定义 + IMenuManager 权限过滤（与 Permissions 集成） |
-| [扩展机制：如何使用](./../extensions-usage.md) | 三层分离、三类分离、启用扩展的接入方式 |
-| [扩展机制：如何开发扩展](./../extensions-development.md) | 扩展契约、三钩子、SG 扫描、过滤器注册 |
+| [扩展机制：如何使用](./usage.md) | 三层分离、三类分离、启用扩展的接入方式 |
+| [扩展机制：如何开发扩展](./development.md) | 扩展契约、三钩子、SG 扫描、过滤器注册 |
 | [全局过滤器体系](../../core-concepts/filters.md) | FilterTier 与 AOP 过滤器注册体系 |
 | [认证与授权](../../security/authorization.md) | AuthorityFilter 角色授权（与权限扩展并存） |

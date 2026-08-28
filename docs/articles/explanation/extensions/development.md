@@ -110,7 +110,7 @@ SG1（`IIncrementalGenerator`）新增 `CollectFeatureGates` 扫描，编译期�
 
 如果扩展引入了新的编译期声明（如 `[RequirePermission]`），扩展可自带 SG 分析器追加规则到 `ProjectMetaContext.GateRules`——遵循"后续加规则只改 ProjectMetaContext"原则。
 
-> 门控三形态与验证机制详见 [门控机制](./gates.md)。
+> 门控三形态与验证机制详见 [门控机制](../gates.md)。
 
 ---
 
@@ -277,7 +277,7 @@ TKWF.Ext.Permissions/
 
 | 文章 | 说明 |
 |:--|:--|
-| [扩展机制：如何使用](./extensions-usage.md) | 三层分离、三类分离、启用/禁用扩展 |
-| [门控机制](./gates.md) | 编译期 / 运行时启动期 / 配置期三形态 + ADR35 具体规则 |
-| [AOP 管线详解](../core-concepts/aop-pipeline.md) | AOP 拦截器体系（扩展过滤器与 AOP 管线的关系） |
-| [全局过滤器体系](../core-concepts/filters.md) | FilterBuilder 注册入口与 FilterTier 语义 |
+| [扩展机制：如何使用](./usage.md) | 三层分离、三类分离、启用/禁用扩展 |
+| [门控机制](../gates.md) | 编译期 / 运行时启动期 / 配置期三形态 + ADR35 具体规则 |
+| [AOP 管线详解](../../core-concepts/aop-pipeline.md) | AOP 拦截器体系（扩展过滤器与 AOP 管线的关系） |
+| [全局过滤器体系](../../core-concepts/filters.md) | FilterBuilder 注册入口与 FilterTier 语义 |

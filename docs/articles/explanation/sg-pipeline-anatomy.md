@@ -232,4 +232,4 @@ SG 管线在编译期执行三项验证：
 - [为什么 AOP 编译期生成](./aop-by-design.md) — 编译期 vs 运行时 AOP 对比
 - [控制器路径选型](../decision-guides/choose-controller-path.md) — 自动生成 vs 手写 Controller
 - [传输协议选型](../decision-guides/choose-transport.md) — GraphQL vs REST vs RPC 选型
-- [扩展机制：如何开发扩展](./extensions-development.md) — SG1 扫描扩展契约
+- [扩展机制：如何开发扩展](./extensions/development.md) — SG1 扫描扩展契约

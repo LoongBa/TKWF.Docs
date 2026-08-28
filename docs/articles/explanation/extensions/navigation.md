@@ -299,6 +299,6 @@ V4.9.74 暂不支持分区（单一菜单集）。多菜单组是前瞻扩展点
 | 文章 | 说明 |
 |:--|:--|
 | [权限扩展](./permissions.md) | 权限定义 + `[RequirePermission]` + `IPermissionChecker`（Navigation 的过滤依赖） |
-| [扩展机制：如何使用](./../extensions-usage.md) | 三层分离、三类分离、启用扩展的接入方式 |
-| [扩展机制：如何开发扩展](./../extensions-development.md) | 扩展契约、三钩子、SG 扫描、过滤器注册 |
+| [扩展机制：如何使用](./usage.md) | 三层分离、三类分离、启用扩展的接入方式 |
+| [扩展机制：如何开发扩展](./development.md) | 扩展契约、三钩子、SG 扫描、过滤器注册 |
 | [认证与授权](../../security/authorization.md) | AuthorityFilter 角色授权（与权限扩展并存） |

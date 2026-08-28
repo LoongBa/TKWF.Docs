@@ -210,7 +210,7 @@ P1（推荐）模块约 25 个（后台任务、多租户、通知、本地化�
 | **Phase 2 接线基座** | V4.9.71 | 三钩子实际接线（`ConfigureServices`/`ConfigureFilters`/`InitializeAsync`）、扩展清单 API（`ITkExtensionContainer`/`ITkExtensionRegistry`）、按需启停（`IsEnabled`） | ✅ 已实施 |
 | **Phase 2 业务模块** | V4.9.72+ | 首批验证模块（Permissions/Navigation）作为独立扩展包落地 | 🔲 待实施 |
 
-> **结论**：扩展机制**接线基座已可用**——你现在就可以开发自己的扩展（见 [扩展机制：如何开发扩展](./extensions-development.md)），只是框架组自带的首批业务模块（Permissions/Navigation）尚未随包发布。
+> **结论**：扩展机制**接线基座已可用**——你现在就可以开发自己的扩展（见 [扩展机制：如何开发扩展](./development.md)），只是框架组自带的首批业务模块（Permissions/Navigation）尚未随包发布。
 
 ---
 
@@ -218,7 +218,7 @@ P1（推荐）模块约 25 个（后台任务、多租户、通知、本地化�
 
 扩展内部使用 `[DistributedEvent]` / `[BackgroundJob]` 等框架特性时，SG1 自动生成对应的 `GateRules` 门控条目（纳入 ADR35 统一门控验证），**扩展零手写门控代码**。若扩展依赖的运行时接线（如 `IDistributedEventBus`）未配置，启动时门控会报错。
 
-> 门控三形态与具体规则见 [门控机制](./gates.md)。
+> 门控三形态与具体规则见 [门控机制](../gates.md)。
 
 ---
 
@@ -226,7 +226,7 @@ P1（推荐）模块约 25 个（后台任务、多租户、通知、本地化�
 
 | 文章 | 说明 |
 |:--|:--|
-| [扩展机制：如何开发扩展](./extensions-development.md) | 扩展契约、三钩子、SG1 扫描、过滤器注册、开发工作流 |
-| [门控机制](./gates.md) | 编译期 / 运行时启动期 / 配置期三形态 + ADR35 具体规则 |
-| [事件总线与消息基础设施](./event-bus.md) | 本地/分布式事件总线（框架核心能力，扩展可依赖） |
-| [后台作业](./background-jobs.md) | 后台作业基础设施（内置扩展） |
+| [扩展机制：如何开发扩展](./development.md) | 扩展契约、三钩子、SG1 扫描、过滤器注册、开发工作流 |
+| [门控机制](../gates.md) | 编译期 / 运行时启动期 / 配置期三形态 + ADR35 具体规则 |
+| [事件总线与消息基础设施](../event-bus.md) | 本地/分布式事件总线（框架核心能力，扩展可依赖） |
+| [后台作业](../background-jobs.md) | 后台作业基础设施（内置扩展） |

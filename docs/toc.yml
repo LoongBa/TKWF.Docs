@@ -21,6 +21,18 @@
           href: articles/explanation/event-bus.md
         - name: Agentic Coding 友好度评估
           href: articles/explanation/agentic-evaluation.md
+        - name: 扩展机制系列
+          items:
+            - name: 扩展子系列索引
+              href: articles/explanation/extensions/index.md
+            - name: 扩展机制：如何使用
+              href: articles/explanation/extensions/usage.md
+            - name: 扩展机制：如何开发扩展
+              href: articles/explanation/extensions/development.md
+            - name: 权限扩展
+              href: articles/explanation/extensions/permissions.md
+            - name: 导航扩展
+              href: articles/explanation/extensions/navigation.md
     - name: 决策指南
       href: articles/decision-guides/choose-transport.md
 - name: 🏗️ 框架概览

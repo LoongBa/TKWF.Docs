@@ -229,4 +229,4 @@ public async Task TransferFundsAsync(decimal amount) { /* ... */ }
 
 - [条件表达式构建器](../advanced/conditions-builder.md) — Conditions Builder 完整 API 参考
 - [增强查询 QueryBuilder](../advanced/query-guide.md) — User.Query\<T\>() 客户端远程查询
-- [扩展机制：如何开发扩展](../explanation/extensions-development.md) — SG1 扫描扩展契约
+- [扩展机制：如何开发扩展](../explanation/extensions/development.md) — SG1 扫描扩展契约
