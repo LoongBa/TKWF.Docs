@@ -1,17 +1,17 @@
 [
   {
-    "version": "4.9.75",
-    "date": "2026-08-28",
-    "description": "扩展机制最终收尾（遗留 20 项 P0/P1 处置）：B1 GateRules SourceExtension（禁用扩展跳过门控）+ A1 DI 全图验证（TKWF_DI001）+ C1 FreeSqlPermissionStore（权限持久化）+ A2 能力机制废弃决策 + F1 TPA 缓存。 参考：v4.9.75-扩展机制最终收尾-开发方案.md（Oracle 评审 H1-H4/M1-M5 修订）/ ADR37 决策 5（废弃记录）/ D17 §4.11.2（DI 全图验证说明）"
+    "version": "4.9.89",
+    "date": "2026-09-01",
+    "description": "事务特性查找正确性回归（Oracle 评审 P1） — `StaticDomainInterceptor.TxAttributeCache` 缓存键从 `MethodInfo` 改 `(MethodInfo, Type)`：类级兜底恢复 `context.Target.GetType()`（运行时具体类型）而非方法声明类型（`DeclaringType`）。修复继承方法 + 派生类类级 `[Transactional]` 场景事务静默丢失。"
   },
   {
-    "version": "4.9.74",
-    "date": "2026-08-28",
-    "description": "扩展机制业务模块 Phase 2（ADR39）：第二个 TKWF.Ext.* 业务扩展包落地——**TKWF.Ext.Navigation** 菜单扩展（菜单数据模型 + 贡献机制 + IMenuManager 权限过滤）；SG 菜单贡献者注册生成；菜单与 Permissions 集成（编译期依赖 + checker 缺失降级）。 参考：v4.9.74-Navigation扩展核心-开发方案.md / ADR39-Navigation扩展架构决策 / D17-TKWF扩展机制与业务模块全景（§5.2 落地标注）"
+    "version": "4.9.88",
+    "date": "2026-09-01",
+    "description": "反射消除与 SG 化（三层原则落地） — \"SG 化 → 消灭 → 缓存兜底\"："
   },
   {
-    "version": "4.9.73",
-    "date": "2026-08-28",
-    "description": "扩展机制遗留收尾——处置 V4.9.72 审核报告全部遗留问题/建议：修复 E1（SG 特征门控扫描 `Contains` 逻辑反转，V4.9.70 静默缺陷）；补 G2（SG 生成代码真实消费者编译验证，堵 V4.9.71 命名空间笔误类缺陷）；G1 评估决策 + L1-L3 低成本修复；文档站 V1.2.1 单独提交。 参考：v4.9.73-扩展机制遗留收尾-开发方案.md / ADR38（D7 评估结论）/ v4.9.72-Permissions扩展核心-审核报告.md"
+    "version": "4.9.87",
+    "date": "2026-09-01",
+    "description": "移除 `[DomainUser] ServiceProvider 尝试来源` 逐来源 Debug.WriteLine 刷屏日志 — `TryResolveScope` 不再每次解析打日志（正常路径首源即成功，失败路径由调用方 throw\"无法获取解析作用域。\"覆盖诊断）。删除冗余 `source` 参数。"
   }
 ]

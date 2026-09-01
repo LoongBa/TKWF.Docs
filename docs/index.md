@@ -7,7 +7,7 @@ _layout: landing
 <div class="hero-section">
   <div class="hero-badges">
     <img src="https://img.shields.io/badge/.NET-10-blue" alt=".NET 10" />
-    <img src="https://img.shields.io/badge/version-4.9.75-green" alt="Version 4.9.75" />
+    <img src="https://img.shields.io/badge/version-4.9.89-green" alt="Version 4.9.89" />
     <img src="https://img.shields.io/badge/Agentic-Engineering-purple" alt="Agentic Engineering" />
   </div>
 <h1>TKW.Framework — 让 Agentic Engineering 更可控、更可靠的软件开发框架</h1>
@@ -524,9 +524,9 @@ tkwf-tsclient-mock → Mock 数据生成
 
 | 版本 | 日期 | 核心内容 |
 |:-----|:-----|:---------|
-| **4.9.75** | 2026-08-28 | 扩展机制最终收尾（遗留 20 项 P0/P1 处置）：B1 GateRules SourceExtension（禁用扩展跳过门控）+ A1 DI 全图验证（TK… |
-| **4.9.74** | 2026-08-28 | 扩展机制业务模块 Phase 2（ADR39）：第二个 TKWF.Ext.* 业务扩展包落地——**TKWF.Ext.Navigation** 菜单扩展（菜单数… |
-| **4.9.73** | 2026-08-28 | 扩展机制遗留收尾——处置 V4.9.72 审核报告全部遗留问题/建议：修复 E1（SG 特征门控扫描 `Contains` 逻辑反转，V4.9.70 静默缺陷）… |
+| **4.9.89** | 2026-09-01 | 事务特性查找正确性回归（Oracle 评审 P1） — `StaticDomainInterceptor.TxAttributeCache` 缓存键从 `Met… |
+| **4.9.88** | 2026-09-01 | 反射消除与 SG 化（三层原则落地） — "SG 化 → 消灭 → 缓存兜底"： |
+| **4.9.87** | 2026-09-01 | 移除 `[DomainUser] ServiceProvider 尝试来源` 逐来源 Debug.WriteLine 刷屏日志 — `TryResolveSco… |
 
 > 完整变更历史见 [TKWF CHANGELOG](https://github.com/LoongBa/TKW.Framework/blob/master/docs/CHANGELOG.md)
 
