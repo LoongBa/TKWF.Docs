@@ -5,7 +5,7 @@ description: 面向 AI Agent 的快速上手文档，含速查卡、6 条框架�
 # AI 快速上手（速查卡 + Prompt 模板）
 
 > 面向 AI Agent（Cursor / GitHub Copilot / Claude 等）的快速参考。
-> 设计依据：[G06B-Agentic](https://github.com/LoongBa/TKW.Framework/blob/master/docs/G06B-%E6%9D%A1%E4%BB%B6%E8%A1%A8%E8%BE%BE%E5%BC%8F%E6%9E%84%E5%BB%BA%E5%99%A8%E4%BD%BF%E7%94%A8%E6%8C%87%E5%8D%97-Agentic.md) · V4.9.41
+> 设计依据：[AC05（原 G06B-Agentic）](https://github.com/LoongBa/TKW.Framework/blob/master/docs/AC-Docs/AC05-%E6%9D%A1%E4%BB%B6%E8%A1%A8%E8%BE%BE%E5%BC%8F%E6%9E%84%E5%BB%BA%E5%99%A8%E7%AE%80%E6%98%8E%E6%8C%87%E5%8D%97.md) · V4.9.41
 
 ---
 

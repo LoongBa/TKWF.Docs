@@ -272,10 +272,12 @@ TKWF.Ext.Permissions/
 | **Phase 2 接线基座** | V4.9.71 | 三钩子实际接线 + 扩展清单 API + 按需启停 + Enable/Disable | ✅ 已实施 |
 | **Phase 2 业务模块** | V4.9.72-74 | Permissions（ADR38，权限持久化 V4.9.75）+ Navigation（ADR39）首批验证模块 | ✅ 已实施 |
 | **收尾** | V4.9.75 | GateRules `SourceExtension` 程序集归属关联 + DI 全图验证（`TKWF_DI001`）+ `FreeSqlPermissionStore` | ✅ 已实施 |
+| **Phase 3** | V4.9.76-77 | 配置结构验证（`TKWF_OPT0xx`）+ 有状态扩展单例（D2）+ 系列收尾 | ✅ 已实施 |
+| **独立仓库化** | V4.9.80+ | 扩展迁至公开仓库 `TKWF.Extensions`（独立版本 v0.1.0+）；框架内核去泛型化（ADR42）；Tagging/Account/Identity/AuditLogging/Settings 等扩展迁出 | ✅ 已实施 |
+| **门控体系** | V4.9.84-85 | 扩展模块引入门控（ADR46 `TKWFEnabledExtension`）+ 权威注册源上提（ADR47）+ 编译期实例化（ADR48 D4）+ 三层门控（ADR50 `TKWF0030-33`） | ✅ 已实施 |
 | ~~Phase 3 能力引用~~ | — | `RequiresCapability` / `ProvidesCapability` + SG 编译期校验 | ⛔ 已废弃（ADR37 决策 5） |
-| Phase 3 扩展单例 | 未来 | 跨钩子共享实例 + DI 解析扩展 | 🔲 待引入 |
 
-> **结论**：扩展机制基座 + 接线 + 首批业务模块 + 收尾校验全部落地——现在就可以开发自己的扩展，并直接参考官方 `TKWF.Ext.Permissions` / `TKWF.Ext.Navigation` 实现。
+> **结论**：扩展机制基座 + 接线 + 首批业务模块 + 收尾 + Phase 3 + 独立仓库化 + 门控体系全部落地——现在就可以开发自己的扩展，并直接参考 [`TKWF.Extensions`](https://github.com/LoongBa/TKWF.Extensions) 仓库中官方 `TKWF.Ext.Permissions` / `TKWF.Ext.Navigation` 实现（V4.9.80 起迁移至独立仓库，独立版本 v0.1.0+）。
 
 > ⛔ **能力引用机制（ADR37 决策 5，V4.9.75 正式废弃）**：`RequiresCapability` / `ProvidesCapability` 声明式软依赖原计划 V4.9.75+ 引入，因 **YAGNI 持续成立**（无真实软依赖案例）+ **编译期 ProjectReference 已覆盖依赖声明**（ADR39 Navigation 的依赖即 `ProjectReference`）而废弃。`FrameworkCapability` 常量保留仅供向后兼容引用。**显式 ProjectReference 优先于运行时能力发现**——接口是契约、DI 注册是能力提供。
 

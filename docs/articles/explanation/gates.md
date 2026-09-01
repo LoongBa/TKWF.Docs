@@ -162,6 +162,39 @@ TKWF_DI001: 'OrderService' 请求服务接口 'ICacheService' 但无框架特性
 
 ---
 
+## ⑤ 扩展模块门控（V4.9.84-89，ADR46/47/50）
+
+扩展机制从"消费端过滤"演进到"领域自治 + 源头门控"，新增一批编译期诊断码（`D18A` 总表）：
+
+| 诊断码 | 级别 | 场景 | 说明 |
+|:--|:--|:--|:--|
+| `TKWF0020` | Error | 领域项目启用了未 `[TKWFEnabledExtension]` 声明的扩展 | SG2 消费端拦截（ADR46） |
+| `TKWF0021` | Warning | 领域项目白名单过滤 | SG1b 聚合层（ADR47） |
+| `TKWF0022` | Error | 扩展项目引用扩展实现项目 | 源头禁令（ADR48/50） |
+| `TKWF0030` | Error | 普通项目直接引用扩展程序集 | L1 门控（ADR50） |
+| `TKWF0031` | Warning | 扩展项目缺 `[TKWFExtension]` 标记 | L2 门控（ADR50） |
+| `TKWF0032` | Error | 领域项目引扩展但未 `[TKWFEnabledExtension]` 声明 | L3 门控（ADR50） |
+| `TKWF0033` | Error | 普通项目声明 `[TKWFExtension]` | L1 门控（ADR50） |
+
+**三层门控不变式（ADR50）**：只有领域项目可引用扩展程序集且须 `[TKWFEnabledExtension]` 声明——
+
+```
+L1 普通项目：直接引扩展 → TKWF0030 Error；声明 [TKWFExtension] → TKWF0033 Error
+L2 扩展项目：引用扩展实现 → TKWF0022 Error；缺 [TKWFExtension] → TKWF0031 Warning
+L3 领域项目：直接引扩展未声明 → TKWF0032 Error
+```
+
+**启用扩展的新方式（V4.9.84+）**：领域项目初始化器显式声明启用，SG1b 生成白名单：
+
+```csharp
+[TKWFEnabledExtension(typeof(PermissionExtensionInitializer<>))]  // 强类型白名单
+public class MyHostInitializer : DomainHostInitializerBase<MyUserInfo> { ... }
+```
+
+> 门控作用面 = 激活 SG1b 的编译（WebApi/测试项目不激活 → 天然豁免）。扩展实例化已编译期化（ADR48 D4，SG 生成 `CreateInstances()`，零 `Activator.CreateInstance` 反射）。
+
+---
+
 ## 严重级别
 
 `RuntimeGateOptions.DefaultSeverity` 控制门控不通过时的行为：
@@ -199,6 +232,8 @@ override `ProjectMetaContextBase.ValidateRuntimeGates`，在基类调用后追�
 | V4.9.65 | 多租户运行时门控 | ADR34 |
 | V4.9.70 | 统一门控体系（GateRules + 12 缺口） | ADR35 |
 | V4.9.75 | 编译期 DI 依赖验证（`TKWF_DI001`）+ `SourceExtension` 扩展归属关联 | ADR37（决策 5 能力废弃）|
+| V4.9.84 | 扩展模块引入门控（`TKWFEnabledExtension` 白名单 + `TKWF0020`） | ADR46 |
+| V4.9.85 | 权威注册源上提（ADR47）+ 扩展机制编译期化（ADR48）+ 三层门控（`TKWF0030-33`） | ADR47/48/50 |
 
 ---
 

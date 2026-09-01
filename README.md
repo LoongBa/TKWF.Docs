@@ -4,7 +4,7 @@
 
 [![Build and Deploy Docs](https://github.com/LoongBa/TKWF.Docs/actions/workflows/docfx.yml/badge.svg)](https://github.com/LoongBa/TKWF.Docs/actions/workflows/docfx.yml)
 
-**当前同步版本：V4.9.75**（文档与框架 [LoongBa/TKW.Framework](https://github.com/LoongBa/TKW.Framework) 保持同步）
+**当前同步版本：V4.9.89**（文档与框架 [LoongBa/TKW.Framework](https://github.com/LoongBa/TKW.Framework) 保持同步）
 
 ---
 
@@ -12,13 +12,18 @@
 
 | 版本 | 日期 | 核心内容 |
 |:-----|:-----|:---------|
-| **4.9.75** | 2026-08-28 | 扩展机制最终收尾：GateRules `SourceExtension`（禁用扩展跳过 Warning 级门控）+ 编译期 DI 依赖验证（`TKWF_DI001`）+ `FreeSqlPermissionStore` 权限持久化 + 能力引用机制废弃（ADR37 决策 5） |
-| **4.9.74** | 2026-08-28 | 扩展机制业务模块 Phase 2（ADR39）：`TKWF.Ext.Navigation` 菜单扩展落地——菜单数据模型 + 贡献机制 + `IMenuManager` 权限过滤 + 与 Permissions 集成 |
-| **4.9.73** | 2026-08-28 | 扩展机制遗留收尾：修复 SG 特征门控扫描 `Contains` 逻辑反转（V4.9.70 静默缺陷）+ SG 生成代码真实消费者编译验证 + 低优项处置 |
-| **4.9.72** | 2026-08-28 | 扩展机制业务模块 Phase 1（ADR38）：首个 `TKWF.Ext.*` 业务扩展包——`TKWF.Ext.Permissions` 细粒度权限管理（权限定义 + 权限检查器 + RequirePermission 过滤器）；SG1 权限贡献者注册生成 + 跨程序集扩展发现 |
-| **4.9.71** | 2026-08-28 | 扩展机制 Phase 2（ADR37）：`ExtensionInitializer` 三钩子接入启动流程 + `ITkExtensionContainer`/`ITkExtensionRegistry` 运行时清单与开发者配置入口 + `IsEnabled` 按需启停 |
-| **4.9.70** | 2026-08-28 | 统一运行时门控完整化（ADR35）+ 扩展机制 Phase 1 基座（ADR37）：`ProjectMetaContext.GateRules` 数据驱动规则集 + SG1 特征扫描生成门控 + 多租户门控迁移；扩展契约 + `FilterBuilder` 分层注册 |
-| **4.9.68** | 2026-08-27 | 多租户双场景完善（ADR36）：三态作用域 + 授权读写分离（Read/Write）+ 更新路径租户钳制 + 客户端租户传播 |
+| **4.9.89** | 2026-09-01 | 事务特性查找正确性回归修复 + AOT 标注补齐（`[RequiresUnreferencedCode]`） |
+| **4.9.88** | 2026-09-01 | 反射消除与 SG 化（三层原则落地）：SG 内零反射 + 事件热路径缓存 + AOT 标注 + 热路径反射缓存 |
+| **4.9.87** | 2026-09-01 | 门控诊断文档更新：新增 `D18A` 诊断码总表 + ADR47/50 诊断码表 + 清理会话/门控调试刷屏 |
+| **4.9.86** | 2026-09-01 | 会话持久化反序列化接口崩溃修复（`IDomainUser` 自定义 JsonConverter） |
+| **4.9.85** | 2026-09-01 | 权威注册源上提（ADR47）+ 扩展机制编译期化（ADR48）+ 三层门控（ADR50）——领域自治 + 源头门控 |
+| **4.9.84** | 2026-09-01 | 扩展模块引入门控（ADR46）：`TKWFEnabledExtension` 白名单 + `TKWF0020` 诊断 |
+| **4.9.83** | 2026-08-31 | 会话上下文非泛型化收尾（ADR45）+ 泛型会话事件契约修复 + 两处回归缺陷修复 |
+| **4.9.82** | 2026-08-31 | Obsolete 清理 + G06 事务章节按 ADR26 重写 + ADR 状态回填 |
+| **4.9.79** | 2026-08-29 | Tagging 扩展包迁移（D17 模式 3）：标签服务迁出为 `TKWF.Ext.Tagging` |
+| **4.9.78** | 2026-08-29 | 查询暴露开关统一（ADR40）+ 控制器接口命名统一（ADR41）+ VEntity 生成物收尾 |
+
+> V4.9.76/77（扩展机制 Phase 3 配置结构验证 + 有状态扩展单例 + 系列收尾）为 v4.9.78 之前另一组扩展机制迭代，CHANGELOG 并入 v4.9.78 记录。
 
 > 完整变更历史见 [TKWF CHANGELOG](https://github.com/LoongBa/TKW.Framework/blob/master/docs/CHANGELOG.md)。
 

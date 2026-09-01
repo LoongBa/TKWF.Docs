@@ -6,7 +6,8 @@ description: TKWF 源文档 D/G/T/xCodeGen 系列与公开文章的完整映射�
 
 > 本文档建立 TKWF 源文档（`_TKWF/docs/`）与公开文档站文章的对应关系，
 > 便于 Agent 与贡献者定位权威来源。
-> 源文档体系以 `_TKWF/docs/00-文档体系说明.md` 为准（v4.9，D 系列 31 份，AC 系列 6 份）。
+> 源文档体系以 `_TKWF/docs/00-文档体系说明.md` 为准（v4.23，D 系列含 D18A/D19，G 系列 18 份）。
+> V4.9.80 起扩展独立仓库：扩展代码/指南迁至公开仓库 [`TKWF.Extensions`](https://github.com/LoongBa/TKWF.Extensions)，扩展模块文档（开发方案/ADR/总览）留在主框架 `03_扩展模块/`（私有）。
 
 ---
 
@@ -25,6 +26,7 @@ description: TKWF 源文档 D/G/T/xCodeGen 系列与公开文章的完整映射�
 | `D06B-条件表达式构建器设计.md` | [条件构建器](../advanced/conditions-builder.md) | PredicateBuilderBase、Entity.Conditions 静态类、xCodeGen + SG1 双重生成 |
 | `D06C-Entity映射与DB Schema-设计方案.md` | [VEntity 读写分离（CQRS）](../explanation/cqrs-read-write.md) · [VEntity 统计与聚合](../explanation/ventity-aggregate.md) | Entity 映射策略：ORM 特性体系（Table/Column/Index/Navigate）、接口标记 vs 基类继承、查询条件生成管线（三阶段 SearchGroup 提取） |
 | `D07-三层SG-原则和设计方案.md` | [代码生成管线](../core-concepts/code-generation.md) | 三层 SG 管线：SG1 元数据提取 → SG2 服务端生成 → SG3 客户端生成；ProjectMetaContext 唯一元数据源。V4.9.32 IsExposed 暴露过滤；V4.9.34 EntityFieldList 字段白名单；V4.9.35 Phase-C 实体连接 resolver + IsGraphQLQueryable 三侧过滤 |
+| `D19-TKWF反射使用与AOT跟踪.md` | [SG 管线解剖](../explanation/sg-pipeline-anatomy.md) | TKWF 反射使用全景 + AOT 兼容跟踪（V4.9.88+）：反射消除与 SG 化三层原则（"SG 化 → 消灭 → 缓存兜底"）、[RequiresDynamicCode]/[RequiresUnreferencedCode] 标注清单、无法消灭的反射（JsonConverter $type 多态 / EventTypeResolver 跨程序集） |
 | `D08-框架CI-CD与脚本架构.md` | — | 三仓库 CI/CD 管线、三引用模式（NuGet/DLL/Project）、MSBuild 基础设施、§九 Schema 导出管线（buildSchema.ps1） |
 
 ## 传输与客户端
@@ -60,6 +62,8 @@ description: TKWF 源文档 D/G/T/xCodeGen 系列与公开文章的完整映射�
 | `D10D-限流架构-设计方案.md` | [全局过滤器体系](../core-concepts/filters.md) | 限流架构：V4.9.26 退役自定义 IRateLimiter → 官方 System.Threading.RateLimiting。PartitionedRateLimiter 分区限流、EnforceAsync 扩展方法、AOP 集成、429 错误码映射 |
 | `D11-系统角色-SystemActor-设计方案.md` | [SystemActor 体系](../explanation/system-actor-explained.md) | 系统角色：BeginSystemScopeAsync、scope.System/scope.IsSystem、IEntityActorAuditable、[DenySystemActor]、StandaloneDomainUserAccessor（ADR 14/15/16） |
 | `D13-多租户：加字段与分库双模式设计方案.md` | [多租户](../explanation/multi-tenancy.md) · [门控机制](../explanation/gates.md) | 多租户架构（v2.2）：加字段（共享库行级隔离）与分库（Database-per-Tenant）双模式、租户识别与授权（ITenantContext/ITenantAuthorization）、身份租户（A）与目标租户（B）双场景、跨租户作用域（ExecuteInTenantAsync）、运行时门控 |
+| `D18-TKWF门控机制-设计方案.md` | [门控机制](../explanation/gates.md) | 门控机制设计：三级门控（1 编译时 / 2 混合 / 3 运行时热路径）、优先级原则（尽量 1、2 不得已才用 3）、GateRules 数据驱动规则集、RuntimeGateOptions 严重级别、SG1 特征门控生成、12 缺口全景、与扩展机制门控衔接 |
+| `D18A-TKWF诊断码总表.md` | — | TKWF 诊断码总表（V4.9.87+）：D18/ADR47/50 各诊断码汇总（TKWF_DI001、TKWF0030-33、TKWF0020-22 等） |
 | `G13-多租户使用指南.md` | [多租户](../explanation/multi-tenancy.md) | 多租户消费方实操手册：双模式选型决策树、加字段/分库/混合快速开始、跨租户操作、安全要点、测试要点 |
 
 ## 数据与查询
@@ -93,9 +97,9 @@ description: TKWF 源文档 D/G/T/xCodeGen 系列与公开文章的完整映射�
 | `D15-事件总线与消息基础设施-设计方案.md` | [事件总线与消息基础设施](../explanation/event-bus.md) · [后台作业](../explanation/background-jobs.md) · [事件的表现层消费](../explanation/event-consumption.md) | 事件总线与消息基础设施：领域事件（AddLocalEvent）、本地/分布式事件总线、后台作业管理器、Outbox/Inbox 事务性消息、EntityHistory 属性级 Diff。对标 ABP 事件/消息体系 11 维功能。与 ADR21-25 互补（ADR 讲 HOW，D15 讲 WHY+WHAT）。V4.9.52 ADR26 已实施 |
 | `D15-事件机制-架构复盘总结.md` | [事件总线与消息基础设施](../explanation/event-bus.md) | V4.9.64 事件机制完整架构复盘总结：W2 本地事件总线 + W4 SG 静态派发表 + W5 EntityHistory + W7 后台作业 |
 | `G15-事件机制-使用指南.md` | [事件总线与消息基础设施](../explanation/event-bus.md) | 事件机制消费方实操手册（v1.0）：三种派发模式（阻塞post-commit/异步Outbox/fire-and-forget）+ API参考 + 8个场景示例 + 反模式 + FAQ + 选型决策树 |
-| `D17-TKWF扩展机制与业务模块全景-设计方案.md` | [扩展机制：如何使用](../explanation/extensions/usage.md) · [扩展机制：如何开发扩展](../explanation/extensions/development.md) · [扩展子系列](../explanation/extensions/index.md) | TKWF V5 扩展机制架构：三层模型（核心/内置扩展/业务扩展）、编译期发现（vs ABP 运行时 DI）、SG1 增量扫描、ADR35 统一门控 + 编译期验证三件套。V4.9.70 基座 + V4.9.71 三钩子接线 + V4.9.72 Permissions + V4.9.74 Navigation 已落地 |
-| `G17A-权限扩展-使用指南.md` | [权限扩展](../explanation/extensions/permissions.md) | 权限扩展（TKWF.Ext.Permissions）实操手册：权限定义/贡献者、[RequirePermission] 方法级权限门、IPermissionChecker/IPermissionStore、fail-closed 语义（V4.9.72+，ADR38） |
-| `G17B-导航扩展-使用指南.md` | [导航扩展](../explanation/extensions/navigation.md) | 导航扩展（TKWF.Ext.Navigation）实操手册：菜单项定义/贡献者、IMenuManager 树形组装 + 权限过滤（All/Any）、checker 缺失降级（V4.9.74+，ADR39） |
+| `D17-TKWF扩展机制与业务模块全景-设计方案.md` | [扩展机制：如何使用](../explanation/extensions/usage.md) · [扩展机制：如何开发扩展](../explanation/extensions/development.md) · [扩展子系列](../explanation/extensions/index.md) | TKWF V5 扩展机制架构：三层模型（核心/内置扩展/业务扩展）、编译期发现（vs ABP 运行时 DI）、SG1 增量扫描、ADR35 统一门控 + 编译期验证三件套。V4.9.70 基座 + V4.9.71 三钩子接线 + V4.9.72 Permissions + V4.9.74 Navigation 已落地。**V4.9.80 剥离**：业务模块全景（§三/§五/§六）迁至 `03_扩展模块/总览和跟踪.md`（私有），本文档聚焦扩展机制 |
+| `G17A-权限扩展-使用指南.md` | [权限扩展](../explanation/extensions/permissions.md) | 权限扩展（TKWF.Ext.Permissions）实操手册：权限定义/贡献者、[RequirePermission] 方法级权限门、IPermissionChecker/IPermissionStore、fail-closed 语义（V4.9.72+，ADR38）。**V4.9.80 已迁移**至 [TKWF.Extensions `docs/Permissions/权限扩展-使用指南.md`](https://github.com/LoongBa/TKWF.Extensions/blob/main/docs/Permissions/%E6%9D%83%E9%99%90%E6%89%A9%E5%B1%95-%E4%BD%BF%E7%94%A8%E6%8C%87%E5%8D%97.md) |
+| `G17B-导航扩展-使用指南.md` | [导航扩展](../explanation/extensions/navigation.md) | 导航扩展（TKWF.Ext.Navigation）实操手册：菜单项定义/贡献者、IMenuManager 树形组装 + 权限过滤（All/Any）、checker 缺失降级（V4.9.74+，ADR39）。**V4.9.80 已迁移**至 [TKWF.Extensions `docs/Navigation/导航扩展-使用指南.md`](https://github.com/LoongBa/TKWF.Extensions/blob/main/docs/Navigation/%E5%AF%BC%E8%88%AA%E6%89%A9%E5%B1%95-%E4%BD%BF%E7%94%A8%E6%8C%87%E5%8D%97.md) |
 
 ## 国际化（i18n）
 
@@ -121,7 +125,7 @@ description: TKWF 源文档 D/G/T/xCodeGen 系列与公开文章的完整映射�
 
 ---
 
-> 对齐 TKWF：V4.9.75 · 2026-08-22
+> 对齐 TKWF：V4.9.89 · 2026-09-02
 
 
 

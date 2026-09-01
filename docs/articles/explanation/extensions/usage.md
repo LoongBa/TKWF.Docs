@@ -1,12 +1,12 @@
 ---
 title: 扩展机制：如何使用
-description: TKWF 扩展机制使用指南：三层分离、三类分离、启用扩展的接入方式（V4.9.70/71 已实施）
+description: TKWF 扩展机制使用指南：三层分离、三类分离、启用扩展的接入方式（V4.9.70-85 已实施，V4.9.80 起扩展独立仓库）
 ---
 
 # 扩展机制：如何使用
 
 > TKWF 扩展机制让"权限、菜单、审计"等业务模块作为可选包按需安装，同时保持框架核心精简。
-> 设计依据：[D17](https://github.com/LoongBa/TKW.Framework/blob/master/docs/D17-TKWF%E6%89%A9%E5%B1%95%E6%9C%BA%E5%88%B6%E4%B8%8E%E4%B8%9A%E5%8A%A1%E6%A8%A1%E5%9D%97%E5%85%A8%E6%99%AF-%E8%AE%BE%E8%AE%A1%E6%96%B9%E6%A1%88.md) · [ADR37](https://github.com/LoongBa/TKW.Framework/blob/master/docs/02-%E8%BF%AD%E4%BB%A3%E5%BC%80%E5%8F%91/ADR/ADR37-TKWF%E6%89%A9%E5%B1%95%E6%9C%BA%E5%88%B6%E6%9E%B6%E6%9E%84%E5%86%B3%E7%AD%96.md) · V4.9.70/71
+> 设计依据：[D17](https://github.com/LoongBa/TKW.Framework/blob/master/docs/D17-TKWF%E6%89%A9%E5%B1%95%E6%9C%BA%E5%88%B6%E4%B8%8E%E4%B8%9A%E5%8A%A1%E6%A8%A1%E5%9D%97%E5%85%A8%E6%99%AF-%E8%AE%BE%E8%AE%A1%E6%96%B9%E6%A1%88.md) · [ADR37](https://github.com/LoongBa/TKW.Framework/blob/master/docs/02-%E8%BF%AD%E4%BB%A3%E5%BC%80%E5%8F%91/ADR/ADR37-TKWF%E6%89%A9%E5%B1%95%E6%9C%BA%E5%88%B6%E6%9E%B6%E6%9E%84%E5%86%B3%E7%AD%96.md) · V4.9.70-85
 
 ---
 
@@ -186,15 +186,18 @@ protected override void ConfigureExtensions(ITkExtensionRegistry registry, IServ
 
 ## 现有扩展清单
 
-TKWF 业务模块全景（D17 §5）中，P0（必须）模块约 11 个，典型如下：
+TKWF 业务模块全景（原 D17 §5，V4.9.80 剥离至扩展仓库）中，P0（必须）模块约 11 个，典型如下：
 
 | 模块 | 扩展包 | 状态 |
 |:--|:--|:--|
-| 权限管理（RBAC） | `TKWF.Ext.Permissions` | 📋 重设计（Phase 2 首批） |
-| 导航菜单 | `TKWF.Ext.Navigation` | 📋 规划中（Phase 2 首批） |
-| 审计日志 | `TKWF.Ext.AuditLogging` | 📋 规划中 |
-| 设置管理 | `TKWF.Ext.Settings` | 📋 规划中 |
-| Tag 服务 | `TKWF.Ext.Tagging` | 📋 迁移（从框架核心迁出） |
+| 权限管理（RBAC） | `TKWF.Ext.Permissions` | ✅ 已发布（V4.9.72+） |
+| 导航菜单 | `TKWF.Ext.Navigation` | ✅ 已发布（V4.9.74+） |
+| 标签服务 | `TKWF.Ext.Tagging` | ✅ 已迁出（V4.9.79） |
+| 审计日志 | `TKWF.Ext.AuditLogging` | ✅ 已迁出（V0.1.0） |
+| 设置管理 | `TKWF.Ext.Settings` | ✅ 已迁出（V0.1.0） |
+| 账户/身份 | `TKWF.Ext.Account` / `TKWF.Ext.Identity` | ✅ 已迁出（V0.1.0） |
+
+> **V4.9.80 扩展独立仓库**：扩展代码/测试/指南从主框架迁至公开仓库 [`TKWF.Extensions`](https://github.com/LoongBa/TKWF.Extensions)，独立版本（v0.1.0 起）+ 独立 NuGet（规划）。扩展模块开发文档（开发方案/ADR/总览跟踪）留在主框架 `03_扩展模块/`（私有）。本页聚焦扩展机制本身，各扩展使用指南见扩展仓库。
 
 P1（推荐）模块约 25 个（后台任务、多租户、通知、本地化、限流、文件管理等），P2（按场景）约 20 个（CMS、支付、CRM、AI 等）——均作为扩展提供。
 
@@ -208,9 +211,13 @@ P1（推荐）模块约 25 个（后台任务、多租户、通知、本地化�
 |:--|:--|:--|:--|
 | **Phase 1 基座** | V4.9.70 | 扩展契约（`TKWFExtensionAttribute` + `ExtensionInitializer<TUserInfo>`）、`FilterBuilder.Add<T>(FilterTier)`、SG1 编译期发现注册表、门控衔接（ADR35） | ✅ 已实施 |
 | **Phase 2 接线基座** | V4.9.71 | 三钩子实际接线（`ConfigureServices`/`ConfigureFilters`/`InitializeAsync`）、扩展清单 API（`ITkExtensionContainer`/`ITkExtensionRegistry`）、按需启停（`IsEnabled`） | ✅ 已实施 |
-| **Phase 2 业务模块** | V4.9.72+ | 首批验证模块（Permissions/Navigation）作为独立扩展包落地 | 🔲 待实施 |
+| **Phase 2 业务模块** | V4.9.72-79 | 首批验证模块（Permissions/Navigation/Tagging）作为独立扩展包落地 | ✅ 已实施 |
+| **Phase 3 收尾** | V4.9.75-77 | GateRules `SourceExtension` + DI 全图验证（`TKWF_DI001`）+ `FreeSqlPermissionStore` + 配置结构验证（`TKWF_OPT0xx`）+ 有状态扩展单例（D2） | ✅ 已实施 |
+| **独立仓库化** | V4.9.80+ | 扩展迁至 `TKWF.Extensions` 公开仓库，独立版本；框架内核去泛型化（ADR42）配合扩展 SG1 化 | ✅ 已实施 |
+| **门控体系** | V4.9.84-85 | 扩展模块引入门控（ADR46）+ 权威注册源上提（ADR47）+ 扩展机制编译期化（ADR48）+ 三层门控（ADR50） | ✅ 已实施 |
+| ~~能力引用~~ | — | `RequiresCapability` / `ProvidesCapability` 声明式软依赖 | ⛔ 已废弃（ADR37 决策 5） |
 
-> **结论**：扩展机制**接线基座已可用**——你现在就可以开发自己的扩展（见 [扩展机制：如何开发扩展](./development.md)），只是框架组自带的首批业务模块（Permissions/Navigation）尚未随包发布。
+> **结论**：扩展机制基座 + 接线 + 首批业务模块 + 收尾 + 独立仓库化 + 门控体系全部落地。现在就可以开发自己的扩展（见 [扩展机制：如何开发扩展](./development.md)），并直接参考 `TKWF.Extensions` 仓库中的官方扩展实现。
 
 ---
 

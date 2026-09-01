@@ -5,7 +5,7 @@ description: 导航扩展使用指南：菜单项定义/贡献者、IMenuManager
 # 导航扩展：TKWF.Ext.Navigation
 
 > TKWF 导航扩展提供**菜单数据模型与贡献机制**——菜单项定义（名称/层级/权限）、菜单管理器（组装 + 权限过滤），**不涉及菜单渲染**（渲染是业务 UI 层的事）。
-> 使用指南：[G17B](https://github.com/LoongBa/TKW.Framework/blob/master/docs/G17B-%E5%AF%BC%E8%88%AA%E6%89%A9%E5%B1%95-%E4%BD%BF%E7%94%A8%E6%8C%87%E5%8D%97.md) · 设计：[D17 §5.2](https://github.com/LoongBa/TKW.Framework/blob/master/docs/D17-TKWF%E6%89%A9%E5%B1%95%E6%9C%BA%E5%88%B6%E4%B8%8E%E4%B8%9A%E5%8A%A1%E6%A8%A1%E5%9D%97%E5%85%A8%E6%99%AF-%E8%AE%BE%E8%AE%A1%E6%96%B9%E6%A1%88.md) · 决策：ADR39 · V4.9.74
+> 使用指南：[G17B（已迁 TKWF.Extensions）](https://github.com/LoongBa/TKWF.Extensions/blob/main/docs/Navigation/%E5%AF%BC%E8%88%AA%E6%89%A9%E5%B1%95-%E4%BD%BF%E7%94%A8%E6%8C%87%E5%8D%97.md) · 设计：[D17 §4.2](https://github.com/LoongBa/TKW.Framework/blob/master/docs/D17-TKWF%E6%89%A9%E5%B1%95%E6%9C%BA%E5%88%B6%E4%B8%8E%E4%B8%9A%E5%8A%A1%E6%A8%A1%E5%9D%97%E5%85%A8%E6%99%AF-%E8%AE%BE%E8%AE%A1%E6%96%B9%E6%A1%88.md) · 决策：ADR39 · V4.9.74
 
 ---
 
@@ -201,7 +201,7 @@ public class MenuService
 
 ### 为什么贡献者同步化（ADR39 D5 / Oracle H1）
 
-D17 §5.2.2 早期设计 `IMenuContributor.ConfigureMenuAsync`（异步），但 V4.9.74 落地时改为**同步 void** `ConfigureMenu`。原因：
+D17 §4.2 早期设计 `IMenuContributor.ConfigureMenuAsync`（异步），但 V4.9.74 落地时改为**同步 void** `ConfigureMenu`（ADR39 D5）。原因：
 
 ```
 ExtensionInitializer 三钩子时序：
@@ -260,7 +260,7 @@ Navigation 扩展只定义"菜单项有什么"（名称、层级、关联权限�
 | 边界 | 说明 | 规划 |
 |:--|:--|:--|
 | 菜单渲染 | 不提供——只定义"菜单项有什么"，渲染归业务 UI 层 | 消费方职责 |
-| TS Client 菜单元数据 | 未实现（D17 §5.3 弱增强） | 留后续迭代 |
+| TS Client 菜单元数据 | 未实现（扩展仓库弱增强） | 留后续迭代 |
 | 异步贡献者 | 不支持——`ConfigureMenu` 是同步（ConfigureServices 同步钩子约束） | 设计约束 |
 | 多菜单组 | `GetMenuAsync(menuName)` 参数当前忽略 | 前瞻扩展点 |
 
@@ -290,7 +290,7 @@ V4.9.74 暂不支持分区（单一菜单集）。多菜单组是前瞻扩展点
 能。Navigation 传递引用带 Permissions 程序集，但不注册 store 时 checker 缺失 → 菜单不过滤（返回全菜单）。安全由方法级权限门兜底。
 
 **Q: 为什么 `ConfigureMenu` 是同步的，不是异步？**
-`ExtensionInitializer.ConfigureServices` 是同步 void 钩子（DI 构建前调用），无法 `await`。异步贡献者无合法调用时机——这是 D17 §5.2.2 原设计的真实缺陷，V4.9.74 修正为同步（Oracle H1）。
+`ExtensionInitializer.ConfigureServices` 是同步 void 钩子（DI 构建前调用），无法 `await`。异步贡献者无合法调用时机——这是 D17 §4.2 原设计的真实缺陷，V4.9.74 修正为同步（Oracle H1）。
 
 ---
 
