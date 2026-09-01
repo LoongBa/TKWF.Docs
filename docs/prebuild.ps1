@@ -66,8 +66,15 @@ foreach ($line in $content -split "`n") {
         $currentVer = $Matches[1]
         $currentDate = $Matches[2]
         $currentDesc = ""
-    } elseif ($currentVer -and $line -match '^> (.+)') {
-        $currentDesc += $Matches[1] + " "
+    } elseif ($currentVer) {
+        if ($line -match '^> (.+)') {
+            # 优先取 blockquote 摘要行（如 "> 扩展机制...：..."）
+            $currentDesc += $Matches[1] + " "
+        } elseif ($currentDesc.Trim() -eq "" -and $line -match '^- (.+)') {
+            # 无摘要时回退取首条 bullet（v4.9.87+ 部分版本直接 ### Fixed/Changed，无 blockquote 摘要）
+            # 截断避免把整条长 bullet 塞进表格；只取第一条
+            $currentDesc += ($Matches[1] -replace '\*+', '') + " "
+        }
     }
 }
 # 保存最后一条
