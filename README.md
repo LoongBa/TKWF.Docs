@@ -4,7 +4,7 @@
 
 [![Build and Deploy Docs](https://github.com/LoongBa/TKWF.Docs/actions/workflows/docfx.yml/badge.svg)](https://github.com/LoongBa/TKWF.Docs/actions/workflows/docfx.yml)
 
-**当前同步版本：V4.9.89**（文档与框架 [LoongBa/TKW.Framework](https://github.com/LoongBa/TKW.Framework) 保持同步）
+**当前同步版本：V4.9.91**（文档与框架 [LoongBa/TKW.Framework](https://github.com/LoongBa/TKW.Framework) 保持同步）
 
 ---
 
@@ -12,6 +12,8 @@
 
 | 版本 | 日期 | 核心内容 |
 |:-----|:-----|:---------|
+| **4.9.91** | 2026-09-03 | `TKWF.Tools` → `TKWF.Utility` 更名（ADR52）+ `TKWF.Cryptography` 并包 + Tag 算法回归 `TKW.Framework.Utility.Tags`（`TKWF.Ext.Tagging` 瘦身为存储扩展 V0.2.0） |
+| **4.9.90** | 2026-09-02 | 配置字典回退 `Dictionary<string,string>`（ADR51）——撤销 V4.7.3 `List<ConfigEntry>` 连带改动 |
 | **4.9.89** | 2026-09-01 | 事务特性查找正确性回归修复 + AOT 标注补齐（`[RequiresUnreferencedCode]`） |
 | **4.9.88** | 2026-09-01 | 反射消除与 SG 化（三层原则落地）：SG 内零反射 + 事件热路径缓存 + AOT 标注 + 热路径反射缓存 |
 | **4.9.87** | 2026-09-01 | 门控诊断文档更新：新增 `D18A` 诊断码总表 + ADR47/50 诊断码表 + 清理会话/门控调试刷屏 |

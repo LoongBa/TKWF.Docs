@@ -7,7 +7,7 @@ _layout: landing
 <div class="hero-section">
   <div class="hero-badges">
     <img src="https://img.shields.io/badge/.NET-10-blue" alt=".NET 10" />
-    <img src="https://img.shields.io/badge/version-4.9.89-green" alt="Version 4.9.89" />
+    <img src="https://img.shields.io/badge/version-4.9.91-green" alt="Version 4.9.91" />
     <img src="https://img.shields.io/badge/Agentic-Engineering-purple" alt="Agentic Engineering" />
   </div>
 <h1>TKW.Framework — 让 Agentic Engineering 更可控、更可靠的软件开发框架</h1>
@@ -524,9 +524,9 @@ tkwf-tsclient-mock → Mock 数据生成
 
 | 版本 | 日期 | 核心内容 |
 |:-----|:-----|:---------|
+| **4.9.91** | 2026-09-03 | `TKWF.Tools` → `TKWF.Utility` 更名（ADR52） — 运行时工具库程序集与命名空间统一更名（`TKW.Framework.Tool… |
+| **4.9.90** | 2026-09-02 | `IDomainHostOptions.ConfigDictionary` 回退 `Dictionary<string, string>`（ADR51） — 撤… |
 | **4.9.89** | 2026-09-01 | 事务特性查找正确性回归（Oracle 评审 P1） — `StaticDomainInterceptor.TxAttributeCache` 缓存键从 `Met… |
-| **4.9.88** | 2026-09-01 | 反射消除与 SG 化（三层原则落地） — "SG 化 → 消灭 → 缓存兜底"： |
-| **4.9.87** | 2026-09-01 | 移除 `[DomainUser] ServiceProvider 尝试来源` 逐来源 Debug.WriteLine 刷屏日志 — `TryResolveSco… |
 
 > 完整变更历史见 [TKWF CHANGELOG](https://github.com/LoongBa/TKW.Framework/blob/master/docs/CHANGELOG.md)
 

@@ -74,7 +74,7 @@ var predicate = Entity.Conditions.All(
     Entity.Conditions.LikeName("test"));
 ```
 
-需要 `using TKWF.Tools.Extensions;`。
+需要 `using TKW.Framework.Extensions;`。
 
 ### 方式 C：链式（推荐）
 

@@ -308,6 +308,7 @@ Navigation → Permissions                ❌ TKWF0022 Error
 | **收尾** | V4.9.75 | GateRules `SourceExtension` 程序集归属关联 + DI 全图验证（`TKWF_DI001`）+ `FreeSqlPermissionStore` | ✅ 已实施 |
 | **Phase 3** | V4.9.76-77 | 配置结构验证（`TKWF_OPT0xx`）+ 有状态扩展单例（D2）+ 系列收尾 | ✅ 已实施 |
 | **独立仓库化** | V4.9.80+ | 扩展迁至公开仓库 `TKWF.Extensions`（独立版本 v0.1.0+）；框架内核去泛型化（ADR42）；Tagging/Account/Identity/AuditLogging/Settings 等扩展迁出 | ✅ 已实施 |
+| **Tagging 瘦身（ADR52）** | V4.9.91 | 标签算法（`ITagService`/`TagService` + 分词/匹配流水线）回归 `TKWF.Utility`（`TKW.Framework.Utility.Tags`）；`TKWF.Ext.Tagging` 瘦身为标签存储扩展（V0.2.0，持久化 V0.3.0 实施） | ✅ 已实施 |
 | **门控体系** | V4.9.84-85 | 扩展模块引入门控（ADR46 `TKWFEnabledExtension`）+ 权威注册源上提（ADR47）+ 编译期实例化（ADR48 D4）+ 三层门控（ADR50 `TKWF0030-33`） | ✅ 已实施 |
 | ~~Phase 3 能力引用~~ | — | `RequiresCapability` / `ProvidesCapability` + SG 编译期校验 | ⛔ 已废弃（ADR37 决策 5） |
 

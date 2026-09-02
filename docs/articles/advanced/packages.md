@@ -13,7 +13,7 @@ description: TKWF.Framework 全部 NuGet 包清单，按职责分层组织。
 | `TKWF.Domain` | 领域框架核心（DomainUser、AOP、`[GenerateController]`） |
 | `TKWF.Core` | 核心基础设施 |
 | `TKWF.Abstractions` | 共享抽象层 |
-| `TKWF.Cryptography` | 密码学工具（AES-GCM、RSA、HMAC、SecurePassword） |
+| `TKWF.Utility` | 运行时工具库（含 `TKWF.Utility.Cryptography` 密码学工具——AES-GCM、RSA、HMAC、SecurePassword；`TKW.Framework.Utility.Tags` 标签算法；ADR52 收纳） |
 
 ## 基础设施集成
 

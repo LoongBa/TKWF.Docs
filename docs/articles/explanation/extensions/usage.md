@@ -115,7 +115,7 @@ TKWF 的能力按"框架介入程度"分为三层：
 | `IMenuManager` | `TKWF.Ext.Navigation` | 菜单数据模型 + 权限过滤 |
 | `IAuditLogger` | `TKWF.Ext.AuditLogging` | 审计日志持久化 |
 | `ISettingManager` | `TKWF.Ext.Settings` | 配置持久化 |
-| `ITagService` | `TKWF.Ext.Tagging` | 标签管理（从框架核心迁出） |
+| `ITagService`（存储） | `TKWF.Ext.Tagging` | 标签存储（算法已回归 `TKW.Framework.Utility.Tags`，ADR52 瘦身） |
 
 ---
 
@@ -205,7 +205,7 @@ public class MyHostInitializer : DomainHostInitializerBase<MyUserInfo>
 | BlobStoring（二进制存储） | V0.1.0 | 大对象本地文件系统存储 |
 | Emailing（邮件） | V0.1.0 | SMTP/MailKit 邮件发送 |
 | DataDictionary（数据字典） | V0.1.0 | 字典定义 + 项 + 按编码查询 |
-| Tagging（标签） | V0.1.0 | 标签提取 / 匹配 / 格式化 |
+| Tagging（标签存储） | V0.2.0 | 标签存储扩展（算法已回归 `TKW.Framework.Utility.Tags`，ADR52 瘦身；持久化 V0.3.0 实施） |
 
 > P0 剩余：**PrintTemplates**（打印模板，需先写 ADR 定模板引擎选型）。完整清单/状态/路线图见扩展仓库 [`TKWF.Extensions`](https://github.com/LoongBa/TKWF.Extensions)（README 扩展一览表）与主框架私有 `03_扩展模块/总览和跟踪.md`。
 >
