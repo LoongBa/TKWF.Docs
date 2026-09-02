@@ -5,7 +5,7 @@ description: 权限扩展使用指南：权限定义/贡献者、[RequirePermiss
 # 权限扩展：TKWF.Ext.Permissions
 
 > TKWF 权限扩展提供**细粒度权限管理**——权限定义（如 `"Order.Create"`）、运行时权限检查、方法级权限门（`[RequirePermission]`），与框架核心的 `AuthorityFilter`（角色检查）并存互补。
-> 使用指南：[G17A（已迁 TKWF.Extensions）](https://github.com/LoongBa/TKWF.Extensions/blob/main/docs/Permissions/%E6%9D%83%E9%99%90%E6%89%A9%E5%B1%95-%E4%BD%BF%E7%94%A8%E6%8C%87%E5%8D%97.md) · 设计：[D17 §4.2](https://github.com/LoongBa/TKW.Framework/blob/master/docs/D17-TKWF%E6%89%A9%E5%B1%95%E6%9C%BA%E5%88%B6%E4%B8%8E%E4%B8%9A%E5%8A%A1%E6%A8%A1%E5%9D%97%E5%85%A8%E6%99%AF-%E8%AE%BE%E8%AE%A1%E6%96%B9%E6%A1%88.md) · 决策：ADR37/38 · V4.9.72+（权限持久化 V4.9.75）
+> 使用指南：[Permissions 指南（TKWF.Extensions）](https://github.com/LoongBa/TKWF.Extensions/blob/main/docs/Permissions/%E6%9D%83%E9%99%90%E6%89%A9%E5%B1%95-%E4%BD%BF%E7%94%A8%E6%8C%87%E5%8D%97.md) · 设计：[D17 §4.2](https://github.com/LoongBa/TKW.Framework/blob/master/docs/D17-TKWF%E6%89%A9%E5%B1%95%E6%9C%BA%E5%88%B6%E4%B8%8E%E4%B8%9A%E5%8A%A1%E6%A8%A1%E5%9D%97%E5%85%A8%E6%99%AF-%E8%AE%BE%E8%AE%A1%E6%96%B9%E6%A1%88.md) · 决策：ADR37/38 · V4.9.72+（权限持久化 V4.9.75）
 
 ---
 

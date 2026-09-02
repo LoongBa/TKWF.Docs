@@ -6,7 +6,7 @@ description: TKWF 扩展机制使用指南：三层分离、三类分离、启�
 # 扩展机制：如何使用
 
 > TKWF 扩展机制让"权限、菜单、审计"等业务模块作为可选包按需安装，同时保持框架核心精简。
-> 设计依据：[D17](https://github.com/LoongBa/TKW.Framework/blob/master/docs/D17-TKWF%E6%89%A9%E5%B1%95%E6%9C%BA%E5%88%B6%E4%B8%8E%E4%B8%9A%E5%8A%A1%E6%A8%A1%E5%9D%97%E5%85%A8%E6%99%AF-%E8%AE%BE%E8%AE%A1%E6%96%B9%E6%A1%88.md) · [ADR37](https://github.com/LoongBa/TKW.Framework/blob/master/docs/02-%E8%BF%AD%E4%BB%A3%E5%BC%80%E5%8F%91/ADR/ADR37-TKWF%E6%89%A9%E5%B1%95%E6%9C%BA%E5%88%B6%E6%9E%B6%E6%9E%84%E5%86%B3%E7%AD%96.md) · V4.9.70-85
+> 设计依据：[D17](https://github.com/LoongBa/TKW.Framework/blob/master/docs/D17-TKWF%E6%89%A9%E5%B1%95%E6%9C%BA%E5%88%B6%E4%B8%8E%E4%B8%9A%E5%8A%A1%E6%A8%A1%E5%9D%97%E5%85%A8%E6%99%AF-%E8%AE%BE%E8%AE%A1%E6%96%B9%E6%A1%88.md) · [ADR37](https://github.com/LoongBa/TKW.Framework/blob/master/docs/02-%E8%BF%AD%E4%BB%A3%E5%BC%80%E5%8F%91/ADR/ADR37-TKWF%E6%89%A9%E5%B1%95%E6%9C%BA%E5%88%B6%E6%9E%B6%E6%9E%84%E5%86%B3%E7%AD%96.md) · [G17B（使用扩展模块指南）](https://github.com/LoongBa/TKW.Framework/blob/master/docs/G17B-%E4%BD%BF%E7%94%A8%E6%89%A9%E5%B1%95%E6%A8%A1%E5%9D%97-%E4%BD%BF%E7%94%A8%E6%8C%87%E5%8D%97.md) · V4.9.70-85
 
 ---
 
@@ -131,6 +131,28 @@ TKWF 的能力按"框架介入程度"分为三层：
 
 安装后，SG1 在**编译期**扫描引用程序集中的 `[TKWFExtension]` 标记，自动发现扩展并生成注册代码——**无需手动 DI 注册**。
 
+### 白名单声明（V4.9.85+ 必需）
+
+> **发现 ≠ 启用（V4.9.85 ADR46 起）**：只引用扩展包不会生效——扩展被 SG1 发现但 `IsEnabled` 默认 `false`，三钩子（`ConfigureServices`/`ConfigureFilters`/`InitializeAsync`）不执行。必须在领域初始化器上显式声明白名单：
+
+```csharp
+using TKWF.Ext.Permissions;
+using TKWF.Ext.Identity;
+
+// 单个扩展
+[TKWFEnabledExtension(typeof(PermissionExtensionInitializer<>))]
+public class MyDomainInitializer : DomainHostInitializerBase<MyUserInfo> { ... }
+
+// 多个扩展——AllowMultiple，每扩展一行
+[TKWFEnabledExtension(typeof(PermissionExtensionInitializer<>))]
+[TKWFEnabledExtension(typeof(IdentityExtensionInitializer<>))]
+public class MyDomainInitializer : DomainHostInitializerBase<MyUserInfo> { ... }
+```
+
+`typeof(XxxExtensionInitializer<>)` 用**开放泛型**——SG1 从 `ContainingAssembly.Name` 推导扩展程序集名，运行时由框架填充具体的 `TUserInfo`。声明后扩展的能力清单（`GeneratedControllerCatalog`）被聚合进领域权威注册，三钩子才真正接线。
+
+> 只引用扩展包但未声明白名单：扩展的 DI 注册、过滤器、种子数据都不会生效。这是编译期门控（ADR46 `TKWF0020`/ADR50 `TKWF0032`），非运行时配置。
+
 ### 查看扩展清单
 
 扩展发现后，通过 `ITkExtensionContainer` 查看扩展清单（可注入单例）：
@@ -154,23 +176,7 @@ public class MyHostInitializer : DomainHostInitializerBase<MyUserInfo>
 }
 ```
 
-### 按需启停（IsEnabled）
-
-扩展默认启用（SG 发现即启用）。消费方通过 `ConfigureExtensions` 虚方法覆盖：
-
-```csharp
-protected override void ConfigureExtensions(ITkExtensionRegistry registry, IServiceCollection services)
-{
-    // 禁用某个扩展——三钩子（ConfigureServices/ConfigureFilters/InitializeAsync）均跳过
-    registry.Disable("Permissions");
-
-    // 重新启用
-    registry.Enable("Navigation");
-
-    // 自定义配置
-    registry.Configure("AuditLogging", options => options.ExcludePaths.Add("/health"));
-}
-```
+> **V4.9.85 后 `ITkExtensionContainer` 语义变化**：扩展实例化已编译期化（ADR48 D4，SG 生成 `CreateInstances()`，零 `Activator.CreateInstance` 反射），`ITkExtensionContainer`/`ITkExtensionRegistry` 退化为"SG 生成集合的查询视图"。旧 `ConfigureExtensions(registry)` 按需启停降级为防御性覆盖——正常启用路径走 `[TKWFEnabledExtension]` 白名单。
 
 ### 命名规范
 
@@ -186,18 +192,24 @@ protected override void ConfigureExtensions(ITkExtensionRegistry registry, IServ
 
 ## 现有扩展清单
 
-TKWF 业务模块全景（原 D17 §5，V4.9.80 剥离至扩展仓库）中，P0（必须）模块约 11 个，典型如下：
+扩展模块全景（原 D17 §5，V4.9.80 剥离至扩展仓库）P0 共 11 个，**9/11 已实施**（V0.1.0+，独立版本）：
 
-| 模块 | 扩展包 | 状态 |
+| 扩展 | 版本 | 说明 |
 |:--|:--|:--|
-| 权限管理（RBAC） | `TKWF.Ext.Permissions` | ✅ 已发布（V4.9.72+） |
-| 导航菜单 | `TKWF.Ext.Navigation` | ✅ 已发布（V4.9.74+） |
-| 标签服务 | `TKWF.Ext.Tagging` | ✅ 已迁出（V4.9.79） |
-| 审计日志 | `TKWF.Ext.AuditLogging` | ✅ 已迁出（V0.1.0） |
-| 设置管理 | `TKWF.Ext.Settings` | ✅ 已迁出（V0.1.0） |
-| 账户/身份 | `TKWF.Ext.Account` / `TKWF.Ext.Identity` | ✅ 已迁出（V0.1.0） |
+| Permissions（权限） | V0.7.0 + V0.8.0 | 权限定义 / fail-closed 检查 / 编译期权限名校验（PERM001） |
+| Identity（身份） | V0.1.0 | 用户 / 角色 / 用户角色分配 + 凭据验证 |
+| Account（账户） | V0.1.0 | 账户锁定 + 密码重置流程 |
+| Navigation（导航/菜单） | V0.1.0 | 菜单数据模型 / 贡献机制 / 权限过滤 |
+| AuditLogging（审计日志） | V0.1.0 | 审计日志 FreeSql 存储 |
+| Settings（设置） | V0.1.0 | 全局/用户级配置持久化 + 分层读取 |
+| BlobStoring（二进制存储） | V0.1.0 | 大对象本地文件系统存储 |
+| Emailing（邮件） | V0.1.0 | SMTP/MailKit 邮件发送 |
+| DataDictionary（数据字典） | V0.1.0 | 字典定义 + 项 + 按编码查询 |
+| Tagging（标签） | V0.1.0 | 标签提取 / 匹配 / 格式化 |
 
-> **V4.9.80 扩展独立仓库**：扩展代码/测试/指南从主框架迁至公开仓库 [`TKWF.Extensions`](https://github.com/LoongBa/TKWF.Extensions)，独立版本（v0.1.0 起）+ 独立 NuGet（规划）。扩展模块开发文档（开发方案/ADR/总览跟踪）留在主框架 `03_扩展模块/`（私有）。本页聚焦扩展机制本身，各扩展使用指南见扩展仓库。
+> P0 剩余：**PrintTemplates**（打印模板，需先写 ADR 定模板引擎选型）。完整清单/状态/路线图见扩展仓库 [`TKWF.Extensions`](https://github.com/LoongBa/TKWF.Extensions)（README 扩展一览表）与主框架私有 `03_扩展模块/总览和跟踪.md`。
+>
+> **V4.9.80 扩展独立仓库**：扩展代码/测试/指南从主框架迁至公开仓库 [`TKWF.Extensions`](https://github.com/LoongBa/TKWF.Extensions)，独立版本（v0.1.0 起）+ 独立 NuGet（规划）；各扩展有独立使用指南（`docs/{扩展}/...-使用指南.md`）。扩展模块开发文档（开发方案/ADR/总览跟踪）留在主框架 `03_扩展模块/`（私有）。本页聚焦扩展机制本身。
 
 P1（推荐）模块约 25 个（后台任务、多租户、通知、本地化、限流、文件管理等），P2（按场景）约 20 个（CMS、支付、CRM、AI 等）——均作为扩展提供。
 

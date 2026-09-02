@@ -5,7 +5,7 @@ description: 导航扩展使用指南：菜单项定义/贡献者、IMenuManager
 # 导航扩展：TKWF.Ext.Navigation
 
 > TKWF 导航扩展提供**菜单数据模型与贡献机制**——菜单项定义（名称/层级/权限）、菜单管理器（组装 + 权限过滤），**不涉及菜单渲染**（渲染是业务 UI 层的事）。
-> 使用指南：[G17B（已迁 TKWF.Extensions）](https://github.com/LoongBa/TKWF.Extensions/blob/main/docs/Navigation/%E5%AF%BC%E8%88%AA%E6%89%A9%E5%B1%95-%E4%BD%BF%E7%94%A8%E6%8C%87%E5%8D%97.md) · 设计：[D17 §4.2](https://github.com/LoongBa/TKW.Framework/blob/master/docs/D17-TKWF%E6%89%A9%E5%B1%95%E6%9C%BA%E5%88%B6%E4%B8%8E%E4%B8%9A%E5%8A%A1%E6%A8%A1%E5%9D%97%E5%85%A8%E6%99%AF-%E8%AE%BE%E8%AE%A1%E6%96%B9%E6%A1%88.md) · 决策：ADR39 · V4.9.74
+> 使用指南：[Navigation 指南（TKWF.Extensions）](https://github.com/LoongBa/TKWF.Extensions/blob/main/docs/Navigation/%E5%AF%BC%E8%88%AA%E6%89%A9%E5%B1%95-%E4%BD%BF%E7%94%A8%E6%8C%87%E5%8D%97.md) · 设计：[D17 §4.2](https://github.com/LoongBa/TKW.Framework/blob/master/docs/D17-TKWF%E6%89%A9%E5%B1%95%E6%9C%BA%E5%88%B6%E4%B8%8E%E4%B8%9A%E5%8A%A1%E6%A8%A1%E5%9D%97%E5%85%A8%E6%99%AF-%E8%AE%BE%E8%AE%A1%E6%96%B9%E6%A1%88.md) · 决策：ADR39 · V4.9.74
 
 ---
 

@@ -6,7 +6,7 @@ description: TKWF 扩展开发指南：编译期发现（vs ABP 运行时）、S
 # 扩展机制：如何开发扩展
 
 > 扩展通过 `[TKWFExtension]` + `ExtensionInitializer<TUserInfo>` 声明，SG1 编译期发现并生成注册代码。
-> 设计依据：[D17](https://github.com/LoongBa/TKW.Framework/blob/master/docs/D17-TKWF%E6%89%A9%E5%B1%95%E6%9C%BA%E5%88%B6%E4%B8%8E%E4%B8%9A%E5%8A%A1%E6%A8%A1%E5%9D%97%E5%85%A8%E6%99%AF-%E8%AE%BE%E8%AE%A1%E6%96%B9%E6%A1%88.md) · [ADR37](https://github.com/LoongBa/TKW.Framework/blob/master/docs/02-%E8%BF%AD%E4%BB%A3%E5%BC%80%E5%8F%91/ADR/ADR37-TKWF%E6%89%A9%E5%B1%95%E6%9C%BA%E5%88%B6%E6%9E%B6%E6%9E%84%E5%86%B3%E7%AD%96.md) · V4.9.70/71
+> 设计依据：[D17](https://github.com/LoongBa/TKW.Framework/blob/master/docs/D17-TKWF%E6%89%A9%E5%B1%95%E6%9C%BA%E5%88%B6%E4%B8%8E%E4%B8%9A%E5%8A%A1%E6%A8%A1%E5%9D%97%E5%85%A8%E6%99%AF-%E8%AE%BE%E8%AE%A1%E6%96%B9%E6%A1%88.md) · [ADR37](https://github.com/LoongBa/TKW.Framework/blob/master/docs/02-%E8%BF%AD%E4%BB%A3%E5%BC%80%E5%8F%91/ADR/ADR37-TKWF%E6%89%A9%E5%B1%95%E6%9C%BA%E5%88%B6%E6%9E%B6%E6%9E%84%E5%86%B3%E7%AD%96.md) · [G17A（设计扩展模块指南）](https://github.com/LoongBa/TKW.Framework/blob/master/docs/G17A-%E8%AE%BE%E8%AE%A1%E6%89%A9%E5%B1%95%E6%A8%A1%E5%9D%97-%E4%BD%BF%E7%94%A8%E6%8C%87%E5%8D%97.md) · V4.9.70-85
 
 ---
 
@@ -261,6 +261,40 @@ TKWF.Ext.Permissions/
 ```
 
 > **包边界（Oracle H4，V4.9.75）**：`FreeSqlPermissionStore` 刻意**不进** Permissions 包——否则权限包强依赖 FreeSql，会污染所有非 FreeSql 宿主。持久化实现随 ORM 包走，权限包只定义契约 + 回退实现。
+
+---
+
+## 扩展间依赖与 .Abstractions（V4.9.85+，ADR48 D7）
+
+扩展 A 需要引用扩展 B 的接口时，**不得引用 B 的实现项目**（L2 门控 `TKWF0022` Error）——必须走 B 的 `.Abstractions` 抽象项目（接口/契约，无实现）。
+
+```
+Navigation → Permissions.Abstractions   ✅ 合法（依赖倒置）
+Navigation → Permissions                ❌ TKWF0022 Error
+```
+
+### 什么时候需要创建 `.Abstractions`
+
+| 条件 | 判断 | 结果 |
+|------|------|------|
+| 其他扩展需要引用此扩展的接口 | 跨扩展依赖 | 创建 `.Abstractions` |
+| 扩展完全独立，其他扩展不依赖它 | 无跨扩展依赖 | 不创建 |
+| 接口只在扩展内部使用 | `internal` 可见性即可 | 不创建 |
+
+### 扩展角色分类（Abstractions 需求概率）
+
+| 角色 | 说明 | Abstractions 需求 | 典型扩展 |
+|------|------|:-----------------:|----------|
+| **上下文提供者** | 回答"谁/什么配置/什么权限" | **高** | Identity、Permissions、Settings |
+| **横切关注点** | 跨业务领域使用 | **中** | AuditLogging、Navigation |
+| **功能扩展** | 面向终端用户的独立特性 | **低** | Emailing、BlobStoring、Tagging、DataDictionary |
+| **增强扩展** | 扩展另一个扩展的能力 | **低** | Account（增强 Identity） |
+
+> **规律**：被依赖方（箭头起点）需要 Abstractions，依赖方（箭头终点）不需要。例如 `Identity (谁) → AuditLogging (谁做了什么)`——Identity 需要 Abstractions，AuditLogging 不需要。
+
+> **按需创建，不过度设计**：当第一个跨扩展依赖出现时才创建对应的 Abstractions。执行时机——扩展 A 代码中出现 `using TKW.Framework.Ext.{B}` 时，立即评估 B 是否有 Abstractions：有 → 改引用 `B.Abstractions`；无 → 立即创建 `B.Abstractions` 并提取公共接口。
+
+> `.Abstractions` 项目无 `ExtensionInitializer` 派生类，L2 门控判据天然豁免。当前 Permissions 已有 `.Abstractions`；Identity 建议新增；Settings 暂缓；Navigation/DataDictionary 不需要。完整决策框架见 [G17A §七](https://github.com/LoongBa/TKW.Framework/blob/master/docs/G17A-%E8%AE%BE%E8%AE%A1%E6%89%A9%E5%B1%95%E6%A8%A1%E5%9D%97-%E4%BD%BF%E7%94%A8%E6%8C%87%E5%8D%97.md) 与 D17 §4.5A。
 
 ---
 
