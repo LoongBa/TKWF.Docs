@@ -28,3 +28,9 @@ Thumbs.db
 
 # Internal planning (private, not published)
 .sisyphus/
+
+# Cloudflare Static Pages 本地产物（未纳入文档站）
+cfstaticpages/
+
+# 本地工作文件（未纳入文档站）
+docs/*.png
