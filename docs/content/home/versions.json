@@ -1,5 +1,10 @@
 [
   {
+    "version": "4.9.92",
+    "date": "2026-09-03",
+    "description": "表结构同步调用面统一（ADR49） — 框架内置实体（Outbox/Inbox/InboxAppliedVersion/DistributedLock/JobRecord）与扩展实体建表责任收敛到主框架 `SyncTables` 单一门控："
+  },
+  {
     "version": "4.9.91",
     "date": "2026-09-03",
     "description": "`TKWF.Tools` → `TKWF.Utility` 更名（ADR52） — 运行时工具库程序集与命名空间统一更名（`TKW.Framework.Tools.` → `TKW.Framework.Utility.`），消除与 D17 §4.3 概念 \"Tools（编译期工具）\" 的同名歧义。程序集 `TKWF.Utility`、目录 `_Framework/Utility/`；5 个下游 ProjectReference（Domain/Web/ExcelTools/ExcelImporter/DMPPlugins）+ slnx + `build/refs` 产物同步更名。"
@@ -8,10 +13,5 @@
     "version": "4.9.90",
     "date": "2026-09-02",
     "description": "`IDomainHostOptions.ConfigDictionary` 回退 `Dictionary<string, string>`（ADR51） — 撤销 V4.7.3 §2.13 的 `List<ConfigEntry>` 连带改动。该改动在 HC 排查期被证伪（G06C 备忘录标注\"❌ 非根因\"）且已知破坏对象形式配置的 JSON 绑定（`section.Bind` 产出空列表，`DomainUser.GetRequiredOption` 系统性失效）。回退恢复 `{ \"键\": \"值\" }` 对象形式配置的默认绑定机制；`DomainUser.TryGetOption` 恢复原生字典取值（O(1)）。HC schema 安全性由既有 `BindRuntimeType(IDictionary/DictionaryEntry → AnyType)`（WebApi Program.cs:54-55）兜底，不受影响。移除 `ConfigEntry` record（全仓及兄弟仓库零引用，已枚举验证）。"
-  },
-  {
-    "version": "4.9.89",
-    "date": "2026-09-01",
-    "description": "事务特性查找正确性回归（Oracle 评审 P1） — `StaticDomainInterceptor.TxAttributeCache` 缓存键从 `MethodInfo` 改 `(MethodInfo, Type)`：类级兜底恢复 `context.Target.GetType()`（运行时具体类型）而非方法声明类型（`DeclaringType`）。修复继承方法 + 派生类类级 `[Transactional]` 场景事务静默丢失。"
   }
 ]

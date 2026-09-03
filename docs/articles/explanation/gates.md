@@ -107,6 +107,8 @@ ProjectMetaContext.ValidateRuntimeGates(RuntimeGateOptions)
 | 生产 | 仅 `AutoMigrateDatabase=true` 放行 |
 | 未注册同步器 | LogWarning 而非静默跳过 |
 
+> **V4.9.92（ADR49）调用面统一**：框架内置实体（Outbox/Inbox/InboxAppliedVersion/DistributedLock/JobRecord）与扩展实体建表责任收敛到 `SyncTables` 单一门控——SG1a 生成 `EntityAssemblies` 清单（消费方 + `TKWF.Core` + `TKWF.BackgroundJobs` + `[TKWFEnabledExtension]` 白名单内扩展程序集），`SyncTables` 遍历清单统一 `SyncStructure`；EF Core 路径 `ApplyFrameworkEntities` 将框架内置实体注册进消费方 DbContext（`Entity<T>()` 幂等，零配置建表）。既有迁移文件不回溯，消费方须 `dotnet ef migrations add` 捕获框架实体。
+
 ---
 
 ## ③ 配置期门控

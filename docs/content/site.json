@@ -1,7 +1,7 @@
 {
   "name": "TKW.Framework",
   "tagline": "让 Agentic Engineering 更可控、更可靠的软件开发框架",
-  "version": "4.9.91",
+  "version": "4.9.92",
   "dotnetVersion": "10",
   "repoUrl": "https://github.com/LoongBa/TKW.Framework",
   "docsRepoUrl": "https://github.com/LoongBa/TKWF.Docs",

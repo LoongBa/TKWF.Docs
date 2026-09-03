@@ -6,7 +6,7 @@ description: TKWF 源文档 D/G/T/xCodeGen 系列与公开文章的完整映射�
 
 > 本文档建立 TKWF 源文档（`_TKWF/docs/`）与公开文档站文章的对应关系，
 > 便于 Agent 与贡献者定位权威来源。
-> 源文档体系以 `_TKWF/docs/00-文档体系说明.md` 为准（v4.23，D 系列含 D18A/D19，G 系列 18 份）。
+> 源文档体系以 `_TKWF/docs/00-文档体系说明.md` 为准（v4.25，D 系列含 D17A/D17B/D18A/D19/D20，G 系列 18 份）。
 > V4.9.80 起扩展独立仓库：扩展代码/指南迁至公开仓库 [`TKWF.Extensions`](https://github.com/LoongBa/TKWF.Extensions)，扩展模块文档（开发方案/ADR/总览）留在主框架 `03_扩展模块/`（私有）。
 
 ---
@@ -74,6 +74,7 @@ description: TKWF 源文档 D/G/T/xCodeGen 系列与公开文章的完整映射�
 | `G06-领域数据服务与数据存取使用指南.md` | [DataService](../core-concepts/data-services.md) | 数据服务使用 |
 | `G06B-条件表达式构建器使用指南.md` | [条件构建器](../advanced/conditions-builder.md) | Conditions 条件工厂 API、Expression 两阶段构建、并发隔离 |
 | `G06C-Entity映射与查询条件配置指南.md` | [VEntity 读写分离（CQRS）](../explanation/cqrs-read-write.md) · [VEntity 统计与聚合](../explanation/ventity-aggregate.md) | 数据库映射（Table/Column/Index）+ Conditions 生成配置（DtoField/SearchGroup/Index 派生） |
+| `D20-TKWF分析服务设计方案.md` | — | 通用分析服务（V5 候选，讨论中）：五段式流水线（tkwf-analytics-view 意图分解 → tkwf-entity 视图 → tkwf-service 取数 → 通用分析服务组装 → flint-chart 渲染）；语义/视觉解耦（semantic_types 固定 + chart_spec 可切换，一数多图）；AnalysisSpec 产物规范（DDL + 数据契约 + 候选图表 + 空模板，docs/analytics-specs/ 文件级落地） |
 
 ## 测试基础设施
 
@@ -100,6 +101,8 @@ description: TKWF 源文档 D/G/T/xCodeGen 系列与公开文章的完整映射�
 | `D17-TKWF扩展机制与业务模块全景-设计方案.md` | [扩展机制：如何使用](../explanation/extensions/usage.md) · [扩展机制：如何开发扩展](../explanation/extensions/development.md) · [扩展子系列](../explanation/extensions/index.md) | TKWF V5 扩展机制架构：三层模型（核心/内置扩展/业务扩展）、编译期发现（vs ABP 运行时 DI）、SG1 增量扫描、ADR35 统一门控 + 编译期验证三件套。V4.9.70 基座 + V4.9.71 三钩子接线 + V4.9.72 Permissions + V4.9.74 Navigation 已落地。**V4.9.80 剥离**：业务模块全景（§三/§五/§六）迁至 `03_扩展模块/总览和跟踪.md`（私有），本文档聚焦扩展机制。**v5（2026-09）**：新增 §4.5A Abstractions 决策框架（ADR48 D7 依赖倒置指南） |
 | `G17A-设计扩展模块-使用指南.md` | [扩展机制：如何开发扩展](../explanation/extensions/development.md) | 扩展模块设计实操手册（作者视角）：扩展项目结构、SG1 声明式实体、三钩子、Abstractions 决策框架、测试、README 技术规范（D17 v5 §4.4/§4.5A + ADR47/48/50） |
 | `G17B-使用扩展模块-使用指南.md` | [扩展机制：如何使用](../explanation/extensions/usage.md) | 扩展模块接入实操手册（消费方视角）：发现与启用（`[TKWFEnabledExtension]` 白名单）、消费方接线、宿主初始化器、多扩展组合、`.Abstractions` 依赖（D17 v5 + V4.9.85 三层门控） |
+| `D17A-扩展间数据关联策略-模块数据边界与跨模块查询.md` | — | 扩展间数据关联架构立场：首选"主键 + 模块服务查询 + 内存拼装 + 业务逻辑缓存"（领域业务逻辑思维）；DB 层兜底用 VEntity 视图实体（同库内只读聚合，优于 ABP Dapper——编译期列名校验/自动 DTO/只读守卫）；禁止跨模块实体引用与面向数据库编程（V4.9.92 新增，v4.24） |
+| `D17B-ABP与TKWF扩展设计机制对比.md` | — | ABP 模块系统 vs TKWF 扩展机制逐项对比：根本差异 = 编译期确定性（SG 编译期发现 + 编译期验证三件套 + 白名单启用 + 门控硬约束 + VEntity）vs 运行时灵活性（ABP 运行时扫描 + Dapper 自由 SQL）；ABP 缺陷与 TKWF 短板 + V5 借鉴方向（V4.9.92 新增，v4.24） |
 
 > **具体扩展指南**（Permissions/Navigation/Identity 等）在扩展仓库 [`TKWF.Extensions/docs/`](https://github.com/LoongBa/TKWF.Extensions/tree/main/docs)，每扩展一份独立使用指南（如 `docs/Permissions/权限扩展-使用指南.md`）。本表 G17A/G17B 为**通用扩展机制指南**，非具体扩展。
 
@@ -127,7 +130,7 @@ description: TKWF 源文档 D/G/T/xCodeGen 系列与公开文章的完整映射�
 
 ---
 
-> 对齐 TKWF：V4.9.91 · 2026-09-02
+> 对齐 TKWF：V4.9.92 · 2026-09-04
 
 
 

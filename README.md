@@ -4,7 +4,7 @@
 
 [![Build and Deploy Docs](https://github.com/LoongBa/TKWF.Docs/actions/workflows/docfx.yml/badge.svg)](https://github.com/LoongBa/TKWF.Docs/actions/workflows/docfx.yml)
 
-**当前同步版本：V4.9.91**（文档与框架 [LoongBa/TKW.Framework](https://github.com/LoongBa/TKW.Framework) 保持同步）
+**当前同步版本：V4.9.92**（文档与框架 [LoongBa/TKW.Framework](https://github.com/LoongBa/TKW.Framework) 保持同步）
 
 ---
 
@@ -12,6 +12,7 @@
 
 | 版本 | 日期 | 核心内容 |
 |:-----|:-----|:---------|
+| **4.9.92** | 2026-09-03 | 表结构同步调用面统一（ADR49）：SG 编译期 `EntityAssemblies` 清单 + EF Core 模型层修复，框架内置/扩展实体建表责任收敛到 `SyncTables` 单一门控 |
 | **4.9.91** | 2026-09-03 | `TKWF.Tools` → `TKWF.Utility` 更名（ADR52）+ `TKWF.Cryptography` 并包 + Tag 算法回归 `TKW.Framework.Utility.Tags`（`TKWF.Ext.Tagging` 瘦身为存储扩展 V0.2.0） |
 | **4.9.90** | 2026-09-02 | 配置字典回退 `Dictionary<string,string>`（ADR51）——撤销 V4.7.3 `List<ConfigEntry>` 连带改动 |
 | **4.9.89** | 2026-09-01 | 事务特性查找正确性回归修复 + AOT 标注补齐（`[RequiresUnreferencedCode]`） |
