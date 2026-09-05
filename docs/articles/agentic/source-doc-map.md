@@ -6,7 +6,7 @@ description: TKWF 源文档 D/G/T/xCodeGen 系列与公开文章的完整映射�
 
 > 本文档建立 TKWF 源文档（`_TKWF/docs/`）与公开文档站文章的对应关系，
 > 便于 Agent 与贡献者定位权威来源。
-> 源文档体系以 `_TKWF/docs/00-文档体系说明.md` 为准（v4.25，D 系列含 D17A/D17B/D18A/D19/D20，G 系列 18 份）。
+> 源文档体系以 `_TKWF/docs/00-文档体系说明.md` 为准（v4.27，D 系列含 D06D/D17A/D17B/D18A/D19/D20/D20B/D21，G 系列 18 份）。
 > V4.9.80 起扩展独立仓库：扩展代码/指南迁至公开仓库 [`TKWF.Extensions`](https://github.com/LoongBa/TKWF.Extensions)，扩展模块文档（开发方案/ADR/总览）留在主框架 `03_扩展模块/`（私有）。
 
 ---
@@ -25,6 +25,7 @@ description: TKWF 源文档 D/G/T/xCodeGen 系列与公开文章的完整映射�
 | `D06-领域数据服务与数据存取设计.md` | [数据层架构](../explanation/data-layer-architecture.md) | DataService 数据存取、IEntityDAC 抽象、ITransactionManager 事务管理（V4.9.52 ADR26）、多 ORM 兼容策略（BCL 标准属性 + EF Core 适配层，V4.9.54 ADR27）、简化双标注策略（V4.9.58 ADR28/29）、DatabaseProvider 方言检查（V4.9.59）。v1.4 |
 | `D06B-条件表达式构建器设计.md` | [条件构建器](../advanced/conditions-builder.md) | PredicateBuilderBase、Entity.Conditions 静态类、xCodeGen + SG1 双重生成 |
 | `D06C-Entity映射与DB Schema-设计方案.md` | [VEntity 读写分离（CQRS）](../explanation/cqrs-read-write.md) · [VEntity 统计与聚合](../explanation/ventity-aggregate.md) | Entity 映射策略：ORM 特性体系（Table/Column/Index/Navigate）、接口标记 vs 基类继承、查询条件生成管线（三阶段 SearchGroup 提取） |
+| `D06D-命名谓词预设-设计方案.md` | — | 第四层（命名成品层）：命名谓词预设 `Entity.Predicates`——`Conditions` 原子谓词之上的常用过滤组合固化；时间相关谓词须用静态方法（防 `DateTime.Today` 冻结 bug）；增强版 `PredicatePreset<TEntity>` Phase 2 延迟（V4.9.92 后新增，v4.27） |
 | `D07-三层SG-原则和设计方案.md` | [代码生成管线](../core-concepts/code-generation.md) | 三层 SG 管线：SG1 元数据提取 → SG2 服务端生成 → SG3 客户端生成；ProjectMetaContext 唯一元数据源。V4.9.32 IsExposed 暴露过滤；V4.9.34 EntityFieldList 字段白名单；V4.9.35 Phase-C 实体连接 resolver + IsGraphQLQueryable 三侧过滤 |
 | `D19-TKWF反射使用与AOT跟踪.md` | [SG 管线解剖](../explanation/sg-pipeline-anatomy.md) | TKWF 反射使用全景 + AOT 兼容跟踪（V4.9.88+）：反射消除与 SG 化三层原则（"SG 化 → 消灭 → 缓存兜底"）、[RequiresDynamicCode]/[RequiresUnreferencedCode] 标注清单、无法消灭的反射（JsonConverter $type 多态 / EventTypeResolver 跨程序集） |
 | `D08-框架CI-CD与脚本架构.md` | — | 三仓库 CI/CD 管线、三引用模式（NuGet/DLL/Project）、MSBuild 基础设施、§九 Schema 导出管线（buildSchema.ps1） |
@@ -74,7 +75,9 @@ description: TKWF 源文档 D/G/T/xCodeGen 系列与公开文章的完整映射�
 | `G06-领域数据服务与数据存取使用指南.md` | [DataService](../core-concepts/data-services.md) | 数据服务使用 |
 | `G06B-条件表达式构建器使用指南.md` | [条件构建器](../advanced/conditions-builder.md) | Conditions 条件工厂 API、Expression 两阶段构建、并发隔离 |
 | `G06C-Entity映射与查询条件配置指南.md` | [VEntity 读写分离（CQRS）](../explanation/cqrs-read-write.md) · [VEntity 统计与聚合](../explanation/ventity-aggregate.md) | 数据库映射（Table/Column/Index）+ Conditions 生成配置（DtoField/SearchGroup/Index 派生） |
-| `D20-TKWF分析服务设计方案.md` | — | 通用分析服务（V5 候选，讨论中）：五段式流水线（tkwf-analytics-view 意图分解 → tkwf-entity 视图 → tkwf-service 取数 → 通用分析服务组装 → flint-chart 渲染）；语义/视觉解耦（semantic_types 固定 + chart_spec 可切换，一数多图）；AnalysisSpec 产物规范（DDL + 数据契约 + 候选图表 + 空模板，docs/analytics-specs/ 文件级落地） |
+| `D20-TKWF分析服务设计方案.md` | — | 通用分析服务（V5 候选，讨论中）：三段式流水线（tkwf-analytics-view 意图分解 → tkwf-service 取数 → 消费端 flint-chart 渲染；tkwf-entity 复用既有链路）；语义/视觉解耦（semantic_types 固定 + chart_spec 可切换，直接采用 flint 原生格式，单一真相归 flint）；AnalysisSpec 产物规范（DDL + 数据契约 + semantic_types + chart_spec + manifest，docs/analytics-specs/ 文件级落地）；服务端返回 spec/Excel artifact 不做像素渲染；一数多图由 flint pivot 承接。v1.1（2026-09-04）经 Oracle 评审修订（对齐 D20B） |
+| `D20B-分析服务开源对标与语义层定位.md` | — | D20 对标文档：ABP 分析能力矩阵（无 Reporting/Analytics/BI 模块——D20 落地即差异化）+ 开源方案分层全景 + 语义层三裁定（SMB 不引运行期语义服务/单一真相归 flint/Ossie 预留不实现）+ flint schema 实况比对（semantic_types=flat map/模板注册表名/原生 overflow+pivot）+ D20 简化建议 P0-P3（V4.9.92 后新增，v4.27） |
+| `D21-TKWF指标引擎-MetricsEngine-设计记录.md` | — | 指标引擎（MetricsEngine）设计记录：原 StatEngine（`_Extensions/DMPCore`）裁定为 POC 失败品（废弃归档）；正式形态 = `TKWF.Ext.Metrics` 扩展模块——纯计算内核、计算器非泛型 + MetricRow 委托访问、v0.1.0 静态注册表零反射（v0.2.0 SG 可选）、内置计算器仅复合业务指标（flint+LINQ 已覆盖简单聚合）、MetricsOptions + 规格校验（V4.9.92 后新增，v4.27） |
 
 ## 测试基础设施
 
