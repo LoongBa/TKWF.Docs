@@ -6,7 +6,7 @@ description: TKWF 源文档 D/G/T/xCodeGen 系列与公开文章的完整映射�
 
 > 本文档建立 TKWF 源文档（`_TKWF/docs/`）与公开文档站文章的对应关系，
 > 便于 Agent 与贡献者定位权威来源。
-> 源文档体系以 `_TKWF/docs/00-文档体系说明.md` 为准（v4.27，D 系列含 D06D/D17A/D17B/D18A/D19/D20/D20B/D21，G 系列 18 份）。
+> 源文档体系以 `_TKWF/docs/00-文档体系说明.md` 为准（v4.29，D 系列含 D06D/D17A/D17B/D18A/D19/D20/D20B/D21/D071，G 系列 18 份）。
 > V4.9.80 起扩展独立仓库：扩展代码/指南迁至公开仓库 [`TKWF.Extensions`](https://github.com/LoongBa/TKWF.Extensions)，扩展模块文档（开发方案/ADR/总览）留在主框架 `03_扩展模块/`（私有）。
 
 ---
@@ -71,7 +71,8 @@ description: TKWF 源文档 D/G/T/xCodeGen 系列与公开文章的完整映射�
 
 | 源文档 | 公开文章 | 说明 |
 |:-------|:---------|:-----|
-| `G07-查询执行路径总览.md` | — | 三种运行环境（进程内/Wasm/TS）× 两种查询模式（Query/Use）完整对比总览 |
+| `D071-SQL级投影与列裁剪支持矩阵.md` | — | 查询管线 SQL 级投影/列裁剪能力跟踪活文档（v4.10.1 附文档）：分场景结论（GraphQL 连接方案1 已解决 / DataService IQueryable 纯实体已迁移 / 进程内全属性 DTO 库级回退）+ 关联 ADR58/15/14 + 新 ORM 接入检查点 8 项 + FreeSql/HC 升级观察点 + DataService 路径遗留迭代登记（v4.28/29 新增） |
+| `G07-查询管线总览.md` | — | 查询管线全链路入口：三种运行环境（进程内/Wasm/TS）× 两种查询模式（Query/Use）执行路径 + 管线分层与 ORM 接入矩阵 + VEntity 查询管线现状（v2.0，2026-09-11） |
 | `G06-领域数据服务与数据存取使用指南.md` | [DataService](../core-concepts/data-services.md) | 数据服务使用 |
 | `G06B-条件表达式构建器使用指南.md` | [条件构建器](../advanced/conditions-builder.md) | Conditions 条件工厂 API、Expression 两阶段构建、并发隔离 |
 | `G06C-Entity映射与查询条件配置指南.md` | [VEntity 读写分离（CQRS）](../explanation/cqrs-read-write.md) · [VEntity 统计与聚合](../explanation/ventity-aggregate.md) | 数据库映射（Table/Column/Index）+ Conditions 生成配置（DtoField/SearchGroup/Index 派生） |
@@ -133,7 +134,7 @@ description: TKWF 源文档 D/G/T/xCodeGen 系列与公开文章的完整映射�
 
 ---
 
-> 对齐 TKWF：V4.9.92 · 2026-09-04
+> 对齐 TKWF：V4.10.4 · 2026-09-11
 
 
 

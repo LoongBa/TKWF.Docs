@@ -12,7 +12,7 @@
 # 依赖: ../_TKWF 仓库已 checkout（CI 中由 workflow 控制）
 
 param(
-    [string]$TkwfRoot = "",
+    [string]$TKWFSourceRoot = "",
     [string]$DocsRoot = "docs"
 )
 
@@ -21,16 +21,16 @@ $ErrorActionPreference = "Stop"
 # ---- 0. 定位 _TKWF 仓库 ----
 # 留空时自动探测：本地兄弟目录 ../_TKWF，CI 中 workflow 检出位置 src/TKW.Framework。
 # 此前固定默认 "../_TKWF" 导致 CI 静默跳过全部版本同步（CHANGELOG 实际在 src/TKW.Framework/docs/）。
-if (-not $TkwfRoot) {
+if (-not $TKWFSourceRoot) {
     foreach ($candidate in @("../_TKWF", "src/TKW.Framework")) {
         if (Test-Path (Join-Path $candidate "docs" "CHANGELOG.md")) {
-            $TkwfRoot = $candidate
+            $TKWFSourceRoot = $candidate
             break
         }
     }
-    if (-not $TkwfRoot) { $TkwfRoot = "../_TKWF" }
+    if (-not $TKWFSourceRoot) { $TKWFSourceRoot = "../_TKWF" }
 }
-Write-Host "TKWF 仓库: $TkwfRoot"
+Write-Host "TKWF 仓库: $TKWFSourceRoot"
 
 # 逐字写入——Set-Content -Value 会把以换行结尾的字符串当成"末尾空行"，再追加一个 OS 换行符，
 # 导致每次运行都给文件累积一个空行（非幂等）。UTF8Encoding($false) 不写 BOM，保留文件既有换行风格。
@@ -41,9 +41,9 @@ function Write-FileVerbatim {
 }
 
 # ---- 1. 读取 CHANGELOG ----
-$changelog = Join-Path $TkwfRoot "docs" "CHANGELOG.md"
+$changelog = Join-Path $TKWFSourceRoot "docs" "CHANGELOG.md"
 if (-not (Test-Path $changelog)) {
-    Write-Error "未找到 CHANGELOG: $changelog —— 版本同步失败（请以 -TkwfRoot 指定 _TKWF 仓库路径）"
+    Write-Error "未找到 CHANGELOG: $changelog —— 版本同步失败（请以 -TKWFSourceRoot 指定 _TKWF 仓库路径）"
     exit 1
 }
 
@@ -84,6 +84,44 @@ if ($currentVer) {
 
 # 取最新 3 版本（按日期排序，取最新的 3 个）
 $latest = $entries | Sort-Object { [DateTime]::ParseExact($_.Date, "yyyy-MM-dd", $null) } -Descending | Select-Object -First 3
+
+# ---- 1.5 git tag 权威版本校正 ----
+# _TKWF CHANGELOG 自 v4.9.93 起格式漂移：v4.10.x 全部堆积在 [Unreleased] 块（无独立版本头）、
+# v4.9.93+ 版本头无日期——日期正则解析不到，导致本站版本号停滞（曾停在 V4.9.92 而框架已 v4.10.x）。
+# 以 git tag 为权威版本源（描述从 CHANGELOG 匹配或 git log 兜底）。
+$gitTagVersions = @()
+try {
+    $gitTagOutput = & git -C $TKWFSourceRoot tag --list 'v*' --sort=-v:refname 2>$null
+    if ($LASTEXITCODE -eq 0 -and $gitTagOutput) {
+        $gitTagVersions = @($gitTagOutput | ForEach-Object { ($_ -replace '^v', '').Trim() } | Where-Object { $_ -match '^\d+\.\d+\.\d+$' })
+    }
+} catch { }
+
+$tagLatest = @()
+foreach ($ver in ($gitTagVersions | Select-Object -First 3)) {
+    $existing = $entries | Where-Object { $_.Ver -eq $ver } | Select-Object -First 1
+    if ($existing) {
+        $tagLatest += @{ Ver = $ver; Date = $existing.Date; Desc = $existing.Desc }
+    } else {
+        # 无独立版本头（v4.10.x 在 [Unreleased]）——git 日期 + Unreleased 块内 （Vx.y.z） 标注 bullet 提取描述
+        $tagDate = (& git -C $TKWFSourceRoot log -1 --format='%ad' --date=short "v$ver" 2>$null).Trim()
+        $esc = [regex]::Escape($ver)
+        $desc = ""
+        $bullet = [regex]::Match($content, "(?ms)^-\s*\*\*([^*]+[（(][Vv]$esc[，,）)][^*]*)\*\*")
+        if ($bullet.Success) {
+            $desc = ($bullet.Groups[1].Value -replace '[（(][Vv][^）)]*[）)]', '').Trim()
+        }
+        if (-not $desc) {
+            $desc = (& git -C $TKWFSourceRoot log -1 --format='%s' "v$ver" 2>$null).Trim()
+        }
+        $tagLatest += @{ Ver = $ver; Date = $tagDate; Desc = $desc }
+    }
+}
+if ($tagLatest.Count -ge 1 -and ($latest.Count -eq 0 -or $tagLatest[0].Ver -ne $latest[0].Ver)) {
+    Write-Host "  ℹ️  CHANGELOG 解析到 $($latest[0].Ver)（格式漂移），采用 git tag 权威版本 $($tagLatest[0].Ver)"
+    $latest = $tagLatest
+}
+
 if ($latest.Count -eq 0) {
     Write-Warning "CHANGELOG 中未解析到版本条目"
     exit 0

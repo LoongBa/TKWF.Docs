@@ -192,26 +192,28 @@ public class MyHostInitializer : DomainHostInitializerBase<MyUserInfo>
 
 ## 现有扩展清单
 
-扩展模块全景（原 D17 §5，V4.9.80 剥离至扩展仓库）P0 共 11 个，**9/11 已实施**（V0.1.0+，独立版本）：
+扩展模块全景（原 D17 §5，V4.9.80 剥离至扩展仓库）已全部实施并持续演进，当前 **24 个扩展模块**（含 Abstractions/Validation 契约包），独立版本管理：
 
 | 扩展 | 版本 | 说明 |
 |:--|:--|:--|
 | Permissions（权限） | V0.7.0 + V0.8.0 | 权限定义 / fail-closed 检查 / 编译期权限名校验（PERM001） |
-| Identity（身份） | V0.1.0 | 用户 / 角色 / 用户角色分配 + 凭据验证 |
-| Account（账户） | V0.1.0 | 账户锁定 + 密码重置流程 |
+| Identity（身份） | V0.3.0 | 用户 / 角色 / 用户角色分配 + 凭据验证 + VEntity 跨表 JOIN |
+| Account（账户） | V0.3.0 | 账户锁定 + 密码重置 + 登录历史与异常检测 |
 | Navigation（导航/菜单） | V0.1.0 | 菜单数据模型 / 贡献机制 / 权限过滤 |
-| AuditLogging（审计日志） | V0.1.0 | 审计日志 FreeSql 存储 |
-| Settings（设置） | V0.1.0 | 全局/用户级配置持久化 + 分层读取 |
-| BlobStoring（二进制存储） | V0.1.0 | 大对象本地文件系统存储 |
-| Emailing（邮件） | V0.1.0 | SMTP/MailKit 邮件发送 |
-| DataDictionary（数据字典） | V0.1.0 | 字典定义 + 项 + 按编码查询 |
-| Tagging（标签存储） | V0.2.0 | 标签存储扩展（算法已回归 `TKW.Framework.Utility.Tags`，ADR52 瘦身；持久化 V0.3.0 实施） |
+| AuditLogging（审计日志） | V0.3.0 | 审计日志 FreeSql 存储 + 统计聚合 + 保留天数清理 |
+| Settings（设置） | V0.2.0 | 全局/用户级配置持久化 + 分层读取 |
+| BlobStoring（二进制存储） | V0.2.0 | 大对象本地文件系统存储 + 流式下载 |
+| Emailing（邮件） | V0.2.0 | SMTP/MailKit 邮件发送 + 指数退避重试 |
+| DataDictionary（数据字典） | V0.2.0 | 字典定义 + 项 + 按编码查询 |
+| Tagging（标签存储） | V0.4.0 | 标签存储扩展（算法已回归 `TKW.Framework.Utility.Tags`；AC 自动机批量匹配 + Options 配置） |
+| PrintTemplates / Dashboard / DataPort / Notifications | V0.1.0-0.2.0 | 打印模板 / 仪表盘 / 导入导出 / 通知中心 |
+| BackgroundJobs（+Quartz）/ HealthCheck / RateLimiting / SecurityLog | V0.1.0-0.2.0 | 后台任务持久化 / 健康检查 / 限流 / 安全日志 |
+| Approval / OrganizationUnit / Calendar / FileManagement / FeatureManagement | V0.1.0-0.3.0 | 审批流 / 组织单元 / 日历排程 / 文件管理 / 功能管理 |
+| 契约包（`.Abstractions`/`.Validation`） | V0.1.0-0.8.0 | Permissions/Emailing/BlobStoring 契约抽取（ADR48/50 依赖倒置） |
 
-> P0 剩余：**PrintTemplates**（打印模板，需先写 ADR 定模板引擎选型）。完整清单/状态/路线图见扩展仓库 [`TKWF.Extensions`](https://github.com/LoongBa/TKWF.Extensions)（README 扩展一览表）与主框架私有 `03_扩展模块/总览和跟踪.md`。
+> **完整清单/版本/状态**以扩展仓库 [`TKWF.Extensions`](https://github.com/LoongBa/TKWF.Extensions) README 扩展一览表为准（本站 [扩展子系列索引](./index.md) 已同步）。P0 全部实施完毕（原 P0 剩余 PrintTemplates 已落地）；P1/P2 候选模块约 45 个（本地化、CMS、支付、CRM、AI 等）按需作为扩展提供。
 >
 > **V4.9.80 扩展独立仓库**：扩展代码/测试/指南从主框架迁至公开仓库 [`TKWF.Extensions`](https://github.com/LoongBa/TKWF.Extensions)，独立版本（v0.1.0 起）+ 独立 NuGet（规划）；各扩展有独立使用指南（`docs/{扩展}/...-使用指南.md`）。扩展模块开发文档（开发方案/ADR/总览跟踪）留在主框架 `03_扩展模块/`（私有）。本页聚焦扩展机制本身。
-
-P1（推荐）模块约 25 个（后台任务、多租户、通知、本地化、限流、文件管理等），P2（按场景）约 20 个（CMS、支付、CRM、AI 等）——均作为扩展提供。
 
 ---
 
