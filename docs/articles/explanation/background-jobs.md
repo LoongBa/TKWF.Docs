@@ -5,8 +5,8 @@ description: TKWF 后台作业：IBackgroundJobManager、[BackgroundJob] 特性�
 
 # 后台作业
 
-> TKWF 提供框架级后台作业基础设施，替代各宿主自行集成 Hangfire 的现状。
-> 设计依据：[ADR23](https://github.com/LoongBa/TKW.Framework/blob/master/docs/02-迭代开发/ADR/ADR23-后台作业基础设施.md) · D15 §5.4 · G15 §4.6/5.2 · V4.9.64-66
+> TKWF 提供框架级后台作业基础设施（内置轻量调度 + Hangfire/Quartz Provider 三实现可选），替代各宿主自行集成 Hangfire 的现状。
+> 设计依据：[ADR23](https://github.com/LoongBa/TKW.Framework/blob/master/docs/02-迭代开发/ADR/ADR23-后台作业基础设施.md) · D15 §5.4 · G15 §4.6/5.2 · G15B（后台任务使用指南）· V4.9.64-66/103-105
 
 ---
 
@@ -134,14 +134,17 @@ public class OrderService : DomainDataServiceBase<MyUserInfo>
 ### 执行模型
 
 ```
-A[EnqueueAsync] --> B[DefaultBackgroundJobManager]
+A[EnqueueAsync] --> B[内置 BackgroundJobWorker]
 B --> C{延迟?}
-C -- 是 --> D[Task.Delay]
-C -- 否 --> E[创建 Scope]
-E --> F[SystemActor 自动绑定]
-F --> G[租户上下文恢复 ITenantScopeRestorer]
-G --> H[ExecuteAsync 执行]
-H --> G1[事件派发：非 AOP 路径立即派发]
+C -- 是 --> D[JobRecord ScheduledAt 到点]
+C -- 否 --> E[写 JobRecord Pending + Channel 信号]
+E --> F[worker 取 Pending + 到点]
+F --> G[CreateScope]
+G --> H[SystemActor 自动绑定]
+H --> I[租户上下文恢复 ITenantScopeRestorer]
+I --> J[ExecuteAsync 执行]
+J --> J1[成功 → Succeeded / 失败 → 重试 or Failed]
+J --> G1[事件派发：非 AOP 路径立即派发]
 ```
 
 ### 核心特性
@@ -180,8 +183,10 @@ H --> G1[事件派发：非 AOP 路径立即派发]
 
 | 扩展点 | 说明 |
 |:--|:--|
-| `IBackgroundJobManager` | 可替换实现（Hangfire/Quartz Provider） |
+| `IBackgroundJobManager` | 可替换实现（三选一：内置/Hangfire/Quartz Provider，V4.9.103-105） |
+| `IAdvancedBackgroundJobManager` | 扩展接口——状态查询（`GetJobStatusAsync`）/取消（`CancelAsync`），与 `IBackgroundJobManager` 同实例注册 |
 | `ITenantScopeRestorer` | 租户上下文恢复策略（默认 `TenantScopeRestorer`） |
+| `IDistributedLock` | 多实例部署防重复执行（默认 `NullDistributedLock`；多实例调 `AddDbDistributedLock()` 覆盖） |
 | `IEventDispatchDiagnostics` | 事件派发诊断（handler 耗时/异常记录） |
 
 ---
@@ -218,15 +223,57 @@ public class SyncInventoryJob : IBackgroundJob
 
 ---
 
-## Provider 扩展（规划）
+## Provider 三实现（V4.9.103-105）
 
-| Provider | 状态 | 说明 |
-|:--|:--|:--|
-| `DefaultBackgroundJobManager` | ✅ 已实现 | 进程内立即执行（`Task.Delay` 模拟延迟） |
-| `HangfireBackgroundJobManager` | 📋 规划中 | Hangfire 持久化队列 + Dashboard |
-| `QuartzBackgroundJobManager` | 📋 规划中 | Quartz 分布式调度 |
+| Provider | 包 | 定位 | 持久化 | 重试 | 集群 | 适用场景 |
+|:--|:--|:--|:--|:--|:--|:--|
+| **内置轻量**（默认） | `TKWF.BackgroundJobs`（随框架） | 进程内 DB 队列 + worker（`BackgroundJobWorker` 常驻轮询） | JobRecord 表（FreeSql/EF Core 自动建） | ✅ `MaxRetryCount` + 指数退避 | `IDistributedLock` | **默认首选**——零第三方依赖，SB 场景（定时报表/邮件队列/指标重算）足够 |
+| **Hangfire** | `TKWF.BackgroundJobs.Hangfire` | 作业平台（storage/worker/dashboard） | SQL Server/Redis/InMemory | ✅ AutomaticRetry | storage 分布式锁 | **重运维需求**——集群/仪表盘/复杂调度管理 |
+| **Quartz** | `TKWF.BackgroundJobs.Quartz` | 调度器（trigger 驱动） | AdoJobStore 12 表 / RAMJobStore | ❌（无内置，RetryPolicy trigger 级） | AdoJobStore + clustering | **调度/触发需求**——cron 周期任务（消费方直接 Quartz API） |
 
-> 当前 `DefaultBackgroundJobManager` 为**进程内立即执行**（`Task.Delay` 模拟延迟），不持久化。`JobRecord`（`IDomainEntity` 持久化实体）**已定义未接入**——W9 持久化队列为未来项。
+> **设计原则**（用户 2026-09-06 裁定）：框架先提供轻量内置，Provider 对接增强。**默认零依赖**；重需求才引第三方（Hangfire/Quartz 的运维/许可负担见各自对接指南）。
+>
+> ⚠️ **三实现"二选一"互斥**：`AddBackgroundJobs` / `AddHangfireBackgroundJobs` / `AddQuartzBackgroundJobs` **只调一个**（各自以 `AddSingleton` 注册 `IBackgroundJobManager`，解析取最后注册——混调以最后一个为准，不推荐）。
+
+### 接线（内置轻量实现）
+
+```csharp
+// DomainInitializer.ConfigureServices 或 Program.cs
+services.AddBackgroundJobs<MyUserInfo>(o =>
+{
+    o.MaxRetryCount = 3;                          // 重试上限（默认 3）
+    o.PollingInterval = TimeSpan.FromSeconds(5);  // worker 轮询间隔
+    o.BatchSize = 10;                             // 每批处理数
+});
+```
+
+- `IBackgroundJobManager` / `IAdvancedBackgroundJobManager` 同实例注册（注入任一均可）
+- `BackgroundJobWorker`（IHostedService）常驻轮询 JobRecord 队列
+- `[BackgroundJob]` 作业经 SG 清单（`ProjectMetaContextBase.BackgroundJobTypeNames`）**自动注册 DI**——零手动 AddTransient
+
+### 状态查询与取消（IAdvancedBackgroundJobManager）
+
+```csharp
+public class JobMonitor(IAdvancedBackgroundJobManager jobs)
+{
+    // Pending / Running / Succeeded / Failed / Cancelled；未知 JobId → null
+    public async Task<BackgroundJobStatus?> GetStatusAsync(string jobId, CancellationToken ct)
+        => await jobs.GetJobStatusAsync(jobId, ct);
+
+    // 仅 Pending/Running 可取消（Running 由作业内 CancellationToken 协作）；终态 → false
+    public async Task<bool> CancelAsync(string jobId, CancellationToken ct)
+        => await jobs.CancelAsync(jobId, ct);
+}
+```
+
+> **Provider 切换**：三实现接口完全一致（`IAdvancedBackgroundJobManager`）——切换只改 DI 接线，业务代码零修改（Hangfire 见 G15B-A、Quartz 见 G15B-B）。状态映射差异见 G15B §四。
+
+### 执行语义（内置实现）
+
+1. **SystemActor 身份**：worker 线程无 `HttpContext`，框架自动 `CreateScope` → `BeginSystemScopeAsync` 绑定系统身份 → 恢复入队时携带的租户上下文 → 执行 `job.ExecuteAsync(args, ct)`
+2. **队列与重试**：`EnqueueAsync` 写 JobRecord（Pending + ScheduledAt）+ Channel 信号即时唤醒 worker；失败且 `RetryCount <= MaxRetryCount` → 回 Pending + 指数退避（`2^RetryCount` 分钟）；超限 → 终态 Failed（LastError 记录）
+3. **分布式锁**：多实例部署下 `IDistributedLock` 防重复执行（默认 `NullDistributedLock` 单实例；多实例调 `AddDbDistributedLock()` 覆盖）
+4. **优雅停机**：`BackgroundJobWorker` 在宿主停机时传播 CancellationToken——Running 作业协作取消
 
 ---
 
@@ -245,33 +292,37 @@ public class SyncInventoryJob : IBackgroundJob
 
 | 实践 | 说明 |
 |:--|:--|
-| 作业参数只传基元类型/DTO | 避免循环引用，序列化安全 |
+| 作业参数只传基元类型/DTO（ID/简单类型） | `JobRecordJson` 序列化保证往返；复杂对象先落库再传 ID（对齐 Hangfire best-practices） |
 | 延迟执行用 `delay` | 避免阻塞线程 |
 | 租户隔离用 `tenantId` | 多租户场景必须显式传递 |
-| handler 异常 try-catch | handler 异常框架吞掉，建议内部 try-catch + log |
-| 测试用 `ExecuteAsync` | 绕过队列，直接验证业务逻辑 |
+| 作业应幂等 | 重试/重放安全——重复执行不产生副作用 |
+| 长时间作业协作响应 `CancellationToken` | 超时/停机可取消 |
+| handler 异常 try-catch | 失败自动重试（MaxRetryCount 内）；重试耗尽框架标记 Failed 并记录 LastError |
+| 测试用 `ExecuteAsync` | 同步执行（等待完成），绕过队列直接验证业务逻辑 |
 
 ---
 
-## 现状边界（必须知晓）
+## 现状边界（V4.9.103-105）
 
 | 能力 | 状态 | 说明 |
 |:--|:--|:--|
-| 接口/特性/SG注册 | ✅ 完成 | V4.9.64 ADR23 |
+| 接口/特性/SG注册 | ✅ 完成 | V4.9.64 ADR23 + SG 清单自动注册 DI |
 | SystemActor 自动绑定 | ✅ | `BeginSystemScopeAsync` 零配置 |
 | 租户上下文恢复 | ✅ | `tenantId` 参数 + `ITenantScopeRestorer` |
 | 事件派发（非 AOP） | ✅ | 立即派发，`[Transactional]` 可切换事务 |
-| JobRecord 持久化 | 📋 规划 | W9 待接线，当前 `EnqueueAsync` 立即执行 |
-| 持久化队列 | 📋 规划 | W9 JobRecord + Hangfire/Quartz Provider |
-| Hangfire Provider | 📋 规划 | V5.0+ 规划 |
+| 内置轻量调度（JobRecord 持久化） | ✅ V4.9.103 | 进程内 DB 队列 + worker，重试 + 分布式锁 + 优雅停机 |
+| Hangfire Provider | ✅ V4.9.104 | `TKWF.BackgroundJobs.Hangfire`（storage/worker/dashboard） |
+| Quartz Provider | ✅ V4.9.105 | `TKWF.BackgroundJobs.Quartz`（AdoJobStore 封装 + clustering） |
+| 状态查询/取消 | ✅ V4.9.103 | `IAdvancedBackgroundJobManager.GetJobStatusAsync/CancelAsync` |
 
-> ⚠️ **边界提示**：当前 `EnqueueAsync` 为**进程内立即执行**（`Task.Delay` 模拟延迟），重启丢失。生产环境关键任务建议配合外部队列（Hangfire/自建）或等待 W9。
+> ⚠️ **边界提示**：内置实现为**进程内 DB 队列**（单实例 worker，多实例需配 `IDistributedLock`），重启不丢（JobRecord 持久化）。生产环境高并发/集群调度建议切 Hangfire/Quartz Provider。
 
 ---
 
 ## 相关文档
 
 - [ADR23 后台作业基础设施](https://github.com/LoongBa/TKW.Framework/blob/master/docs/02-%E8%BF%AD%E4%BB%A3%E5%BC%80%E5%8F%91/ADR/ADR23-%E5%90%8E%E5%8F%B0%E4%BD%9C%E4%B8%9A%E5%9F%BA%E7%A1%80%E8%AE%BE%E6%96%BD.md)
+- [G15B 后台任务使用指南](https://github.com/LoongBa/TKW.Framework/blob/master/docs/G15B-%E5%90%8E%E5%8F%B0%E4%BB%BB%E5%8A%A1-%E4%BD%BF%E7%94%A8%E6%8C%87%E5%8D%97.md)（三实现选型 + Provider 状态映射差异）
 - [D15 §5.4](https://github.com/LoongBa/TKW.Framework/blob/master/docs/D15-%E4%BA%8B%E4%BB%B6%E6%80%BB%E7%BA%BF%E4%B8%8E%E6%B6%88%E6%81%AF%E5%9F%BA%E7%A1%80%E8%AE%BE%E6%96%BD-%E8%AE%BE%E8%AE%A1%E6%96%B9%E6%A1%88.md#54-%E5%90%8E%E5%8F%B0%E4%BD%9C%E4%B8%9A)
 - [G15 §4.6](https://github.com/LoongBa/TKW.Framework/blob/master/docs/G15-%E4%BA%8B%E4%BB%B6%E6%9C%BA%E5%88%B6-%E4%BD%BF%E7%94%A8%E6%8C%87%E5%8D%97.md#46-%E5%90%8E%E5%8F%B0%E4%BD%9C%E4%B8%9A%E5%86%85%E7%9A%84%E4%BA%8B%E4%BB%B6%E6%B4%BE%E5%8F%91)
 - [G15 §5.2](https://github.com/LoongBa/TKW.Framework/blob/master/docs/G15-%E4%BA%8B%E4%BB%B6%E6%9C%BA%E5%88%B6-%E4%BD%BF%E7%94%A8%E6%8C%87%E5%8D%97.md#52-%E9%9D%9E-aop-%E8%B7%AF%E5%BE%84)
@@ -283,6 +334,7 @@ public class SyncInventoryJob : IBackgroundJob
 | 版本 | 变更 |
 |:--|:--|
 | v1.0 | 初版（基于 ADR23 + v4.9.64/66 实施） |
+| v1.1 | 同步 V4.9.103-105：内置轻量调度（JobRecord 持久化 + worker + 重试/分布式锁/优雅停机）+ Hangfire Provider + Quartz Provider 三实现落地；新增 `IAdvancedBackgroundJobManager` 状态查询/取消 |
 
 ---
 

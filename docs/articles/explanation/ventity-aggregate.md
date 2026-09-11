@@ -1,12 +1,12 @@
 ---
 title: VEntity 统计与聚合
-description: TKWF VEntity 统计聚合能力：ViewSql 自动聚合（StatsDto）、Hasura 风格聚合 GraphQL 自动生成、AutoQuery 消除 80% 查询代码
+description: TKWF VEntity 统计聚合能力：ViewSql 自动聚合（StatsDto）、Hasura 风格聚合 GraphQL 自动生成、EQR + GraphQL Connection 标准查询零代码
 ---
 
 # VEntity 统计与聚合
 
-> 框架级 CQRS 的核心卖点：VEntity 不只是"读模型"——它还自带**统计与聚合能力**。ViewSql 中的 `SUM/COUNT/AVG/MIN/MAX` 被 SG 自动识别，生成聚合 GraphQL 类型 + 统计 Dto，AutoQuery 消除 80% 查询 Service 代码。
-> 设计依据：[ADR20](https://github.com/LoongBa/TKW.Framework/blob/master/docs/02-迭代开发/ADR/ADR20-VEntity聚合GraphQL自动生成.md) · V4.9.38/53
+> 框架级 CQRS 的核心卖点：VEntity 不只是"读模型"——它还自带**统计与聚合能力**。ViewSql 中的 `SUM/COUNT/AVG/MIN/MAX` 被 SG 自动识别，生成聚合 GraphQL 类型 + 统计 Dto；标准列表/分页查询走 EQR + GraphQL Connection 零代码。
+> 设计依据：[ADR20](https://github.com/LoongBa/TKW.Framework/blob/master/docs/02-迭代开发/ADR/ADR20-VEntity聚合GraphQL自动生成.md) · [ADR14](https://github.com/LoongBa/TKW.Framework/blob/master/docs/02-迭代开发/ADR/ADR14-VEntity查询架构简化.md) · V4.9.38/40/53/102
 
 ---
 
@@ -32,7 +32,7 @@ TKWF 的聚合能力分三层，逐层递进：
 | 层 | 能力 | 自动化 | 版本 |
 |:--|:--|:--|:--|
 | **① StatsDto 自动生成** | ViewSql 中的聚合函数 → 自动生成 `{VEntity}StatsDto`（partial record） | xCodeGen `AggregationDetector` 扫描 ViewSql | V4.9.38 |
-| **② AutoQuery 自动查询** | `[DomainGenerateCode(AutoQuery = true)]` → 自动生成 List + Count 查询 Controller | SG1b `ControllerGenerator` 生成 | V4.9.38 |
+| **② 标准查询（EQR + GraphQL Connection）** | VEntity 默认 `ExposeGraphqlQuery = true` → SG2 生成 Connection resolver（列表/分页/过滤/排序） | SG2 `ApiServiceGenerator` 生成 | V4.9.40/78 |
 | **③ 聚合 GraphQL 自动生成** | VEntity → Hasura 风格 `{entity}_aggregate` GraphQL 字段 + QueryBuilder `.Aggregate()` 链 | SG2 扩展（ADR20） | V4.9.53 |
 
 ---
@@ -112,14 +112,14 @@ public async Task<MerchantOrderStatsViewStatsDto> GetMerchantStatsAsync(long mer
 
 ---
 
-## ② AutoQuery 自动查询
+## ② 标准查询（EQR + GraphQL Connection）
 
 ### 原理
 
-`[DomainGenerateCode(AutoQuery = true)]` 让 SG 自动生成标准的 List + Count 查询 Controller——无需手写查询 Service。
+VEntity 默认 `ExposeGraphqlQuery = true`（V4.9.78 起由 `QueryExposureDefaults` 统一推导，见 ADR40/ADR12），SG2 自动生成 **Connection resolver**（`UsePaging + UseProjection + UseFiltering + UseSorting`）——列表/分页/过滤/排序零代码，无需手写查询 Service：
 
 ```csharp
-[DomainGenerateCode(IsView = true, AutoQuery = true, ViewSql = "...")]
+[DomainGenerateCode(IsView = true, ViewSql = "...")]
 public class OrderListView : IDomainEntity
 {
     public long Id { get; set; }
@@ -129,23 +129,37 @@ public class OrderListView : IDomainEntity
 }
 ```
 
-### 自动生成的 Controller
+### 查询方式（三端等价）
 
 ```csharp
-// SG 自动生成（OrderListViewQueryController.g.cs）
-// 含 List + Count 标准查询方法，ct 参数全链路自动追加
-public class OrderListViewQueryController
-{
-    public Task<PagedResult<OrderListView>> ListAsync(
-        string? status, int page, int pageSize, CancellationToken ct) { ... }
+// 进程内 / C# Wasm：EQR 统一入口（3 跳零反射）
+var page = await User.Query<OrderListView>()
+    .Where(o => o.Status == "Paid")
+    .OrderByDescending(o => o.Amount)
+    .Page(1, 20)
+    .ToPageAsync();
+```
 
-    public Task<int> CountAsync(string? status, CancellationToken ct) { ... }
+```typescript
+// TS 前端：QueryBuilder 链（API 表面同构）
+const page = await Tkwf.User.Query<OrderListView>()
+    .where(f => f.status.eq("Paid"))
+    .orderByDescending(f => f.amount)
+    .page(1, 20)
+    .toPageAsync();
+```
+
+```graphql
+# GraphQL 原生（HotChocolate Connection）
+orderListView(first: 20, where: { status: { eq: "Paid" } }, order: { amount: DESC }) {
+  totalCount
+  nodes { id orderNo status amount }
+  edges { cursor node { ... } }
+  pageInfo { hasNextPage endCursor }
 }
 ```
 
-**消除 80% 查询 Service**：标准列表查询 + 分页 + 计数全部自动生成，SG2 自动转 REST + GraphQL 端点。
-
-> V4.9.40 起，AutoQuery 委托 EQR（EntityQueryRoot）统一入口——`User.Query<T>()` → EQR → `IEntityReadOnlyDAC.Query` → `IQueryable`，3 跳零反射。
+> **VEntity 不支持 REST 端点**（V4.9.102）：VEntity 仅提供 GraphQL 查询（EQR 直连，`ExposeGraphqlQuery` 默认 true）；REST 查询需通过 **Service 方法包装**（`[RestGet("list")]` + `IEntityReadOnlyDAC<T>` 或 `User.Query<T>()` 手写查询方法）。`AutoQuery`/`IsGraphQLQueryable` 旧属性已移除（V4.9.102），统一使用 `ExposeRestQuery`/`ExposeGraphqlQuery`。
 
 ---
 
@@ -223,8 +237,7 @@ query {
 开发者写 ViewSql（含 SUM/COUNT/AVG/MIN/MAX）
   ↓ 编译
   ├─ xCodeGen AggregationDetector → 扫描聚合函数 → 生成 StatsDto（partial record）
-  ├─ SG1b ControllerGenerator → AutoQuery 生成 List + Count Controller
-  ├─ SG2 → 生成 connection resolver + _aggregate GraphQL 字段
+  ├─ SG2 → 生成 Connection resolver（列表/分页/过滤/排序）+ _aggregate GraphQL 字段
   └─ SG3 → 生成客户端代理（含 .Aggregate() 链支持）
   ↓ 运行时
   ├─ 进程内：User.Query<T>() → EQR → IQueryable → FreeSql SumAsync/CountAsync
@@ -252,7 +265,7 @@ query {
 
 - VEntity 单表聚合查询（Sum/Count/Avg/Max/Min）
 - 统计仪表盘 / 报表页面
-- 前端列表页面的"总数"徽章（AutoQuery CountAsync）
+- 前端列表页面的"总数"徽章（GraphQL Connection `totalCount`）
 - 三端等价的聚合查询 API
 
 ### ❌ 不适用
@@ -272,8 +285,10 @@ query {
 |:--|:--|:--|
 | V4.9.5 | VEntity + ViewSql 统一设计（声明式视图实体） | — |
 | V4.9.36 | IsComputed 计算字段 + DynamicSelector 投影跳过 | ADR11 |
-| V4.9.38 | AutoQuery 自动查询 + 聚合 Dto 自动生成（AggregationDetector）+ 轻量 VEntity（InlineSelectSql） | ADR13 |
-| V4.9.40 | EQR 统一入口（8跳→3跳）+ AutoQuery 委托 EQR + IGlobalQueryFilter | ADR14 |
+| V4.9.38 | 聚合 Dto 自动生成（AggregationDetector）+ 轻量 VEntity（InlineSelectSql） | ADR13 |
+| V4.9.40 | EQR 统一入口（8跳→3跳）+ IGlobalQueryFilter | ADR14 |
+| V4.9.78 | `QueryExposureDefaults` 统一推导 `ExposeGraphqlQuery`（VEntity 默认开放） | ADR40 |
+| V4.9.102 | VEntity 明确不支持 REST 端点 + `AutoQuery`/`IsGraphQLQueryable` 旧属性移除 | ADR40 落地 |
 | V4.9.53 | 聚合 GraphQL 自动生成（Hasura 风格）+ QueryBuilder `.Aggregate()` 链 | ADR20 |
 
 ---

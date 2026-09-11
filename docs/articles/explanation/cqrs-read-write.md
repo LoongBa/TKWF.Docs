@@ -18,7 +18,7 @@ description: TKWF 架构级 CQRS：Entity 写模型 / VEntity 读模型类型级
 | 传统 CQRS 痛点 | TKWF 类型级 CQRS 解决 |
 |:--|:--|
 | 写模型/读模型双份实体定义 | **类型级分离**：Entity 只写、VEntity 只读，编译期区分 |
-| 手写查询 Service + Controller | **AutoQuery + EQR**：标准查询零代码 |
+| 手写查询 Service + Controller | **EQR + GraphQL Connection**：标准查询零代码 |
 | 视图层手写 SQL + Dto | **ViewSql 声明式**：SQL 即 Dto，编译期生成 Dto |
 | 进程内/外查询 API 不等价 | **EQR 统一入口**：`User.Query<T>()` 三端等价 |
 
@@ -84,7 +84,7 @@ public class OrderView : IDomainEntity
 |:--|:--|:--|
 | 标注 | `[DomainGenerateCode]` | `[DomainGenerateCode(IsView = true, ViewSql = "...")]` |
 | 基类 | `DomainServiceBase<T>` / `DomainControllerBase<T>` | `IDomainEntity`（只读接口） |
-| 生成物 | Controller + AOP 装饰器 + DataService | ViewSql 视图 + EQR 入口 + AutoQuery |
+| 生成物 | Controller + AOP 装饰器 + DataService | ViewSql 视图 + EQR 入口 + GraphQL Connection |
 | 业务逻辑 | 有（Add/Update/Delete/业务方法） | 无（纯投影/查询/聚合） |
 | 事务 | 有（`[Transactional]`） | 无（只读） |
 
@@ -100,7 +100,7 @@ VEntity 的核心是 **ViewSql** —— 在编译期声明 SQL 视图，编译�
 |:--|:--|:--|
 | SQL 视图创建脚本 | xCodeGen | `SyncViewsAsync` 自动执行 |
 | 统计 Dto | xCodeGen `AggregationDetector` | ViewSql 中聚合函数 → StatsDto |
-| AutoQuery Controller | SG1b `ControllerGenerator` | List + Count 标准查询 |
+| GraphQL Connection | SG2 `ApiServiceGenerator` | 列表/分页/过滤/排序零代码（`ExposeGraphqlQuery` 默认 true） |
 | GraphQL 聚合 | SG2 `ApiServiceGenerator` | Hasura 风格 `{entity}_aggregate` |
 | EQR 入口 | SG1b `EntityQueryRoot` | `User.Query<T>()` 统一入口 |
 
@@ -207,28 +207,46 @@ query {
 
 ---
 
-## 5. AutoQuery 自动查询（零代码 CRUD）
+## 5. 标准查询（EQR + GraphQL Connection）
+
+VEntity 的标准查询（列表/分页/计数）通过 **EQR 统一入口 + GraphQL Connection** 提供，无需手写查询 Service：
 
 ```csharp
-[DomainGenerateCode(IsView = true, AutoQuery = true, ViewSql = "SELECT * FROM orders")]
+[DomainGenerateCode(IsView = true, ViewSql = "SELECT * FROM orders")]
 public class OrderListView : IDomainEntity
 {
     public long Id { get; set; }
     public string OrderNo { get; set; } = "";
     public OrderStatus Status { get; set; }
 }
-
-// SG 自动生成：
-// OrderListViewQueryController.g.cs
-// - ListAsync(filter, page, pageSize) → PagedResult<Order>
-// - CountAsync(filter) → int
-// Controller/Resolver/Endpoint 自动生成
 ```
 
+**查询方式（三端等价）**：
+
+```csharp
+// 进程内 / C# Wasm：EQR 统一入口
+var page = await User.Query<OrderListView>()
+    .Where(o => o.Status == OrderStatus.Paid)
+    .OrderByDescending(o => o.Id)
+    .Page(1, 20)
+    .ToPageAsync();          // 分页 + 计数
+```
+
+```typescript
+// TS 前端：QueryBuilder 链（API 表面同构）
+const page = await Tkwf.User.Query<OrderListView>()
+    .where(f => f.status.eq("Paid"))
+    .orderByDescending(f => f.id)
+    .page(1, 20)
+    .toPageAsync();
+```
+
+**GraphQL 通道**：VEntity 默认 `ExposeGraphqlQuery = true`（V4.9.78 起 `QueryExposureDefaults` 统一推导），SG2 自动生成 Connection resolver（`UsePaging + UseProjection + UseFiltering + UseSorting`）——列表/分页/排序/过滤零代码。
+
 **关键点**：
-- 标准 List + Count 方法零代码生成
-- SG2 自动生成 REST + GraphQL 端点
-- V4.9.40 起委托 EQR：`AutoQuery` 方法体改为 `return User.Query<T>().Where(...).ToPageAsync()`
+- **VEntity 仅支持 GraphQL 查询**（EQR 直连，`ExposeGraphqlQuery` 默认 true）；**不支持 REST 端点**（SG1b early-return 阻断，V4.9.102）
+- REST 查询需通过 **Service 方法包装**——注入 `IEntityReadOnlyDAC<T>` 或 `User.Query<T>()` 手写查询方法（`[RestGet("list")]`）
+- `AutoQuery`/`IsGraphQLQueryable` 旧属性已移除（V4.9.102），统一使用 `ExposeRestQuery`/`ExposeGraphqlQuery`
 
 ---
 
@@ -245,12 +263,12 @@ public class OrderListView : IDomainEntity
 
 ---
 
-## 与 AutoQuery / VEntity 聚合的关系
+## 与标准查询 / VEntity 聚合的关系
 
 | 能力 | 章节 | 核心价值 |
 |:--|:--|:--|
 | VEntity 读写分离 | 本文 | 类型级 CQRS 基础架构 |
-| AutoQuery 自动查询 | [VEntity 统计与聚合](ventity-aggregate.md) §② | 标准 List/Count 零代码生成 |
+| 标准查询（EQR + GraphQL Connection） | [VEntity 统计与聚合](ventity-aggregate.md) §② | 列表/分页/计数零代码生成 |
 | VEntity 聚合 GraphQL | [VEntity 统计与聚合](ventity-aggregate.md) §③ | Hasura 风格 `.Aggregate()` 三端等价 |
 | ViewSql 统计自动生成 | [VEntity 统计与聚合](ventity-aggregate.md) §① | StatsDto 自动生成 |
 
@@ -261,7 +279,7 @@ public class OrderListView : IDomainEntity
 ### ✅ 适用
 
 - 复杂查询（JOIN、窗口函数、聚合）→ ViewSql 声明
-- 标准列表/详情/分页/计数 → AutoQuery 零代码
+- 标准列表/详情/分页/计数 → EQR + GraphQL Connection 零代码
 - 三端统一查询 API → EQR 统一入口
 - 读写分离强需求（写路径走 Entity + AOP，读路径走 VEntity + EQR）
 
@@ -278,7 +296,7 @@ public class OrderListView : IDomainEntity
 
 ## 继续阅读
 
-- [VEntity 统计与聚合](ventity-aggregate.md) — StatsDto 自动生成 + AutoQuery + 聚合 GraphQL
+- [VEntity 统计与聚合](ventity-aggregate.md) — StatsDto 自动生成 + 标准查询（EQR/GraphQL Connection）+ 聚合 GraphQL
 - [数据层架构](data-layer-architecture.md) — Entity/VEntity/DAC/Repository 全景
 - [增强查询 QueryBuilder](../advanced/query-guide.md) — `.Where()`/`.OrderBy()`/`.Aggregate()` 完整用法
 - [数据服务与数据存取](../core-concepts/data-services.md) — DataService 完整用法

@@ -83,7 +83,7 @@ ProjectMetaContext.ValidateRuntimeGates(RuntimeGateOptions)
 | 5 | ADR27 | `SchemaSyncStrategy=Migrations` 但无迁移文件 | ✅ V4.9.70 |
 | 6 | ADR21 | `[DomainEventHandler]` 存在但 `AddEventDispatch()` 未调用 | ✅ V4.9.70 |
 | 7 | ADR33 | RPC 路径非 `[DistributedEvent]` 事件可序列化性 | 编译期 |
-| 8 | ADR28 | `ProjectMetaContext.Instance` 未在 `OnModelCreating` 前初始化 | ⏳ Phase 2 |
+| 8 | ADR28 | `ProjectMetaContext.Instance` 未在 `OnModelCreating` 前初始化 | ✅ V4.9.102（`ProjectMetaContextInitialized` 门控：EFCoreModelConfigurator 静态标志 + SG1 使用检测） |
 | 9 | ADR24 | `InboxProcessor` 配置但 `IDistributedLock` 未注册 | ✅ V4.9.70 |
 | 10 | ADR21 | 孤儿事件：`AddEvent<T>()` 无匹配 `[DomainEventHandler]` | 编译期 |
 | 11 | ADR25 | `EntityHistoryFilter` 注册但 `IEntityHistoryStore` 未在 DI | ✅ V4.9.70 |
@@ -236,6 +236,7 @@ override `ProjectMetaContextBase.ValidateRuntimeGates`，在基类调用后追�
 | V4.9.75 | 编译期 DI 依赖验证（`TKWF_DI001`）+ `SourceExtension` 扩展归属关联 | ADR37（决策 5 能力废弃）|
 | V4.9.84 | 扩展模块引入门控（`TKWFEnabledExtension` 白名单 + `TKWF0020`） | ADR46 |
 | V4.9.85 | 权威注册源上提（ADR47）+ 扩展机制编译期化（ADR48）+ 三层门控（`TKWF0030-33`） | ADR47/48/50 |
+| V4.9.102 | 门控缺口 #6/#8 收尾（`EventDispatchFilter` 规则 + `ProjectMetaContextInitialized` 规则）——统一门控体系闭环 | ADR35 |
 
 ---
 
