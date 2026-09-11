@@ -28,6 +28,8 @@ jobs:
           token: ${{ secrets.TOKEN_FRAMEWORK }}
           path: src/TKW.Framework
           ref: master
+          fetch-depth: 0
+          fetch-tags: true
 
       - name: Setup .NET 10.0
         uses: actions/setup-dotnet@v4
