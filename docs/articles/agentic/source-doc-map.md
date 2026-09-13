@@ -6,7 +6,7 @@ description: TKWF 源文档 D/G/T/xCodeGen 系列与公开文章的完整映射�
 
 > 本文档建立 TKWF 源文档（`_TKWF/docs/`）与公开文档站文章的对应关系，
 > 便于 Agent 与贡献者定位权威来源。
-> 源文档体系以 `_TKWF/docs/00-文档体系说明.md` 为准（v4.29，D 系列含 D06D/D17A/D17B/D18A/D19/D20/D20B/D21/D071，G 系列 18 份）。
+> 源文档体系以 `_TKWF/docs/00-文档体系说明.md` 为准（v4.30，D 系列含 D06D/D17A/D17B/D18A/D19/D20/D20B/D21/D071，G 系列 18 份）。
 > V4.9.80 起扩展独立仓库：扩展代码/指南迁至公开仓库 [`TKWF.Extensions`](https://github.com/LoongBa/TKWF.Extensions)，扩展模块文档（开发方案/ADR/总览）留在主框架 `03_扩展模块/`（私有）。
 
 ---
@@ -26,7 +26,7 @@ description: TKWF 源文档 D/G/T/xCodeGen 系列与公开文章的完整映射�
 | `D06B-条件表达式构建器设计.md` | [条件构建器](../advanced/conditions-builder.md) | PredicateBuilderBase、Entity.Conditions 静态类、xCodeGen + SG1 双重生成 |
 | `D06C-Entity映射与DB Schema-设计方案.md` | [VEntity 读写分离（CQRS）](../explanation/cqrs-read-write.md) · [VEntity 统计与聚合](../explanation/ventity-aggregate.md) | Entity 映射策略：ORM 特性体系（Table/Column/Index/Navigate）、接口标记 vs 基类继承、查询条件生成管线（三阶段 SearchGroup 提取） |
 | `D06D-命名谓词预设-设计方案.md` | — | 第四层（命名成品层）：命名谓词预设 `Entity.Predicates`——`Conditions` 原子谓词之上的常用过滤组合固化；时间相关谓词须用静态方法（防 `DateTime.Today` 冻结 bug）；增强版 `PredicatePreset<TEntity>` Phase 2 延迟（V4.9.92 后新增，v4.27） |
-| `D07-三层SG-原则和设计方案.md` | [代码生成管线](../core-concepts/code-generation.md) | 三层 SG 管线：SG1 元数据提取 → SG2 服务端生成 → SG3 客户端生成；ProjectMetaContext 唯一元数据源。V4.9.32 IsExposed 暴露过滤；V4.9.34 EntityFieldList 字段白名单；V4.9.35 Phase-C 实体连接 resolver + IsGraphQLQueryable 三侧过滤 |
+| `D07-三层SG-原则和设计方案.md` | [代码生成管线](../core-concepts/code-generation.md) | 三层 SG 管线：SG1 元数据提取 → SG2 服务端生成 → SG3 客户端生成；ProjectMetaContext 唯一元数据源。V4.9.32 IsExposed 暴露过滤；V4.9.34 EntityFieldList 字段白名单；V4.9.35 Phase-C 实体连接 resolver（`IsGraphQLQueryable` 三侧过滤，V4.9.102 起统一为 `ExposeGraphqlQuery`） |
 | `D19-TKWF反射使用与AOT跟踪.md` | [SG 管线解剖](../explanation/sg-pipeline-anatomy.md) | TKWF 反射使用全景 + AOT 兼容跟踪（V4.9.88+）：反射消除与 SG 化三层原则（"SG 化 → 消灭 → 缓存兜底"）、[RequiresDynamicCode]/[RequiresUnreferencedCode] 标注清单、无法消灭的反射（JsonConverter $type 多态 / EventTypeResolver 跨程序集） |
 | `D08-框架CI-CD与脚本架构.md` | — | 三仓库 CI/CD 管线、三引用模式（NuGet/DLL/Project）、MSBuild 基础设施、§九 Schema 导出管线（buildSchema.ps1） |
 
@@ -64,14 +64,14 @@ description: TKWF 源文档 D/G/T/xCodeGen 系列与公开文章的完整映射�
 | `D11-系统角色-SystemActor-设计方案.md` | [SystemActor 体系](../explanation/system-actor-explained.md) | 系统角色：BeginSystemScopeAsync、scope.System/scope.IsSystem、IEntityActorAuditable、[DenySystemActor]、StandaloneDomainUserAccessor（ADR 14/15/16） |
 | `D13-多租户：加字段与分库双模式设计方案.md` | [多租户](../explanation/multi-tenancy.md) · [门控机制](../explanation/gates.md) | 多租户架构（v2.2）：加字段（共享库行级隔离）与分库（Database-per-Tenant）双模式、租户识别与授权（ITenantContext/ITenantAuthorization）、身份租户（A）与目标租户（B）双场景、跨租户作用域（ExecuteInTenantAsync）、运行时门控 |
 | `D18-TKWF门控机制-设计方案.md` | [门控机制](../explanation/gates.md) | 门控机制设计：三级门控（1 编译时 / 2 混合 / 3 运行时热路径）、优先级原则（尽量 1、2 不得已才用 3）、GateRules 数据驱动规则集、RuntimeGateOptions 严重级别、SG1 特征门控生成、12 缺口全景、与扩展机制门控衔接 |
-| `D18A-TKWF诊断码总表.md` | — | TKWF 诊断码总表（V4.9.87+）：D18/ADR47/50 各诊断码汇总（TKWF_DI001、TKWF0030-33、TKWF0020-22 等） |
+| `D18A-TKWF诊断码总表.md` | — | TKWF 诊断码总表（V4.10.22）：D18/ADR47/50 各诊断码汇总（`TKWF_SG1a_DI001/DI002/DI003` 编译期 DI 校验三件套、TKWF0030-33、TKWF0020-22 等，69 条含双级别） |
 | `G13-多租户使用指南.md` | [多租户](../explanation/multi-tenancy.md) | 多租户消费方实操手册：双模式选型决策树、加字段/分库/混合快速开始、跨租户操作、安全要点、测试要点 |
 
 ## 数据与查询
 
 | 源文档 | 公开文章 | 说明 |
 |:-------|:---------|:-----|
-| `D071-SQL级投影与列裁剪支持矩阵.md` | — | 查询管线 SQL 级投影/列裁剪能力跟踪活文档（v4.10.1 附文档）：分场景结论（GraphQL 连接方案1 已解决 / DataService IQueryable 纯实体已迁移 / 进程内全属性 DTO 库级回退）+ 关联 ADR58/15/14 + 新 ORM 接入检查点 8 项 + FreeSql/HC 升级观察点 + DataService 路径遗留迭代登记（v4.28/29 新增） |
+| `D071-SQL级投影与列裁剪支持矩阵.md` | — | 查询管线 SQL 级投影/列裁剪能力跟踪活文档（v4.10.1 附文档）：分场景结论（GraphQL 连接方案1 已解决 / DataService IQueryable 纯实体已迁移（V4.10.2，v4.30 状态同步）/ 进程内全属性 DTO 库级回退）+ 关联 ADR58/15/14 + 新 ORM 接入检查点 8 项 + FreeSql/HC 升级观察点 + DataService 路径遗留迭代登记（v4.28-30） |
 | `G07-查询管线总览.md` | — | 查询管线全链路入口：三种运行环境（进程内/Wasm/TS）× 两种查询模式（Query/Use）执行路径 + 管线分层与 ORM 接入矩阵 + VEntity 查询管线现状（v2.0，2026-09-11） |
 | `G06-领域数据服务与数据存取使用指南.md` | [DataService](../core-concepts/data-services.md) | 数据服务使用 |
 | `G06B-条件表达式构建器使用指南.md` | [条件构建器](../advanced/conditions-builder.md) | Conditions 条件工厂 API、Expression 两阶段构建、并发隔离 |
@@ -134,7 +134,7 @@ description: TKWF 源文档 D/G/T/xCodeGen 系列与公开文章的完整映射�
 
 ---
 
-> 对齐 TKWF：V4.10.4 · 2026-09-11
+> 对齐 TKWF：V4.10.22 · 2026-09-11
 
 
 

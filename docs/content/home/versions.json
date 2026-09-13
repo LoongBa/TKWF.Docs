@@ -1,17 +1,17 @@
 [
   {
-    "version": "4.10.4",
-    "date": "2026-09-11",
-    "description": "SG 嵌套类型兼容修复 + P1 编译风险吸收"
+    "version": "4.10.22",
+    "date": "2026-09-14",
+    "description": "DI001 扫描面信号驱动化 + DI003 扩展聚合遗漏诊断"
   },
   {
-    "version": "4.10.3",
-    "date": "2026-09-11",
-    "description": "Resolver hintName 相撞修复"
+    "version": "4.10.21",
+    "date": "2026-09-13",
+    "description": "DI 契约豁免 + 方法级 ExposeRest 门控完成"
   },
   {
-    "version": "4.10.2",
-    "date": "2026-09-11",
-    "description": "DataService 纯实体 IQueryable 路径迁移"
+    "version": "4.10.20",
+    "date": "2026-09-13",
+    "description": "方法级 ExposeGraphQL 接线"
   }
 ]

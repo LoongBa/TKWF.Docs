@@ -152,7 +152,7 @@ J --> G1[事件派发：非 AOP 路径立即派发]
 | 特性 | 说明 |
 |:--|:--|
 | **SystemActor 自动绑定** | `BeginSystemScopeAsync` 零配置，退出时清理 AsyncLocal 防泄漏 |
-| **租户上下文恢复** | `EnqueueAsync(..., tenantId)` → 执行时 `ITenantScopeRestorer.BeginTenantScopeAsync` 恢复租户上下文 |
+| **租户上下文恢复** | `EnqueueAsync(..., tenantId)` → 执行时 `ITenantScopeRestorer.BeginTenantScopeAsync` 恢复租户上下文；V4.10.15 起 **ambient 租户自动捕获**——未显式传 `tenantId` 时自动捕获当前 ambient 租户上下文 |
 | **事件派发** | 非 AOP 路径（`AopContextAccessor.Current == null`）→ `PublishAsync` 立即派发；需事务一致请标 `[Transactional]` |
 | **AsyncLocal 隔离** | 作业执行结束必须清理 AsyncLocal（防线程池复用串号）——框架自动清理 |
 

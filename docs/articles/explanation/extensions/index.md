@@ -1,6 +1,6 @@
 ---
 title: 扩展子系列：有哪些扩展
-description: TKWF 扩展机制子系列索引：24 个扩展模块一览（V4.9.80 起独立仓库 TKWF.Extensions，独立版本演进）
+description: TKWF 扩展机制子系列索引：25 个扩展模块一览（V4.9.80 起独立仓库 TKWF.Extensions，独立版本演进）
 ---
 # 扩展子系列：有哪些扩展
 
@@ -10,13 +10,13 @@ description: TKWF 扩展机制子系列索引：24 个扩展模块一览（V4.9.
 
 | 扩展 | 版本 | 说明 | 指南（扩展仓库） |
 |:-----|:-----|:-----|:-----|
-| **Permissions**（权限） | V0.7.0 + V0.8.0 | 细粒度权限定义 / fail-closed 检查 / 编译期权限名校验（PERM001） | [本地文章](./permissions.md) · [指南](https://github.com/LoongBa/TKWF.Extensions/blob/master/docs/Permissions/权限扩展-使用指南.md) |
+| **Permissions**（权限） | V0.7.0 + V0.8.0 + V0.9.0 | 细粒度权限定义 / fail-closed 检查 / 编译期权限名校验（PERM001）/ 多用户批量权限检查（`IPermissionBatchChecker`，单权限×多用户 + 按 ProviderKey 分组归因） | [本地文章](./permissions.md) · [指南](https://github.com/LoongBa/TKWF.Extensions/blob/master/docs/Permissions/权限扩展-使用指南.md) |
 | **Permissions.Abstractions** | V0.1.0 | 权限契约抽象（`IPermissionChecker`/`RequirePermission`/`IRoleProvider`） | —（并入 Permissions） |
 | **Permissions.Validation** | V0.8.0 | 扩展侧 PERM001 DiagnosticAnalyzer（从内核移除耦合） | —（并入 Permissions） |
 | **Identity**（身份） | V0.3.0 | 用户 / 角色 / 用户角色分配 + PasswordHasher 凭据验证；`GetRolesAsync` VEntity 跨表 JOIN | [指南](https://github.com/LoongBa/TKWF.Extensions/blob/master/docs/Identity/身份管理扩展-使用指南.md) |
 | **Account**（账户） | V0.3.0 | 账户锁定 + 密码重置 + **登录历史与异常检测**（消费 SecurityLog 查询） | [指南](https://github.com/LoongBa/TKWF.Extensions/blob/master/docs/Account/账户管理扩展-使用指南.md) |
 | **Navigation**（导航/菜单） | V0.1.0 | 菜单数据模型 / 贡献机制 / 权限过滤（从主框架迁出） | [本地文章](./navigation.md) · [指南](https://github.com/LoongBa/TKWF.Extensions/blob/master/docs/Navigation/导航扩展-使用指南.md) |
-| **AuditLogging**（审计） | V0.3.0 | 审计日志 FreeSql 存储 + SG1 实体 + 查询 API + 统计聚合 + 保留天数清理 | [指南](https://github.com/LoongBa/TKWF.Extensions/blob/master/docs/AuditLogging/审计日志扩展-使用指南.md) |
+| **AuditLogging**（审计） | V0.4.0 | 审计日志 FreeSql 存储 + SG1 实体 + 查询 API + 统计聚合 + 保留天数清理 + 管理 API（`[GenerateController]` + 5 REST 端点） | [指南](https://github.com/LoongBa/TKWF.Extensions/blob/master/docs/AuditLogging/审计日志扩展-使用指南.md) |
 | **Settings**（设置） | V0.2.0 | 全局/用户级配置持久化 + 分层读取 | [指南](https://github.com/LoongBa/TKWF.Extensions/blob/master/docs/Settings/设置管理扩展-使用指南.md) |
 | **BlobStoring**（二进制存储） | V0.2.0 | 本地文件系统存储 + FreeSql 记录 + FileStream 流式下载 | [指南](https://github.com/LoongBa/TKWF.Extensions/blob/master/docs/BlobStoring/二进制存储扩展-使用指南.md) |
 | **BlobStoring.Abstractions** | V0.1.1 | Blob 存储契约（`IBlobStorageService`/`BlobInfo`/`BlobStoringOptions`，ADR50 依赖倒置） | —（并入 BlobStoring） |
@@ -27,7 +27,8 @@ description: TKWF 扩展机制子系列索引：24 个扩展模块一览（V4.9.
 | **PrintTemplates**（打印模板） | V0.1.0 | 打印模板引擎与版本化（Scriban 沙箱渲染 + Draft/Active/Archived 生命周期） | [指南](https://github.com/LoongBa/TKWF.Extensions/blob/master/docs/PrintTemplates/打印模板扩展-使用指南.md) |
 | **Dashboard**（仪表盘） | V0.1.0 | 仪表盘数据服务（Metrics 展示层——JSON 描述符 + Widget 数据查询） | [指南](https://github.com/LoongBa/TKWF.Extensions/blob/master/docs/Dashboard/仪表盘扩展-使用指南.md) |
 | **DataPort**（导入导出） | V0.1.0 | 数据导入导出（核心运行库 + MiniExcel Provider + SG1 持久化；FileHash 幂等） | [指南](https://github.com/LoongBa/TKWF.Extensions/blob/master/docs/DataPort/数据导入导出扩展-使用指南.md) |
-| **Notifications**（通知中心） | V0.2.0 | 站内通知收件箱 + 订阅 + 事件驱动通知 + 多通道路由（UseChannels/Email） | [指南](https://github.com/LoongBa/TKWF.Extensions/blob/master/docs/Notifications/通知中心扩展-使用指南.md) |
+| **Notifications**（通知中心） | V0.4.0 | 站内通知收件箱 + 订阅 + 事件驱动通知 + 多通道路由（UseChannels/Email）+ 用户偏好路由 + 逐用户权限门控 + SignalR 实时推送通道 | [指南](https://github.com/LoongBa/TKWF.Extensions/blob/master/docs/Notifications/通知中心扩展-使用指南.md) |
+| **Notifications.SignalR** | V0.1.0 | 通知中心 SignalR 实时推送通道（独立包——Hub 类型锚 + best-effort 推送 + 端点映射；`FrameworkReference` 共享框架零 NuGet；服务端非 UI） | —（并入 Notifications） |
 | **BackgroundJobs**（后台任务持久化） | V0.2.0 | 执行历史 `JobExecution` + 业务结果 `JobResult` 追踪 + 历史清理（RetentionDays） | [指南](https://github.com/LoongBa/TKWF.Extensions/blob/master/docs/BackgroundJobs/后台任务持久化扩展-使用指南.md) |
 | **BackgroundJobs.Quartz** | V0.1.0 | Quartz AdoJobStore 一键封装（`UseTkfwAdoJobStore` 12 表自动建表/集群配置） | —（并入 BackgroundJobs） |
 | **HealthCheck**（健康检查） | V0.2.0 | 系统健康探测（net10 HealthChecks + `/health` 端点 + 内置 DB 探针 `AddDatabaseHealthCheck<T>`） | [指南](https://github.com/LoongBa/TKWF.Extensions/blob/master/docs/HealthCheck/健康检查扩展-使用指南.md) |

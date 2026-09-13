@@ -129,25 +129,29 @@ ProjectMetaContext.ValidateRuntimeGates(RuntimeGateOptions)
 
 ---
 
-## ④ 编译期 DI 依赖验证（V4.9.75，`TKWF_DI001`）
+## ④ 编译期 DI 依赖验证（V4.9.75 起，`TKWF_SG1a_DI001/DI002/DI003`）
 
-扩展机制收尾新增的**编译期诊断**——SG1 扫描服务类构造函数，请求的接口若无框架特性注册且不在白名单，输出 `TKWF_DI001`：
+扩展机制收尾新增的**编译期诊断**——SG1 扫描服务类构造函数，请求的接口若无框架注册且不在白名单，输出 `TKWF_SG1a_DI001`（V4.10.22 信号驱动化演进，见下）：
 
 ```
-TKWF_DI001: 'OrderService' 请求服务接口 'ICacheService' 但无框架特性注册
+TKWF_SG1a_DI001: 'OrderService' 请求服务接口 'ICacheService' 但无框架注册
             （[DomainService] 等）——若为运行时手写注册请忽略；
-            如需编译期校验可升级 TKWF_DI001_Severity=Error
+            如需编译期校验可升级 [TKWFSeverity(TKWFDiagnostic.DI001, EnumSeverity.Error)]
 ```
 
 | 项 | 说明 |
 |:--|:--|
 | 信号源 | `ClassMetadata.ConstructorParameterTypes`（SG 扫描构造函数参数类型） |
+| 扫描面（V4.10.22 ADR74 信号驱动） | 注入方扫描加**信号门**（复用 `IsDomainTypeSignal`）：无框架契约信号的非元数据类（纯 POCO/基础设施包装/测试桩）不再扫；有信号类（继承领域基类/实现 IDomainService/`[DomainGenerateCode]`/Controller 基类）仍严格校验；internal 服务类经通道 A 仍扫 |
 | 判定 | 参数接口无框架特性注册（`[DomainService]` 等 `ImplementedInterfaces`）且不在白名单 |
 | 白名单 | `System.` / `Microsoft.` / `TKW.Framework.` 前缀，及泛型/基类/`IEnumerable` 场景 |
 | 默认级别 | **`Warning`**（不破坏既有编译） |
-| 升级方式 | `.csproj` 加 `<TKWF_DI001_Severity>Error</TKWF_DI001_Severity>` |
+| 升级方式 | `[TKWFSeverity(TKWFDiagnostic.DI001, EnumSeverity.Error)]` 属性（V4.9.101 起，MSBuild 属性已弃用） |
+| 豁免 | `[DiContractIgnore]` 类级豁免（V4.10.21 ADR71，手写注册类退出 DI 校验） |
 | 边界 | 不验证**运行时手写注册**（SG 看不到运行时代码） |
 
+> **DI 校验三件套**（V4.10.22 闭环）：`DI001`（服务构造依赖无框架注册）、`DI002`（Store/Service 注入 `MetaType.DataService` 类型未注册，含跨扩展，V4.10.8 ADR61 + V4.10.12 补全扫描面）、`DI003`（扩展聚合遗漏——扩展有信号类但未提供聚合通道，V4.10.22 ADR75）。三者均有 Warning/Error 双级别（`[TKWFSeverity]` 切换）。全量诊断码见 D18A 总表（69 条）。
+>
 > 这是门控体系首次覆盖"**构造依赖能否被满足**"——此前只能靠启动时 DI 解析异常暴露，现在编译期即报。dry-run 全仓零误报。
 
 ### GateRules 扩展归属关联（`SourceExtension`）
@@ -237,6 +241,7 @@ override `ProjectMetaContextBase.ValidateRuntimeGates`，在基类调用后追�
 | V4.9.84 | 扩展模块引入门控（`TKWFEnabledExtension` 白名单 + `TKWF0020`） | ADR46 |
 | V4.9.85 | 权威注册源上提（ADR47）+ 扩展机制编译期化（ADR48）+ 三层门控（`TKWF0030-33`） | ADR47/48/50 |
 | V4.9.102 | 门控缺口 #6/#8 收尾（`EventDispatchFilter` 规则 + `ProjectMetaContextInitialized` 规则）——统一门控体系闭环 | ADR35 |
+| V4.10.8-22 | 编译期 DI 校验演进：DI001 扫描面收敛（internal 排除 ADR68 + 信号驱动 ADR74）+ `[DiContractIgnore]` 豁免（ADR71）+ DI002 跨扩展补全（ADR65）+ DI003 扩展聚合遗漏（ADR75） | ADR61/65/68/71/74/75 |
 
 ---
 

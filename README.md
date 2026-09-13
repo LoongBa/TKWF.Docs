@@ -4,7 +4,7 @@
 
 [![Build and Deploy Docs](https://github.com/LoongBa/TKWF.Docs/actions/workflows/docfx.yml/badge.svg)](https://github.com/LoongBa/TKWF.Docs/actions/workflows/docfx.yml)
 
-**当前同步版本：V4.10.4**（文档与框架 [LoongBa/TKW.Framework](https://github.com/LoongBa/TKW.Framework) 保持同步）
+**当前同步版本：V4.10.22**（文档与框架 [LoongBa/TKW.Framework](https://github.com/LoongBa/TKW.Framework) 保持同步）
 
 ---
 
@@ -12,6 +12,9 @@
 
 | 版本 | 日期 | 核心内容 |
 |:-----|:-----|:---------|
+| **4.10.22** | 2026-09-14 | DI001 扫描面信号驱动化（ADR74）+ DI003 扩展聚合遗漏诊断（ADR75）——编译期 DI 校验三件套闭环 |
+| **4.10.21** | 2026-09-13 | DI 契约豁免 `[DiContractIgnore]`（ADR71）+ 方法级 ExposeRest 门控完成（ADR72） |
+| **4.10.20** | 2026-09-13 | 方法级 ExposeGraphQL 接线——`[ApiExpose(ExposeGraphQL=false)]` 方法级生效（ADR70） |
 | **4.10.4** | 2026-09-11 | SG 嵌套类型兼容修复（Roslyn `FullyQualifiedFormat` `+` 分隔误判）+ Oracle P1-1 CS1737 编译风险吸收（V5 前收尾清单 §二 #12） |
 | **4.10.3** | 2026-09-11 | 跨命名空间同名 Controller resolver hintName 相撞修复（`SanitizeIdentifier(FullTypeName)` 全类型名消歧，V5 前收尾清单 §一 #11） |
 | **4.10.2** | 2026-09-11 | DataService 纯实体 IQueryable 路径迁移方案 1（阶段②）——GraphQL SQL 级列裁剪对齐实体连接路径（ADR58 + D071 §二） |
