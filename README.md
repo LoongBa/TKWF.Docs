@@ -4,7 +4,7 @@
 
 [![Build and Deploy Docs](https://github.com/LoongBa/TKWF.Docs/actions/workflows/docfx.yml/badge.svg)](https://github.com/LoongBa/TKWF.Docs/actions/workflows/docfx.yml)
 
-**当前同步版本：V4.10.22**（文档与框架 [LoongBa/TKW.Framework](https://github.com/LoongBa/TKW.Framework) 保持同步）
+**当前同步版本：V4.10.24**（文档与框架 [LoongBa/TKW.Framework](https://github.com/LoongBa/TKW.Framework) 保持同步）
 
 ---
 
@@ -12,6 +12,8 @@
 
 | 版本 | 日期 | 核心内容 |
 |:-----|:-----|:---------|
+| **4.10.24** | 2026-09-15 | xCodeGen 活态文档生成缺陷修复 G9/G10——DOMAIN_MAP 收录 VEntity + 实体描述去占位（XiaoShuTong 问题单，Oracle PASS） |
+| **4.10.23** | 2026-09-14 | xCodeGen 生成期可插拔校验阶段（ADR76 U3b）——`IValidationChecker` 快/重两档 + `ValidationRunner`，默认关闭零行为变化 |
 | **4.10.22** | 2026-09-14 | DI001 扫描面信号驱动化（ADR74）+ DI003 扩展聚合遗漏诊断（ADR75）——编译期 DI 校验三件套闭环 |
 | **4.10.21** | 2026-09-13 | DI 契约豁免 `[DiContractIgnore]`（ADR71）+ 方法级 ExposeRest 门控完成（ADR72） |
 | **4.10.20** | 2026-09-13 | 方法级 ExposeGraphQL 接线——`[ApiExpose(ExposeGraphQL=false)]` 方法级生效（ADR70） |

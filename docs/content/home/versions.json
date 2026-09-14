@@ -1,17 +1,17 @@
 [
   {
+    "version": "4.10.24",
+    "date": "2026-09-15",
+    "description": "xCodeGen 活态文档生成缺陷修复 G9/G10"
+  },
+  {
+    "version": "4.10.23",
+    "date": "2026-09-14",
+    "description": "xCodeGen 生成期可插拔校验阶段"
+  },
+  {
     "version": "4.10.22",
     "date": "2026-09-14",
     "description": "DI001 扫描面信号驱动化 + DI003 扩展聚合遗漏诊断"
-  },
-  {
-    "version": "4.10.21",
-    "date": "2026-09-13",
-    "description": "DI 契约豁免 + 方法级 ExposeRest 门控完成"
-  },
-  {
-    "version": "4.10.20",
-    "date": "2026-09-13",
-    "description": "方法级 ExposeGraphQL 接线"
   }
 ]
