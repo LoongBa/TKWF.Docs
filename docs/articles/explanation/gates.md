@@ -150,7 +150,7 @@ TKWF_SG1a_DI001: 'OrderService' 请求服务接口 'ICacheService' 但无框架�
 | 豁免 | `[DiContractIgnore]` 类级豁免（V4.10.21 ADR71，手写注册类退出 DI 校验） |
 | 边界 | 不验证**运行时手写注册**（SG 看不到运行时代码） |
 
-> **DI 校验三件套**（V4.10.22 闭环）：`DI001`（服务构造依赖无框架注册）、`DI002`（Store/Service 注入 `MetaType.DataService` 类型未注册，含跨扩展，V4.10.8 ADR61 + V4.10.12 补全扫描面）、`DI003`（扩展聚合遗漏——扩展有信号类但未提供聚合通道，V4.10.22 ADR75）。三者均有 Warning/Error 双级别（`[TKWFSeverity]` 切换）。全量诊断码见 D18A 总表（69 条）。
+> **DI 校验三件套**（V4.10.22 闭环）：`DI001`（服务构造依赖无框架注册）、`DI002`（Store/Service 注入 `MetaType.DataService` 类型未注册，含跨扩展，V4.10.8 ADR61 + V4.10.12 补全扫描面）、`DI003`（扩展聚合遗漏——扩展有信号类但未提供聚合通道，V4.10.22 ADR75）。三者均有 Warning/Error 双级别（`[TKWFSeverity]` 切换）。全量诊断码见 D18A 总表（V4.10.33 起 82 属性/87 条目，含 VIEW003/DI001/DI002/DI003/TKWF0034 五双级别 + CTRB001-003 贡献者诊断）。
 >
 > 这是门控体系首次覆盖"**构造依赖能否被满足**"——此前只能靠启动时 DI 解析异常暴露，现在编译期即报。dry-run 全仓零误报。
 

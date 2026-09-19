@@ -24,7 +24,7 @@ description: 权限扩展使用指南：权限定义/贡献者、[RequirePermiss
 
 角色适合"谁能进哪个模块"，权限适合"谁能做哪个具体操作"。两者**并存不替代**——同一个方法可同时标注 `[RequireRole("Sales")]` + `[RequirePermission("Order.Create")]`，先查角色再查权限。
 
-> **ABP 对比**：ABP 的 `IPermissionChecker` 与此设计类似，但 TKWF 的关键差异在**发现机制**——ABP 运行时反射扫描 `IPermissionDefinitionContributor` 实现，TKWF 用 SG1 编译期扫描 `[PermissionContributor]` 标记生成类型清单（零运行时反射）。详见下方"架构全景"。
+> **ABP 对比**：ABP 的 `IPermissionChecker` 与此设计类似，但 TKWF 的关键差异在**发现机制**——ABP 运行时反射扫描 `IPermissionDefinitionContributor` 实现，TKWF 用 SG1 编译期接口判定扫描 `IPermissionDefinitionContributor` 实现生成类型清单（零运行时反射）。详见下方"架构全景"。
 
 ---
 
@@ -34,7 +34,7 @@ description: 权限扩展使用指南：权限定义/贡献者、[RequirePermiss
 ┌──────────────────────────────────────────────────────────────┐
 │ 消费方项目（App.csproj）                                       │
 │                                                                │
-│  [PermissionContributor]                                       │
+│  // 实现 IPermissionDefinitionContributor 即被 SG1 收集（无特性）│
 │  class OrderPermissions : IPermissionDefinitionContributor   │
 │  { Define(context) => context.Add("Order.Create", ...) }     │
 │                                                                │
@@ -46,9 +46,9 @@ description: 权限扩展使用指南：权限定义/贡献者、[RequirePermiss
 │ SG1 编译期扫描（ReferencedAssemblySymbols）                    │
 │                                                                │
 │  ① 扫描 [TKWFExtension("Permissions")] → 扩展初始器类型清单   │
-│  ② 扫描 [PermissionContributor] → 贡献者类型清单             │
+│  ② 接口判定扫描 IPermissionDefinitionContributor 实现 → 类型清单             │
 │  ③ 生成 typeof(global::{FullName}) 编译期类型引用             │
-│  ④ 写入 ProjectMetaContext.PermissionContributors 桥          │
+│  ④ 写入 ProjectMetaContext.Contributors 单桥（TargetKind=Permission）          │
 └──────────────────────────┬───────────────────────────────────┘
                            │ 启动时
                            ↓
@@ -56,8 +56,8 @@ description: 权限扩展使用指南：权限定义/贡献者、[RequirePermiss
 │ PermissionExtensionInitializer 三钩子（V4.9.71 机制）         │
 │                                                                │
 │  ConfigureServices（DI 构建前，同步）                          │
-│    → 读 ProjectMetaContext.PermissionContributors             │
-│    → Activator.CreateInstance(contributorType)  无参构造       │
+│    → 读 ProjectMetaContext.Contributors["Permission"] 单桥     │
+│    → CreateContributorInstances("Permission") 编译期实例化    │
 │    → contributor.Define(context)  收集权限定义                 │
 │    → 填充 IPermissionDefinitionRepository                      │
 │    → TryAdd 注册 IPermissionChecker/Store/PermissionFilter    │
@@ -111,10 +111,9 @@ description: 权限扩展使用指南：权限定义/贡献者、[RequirePermiss
 
 ### Step 2：声明权限定义（贡献者）
 
-业务模块用 `[PermissionContributor]` 标记一个实现 `IPermissionDefinitionContributor` 的类：
+业务模块实现 `IPermissionDefinitionContributor` 接口（V4.10.31 起 SG1 接口判定收集，无需特性标记）：
 
 ```csharp
-[PermissionContributor]
 public class OrderPermissions : IPermissionDefinitionContributor
 {
     public void Define(PermissionDefinitionContext context)
@@ -135,7 +134,7 @@ public class OrderPermissions : IPermissionDefinitionContributor
 }
 ```
 
-SG1 扫描 `[PermissionContributor]` → 生成 `GeneratedPermissionContributors` → 启动时扩展初始化器实例化贡献者、调用 `Define()` 收集定义（ConfigureServices 阶段，编译期清单无反射）。
+SG1 接口判定扫描 `IPermissionDefinitionContributor` 实现 → 贡献者清单入 `ProjectMetaContext.Contributors` 单桥 → 启动时扩展初始化器 `CreateContributorInstances` 编译期实例化（V4.10.32）、调用 `Define()` 收集定义（ConfigureServices 阶段，编译期清单无反射）。
 
 ### Step 3：方法级权限门
 
@@ -212,7 +211,7 @@ public async Task GrantAsync(IPermissionStore store)
 | 概念 | 说明 |
 |:--|:--|
 | 权限定义（PermissionDefinition） | 权限声明——`Name`（如 `"Order.Create"`）+ 显示名/分组/父权限 |
-| 权限贡献者（IPermissionDefinitionContributor） | 业务模块声明权限定义的类，`[PermissionContributor]` 标记 |
+| 权限贡献者（IPermissionDefinitionContributor） | 业务模块声明权限定义的类，实现接口即可（V4.10.31 起 SG1 接口判定，不再用 `[PermissionContributor]` 特性） |
 | 权限检查器（IPermissionChecker） | 运行时判断当前用户是否拥有权限 |
 | 权限存储（IPermissionStore） | 持久化权限授予值——V4.9.75 起默认 `FreeSqlPermissionStore`（已注册 `IFreeSql` 时），未注册时回退 NoOp |
 | 方法级权限门（[RequirePermission]） | 标记方法/接口，无权限时抛 `DomainException(FORBIDDEN)` |
@@ -364,13 +363,13 @@ IPermissionStore.GetAsync("Order.Create", "User", userId)
 不冲突。`AuthorityFilter`（角色）和 `PermissionFilter`（权限）独立工作，可同时标记。请求先过角色检查，再过权限检查。
 
 **Q: 权限定义在哪声明？**
-在消费方业务模块的 `[PermissionContributor]` 类里，经 `Define(context).Add(...)` 声明。SG 编译期发现（源码 + 引用程序集）。
+在消费方业务模块的 `IPermissionDefinitionContributor` 实现类里，经 `Define(context).Add(...)` 声明。SG 编译期发现（源码 + 引用程序集）。
 
 **Q: 默认权限检查器为何可能恒拒绝？**
 看 store 是否生效：引用 `TKWF.Domain.FreeSql` → 默认 `FreeSqlPermissionStore` 真实读写数据库；未注册 `IFreeSql` → 回退 NoOp 恒拒绝（并输出 `LogWarning`）。`PermissionChecker<TUserInfo>` 本身已接通用户上下文 + store 链路，逻辑层无需额外配置。
 
 **Q: 为什么不像 ABP 那样运行时反射发现权限定义？**
-TKWF 核心理念是"编译期确定性"——SG1 编译期扫描 `[PermissionContributor]` 标记生成类型清单（零运行时反射）。权限定义本身在运行时由扩展初始化器收集（SG 不能执行用户代码），但贡献者类型发现是编译期的。这是 TKWF 与 ABP 的根本区别。
+TKWF 核心理念是"编译期确定性"——SG1 编译期接口判定扫描 `IPermissionDefinitionContributor` 实现生成类型清单（零运行时反射）。权限定义本身在运行时由扩展初始化器收集（SG 不能执行用户代码），但贡献者类型发现是编译期的。这是 TKWF 与 ABP 的根本区别。
 
 ---
 

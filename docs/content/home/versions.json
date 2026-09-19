@@ -1,17 +1,17 @@
 [
   {
-    "version": "4.10.24",
-    "date": "2026-09-15",
-    "description": "xCodeGen 活态文档生成缺陷修复 G9/G10"
+    "version": "4.10.33",
+    "date": "2026-09-19",
+    "description": "i18n 国际化基础设施 Phase 1 立项"
   },
   {
-    "version": "4.10.23",
-    "date": "2026-09-14",
-    "description": "xCodeGen 生成期可插拔校验阶段"
+    "version": "4.10.32",
+    "date": "2026-09-18",
+    "description": "贡献者机制 A+ 阶段 4——V5 破坏性清理 + 编译期化 + 诊断码"
   },
   {
-    "version": "4.10.22",
-    "date": "2026-09-14",
-    "description": "DI001 扫描面信号驱动化 + DI003 扩展聚合遗漏诊断"
+    "version": "4.10.31",
+    "date": "2026-09-18",
+    "description": "贡献者机制 A+ 阶段 3——迁 Permission/Feature 同模式批量"
   }
 ]

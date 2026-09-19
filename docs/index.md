@@ -7,7 +7,7 @@ _layout: landing
 <div class="hero-section">
   <div class="hero-badges">
     <img src="https://img.shields.io/badge/.NET-10-blue" alt=".NET 10" />
-    <img src="https://img.shields.io/badge/version-4.10.24-green" alt="Version 4.10.24" />
+    <img src="https://img.shields.io/badge/version-4.10.33-green" alt="Version 4.10.33" />
     <img src="https://img.shields.io/badge/Agentic-Engineering-purple" alt="Agentic Engineering" />
   </div>
 <h1>TKW.Framework — 让 Agentic Engineering 更可控、更可靠的软件开发框架</h1>
@@ -524,9 +524,9 @@ tkwf-tsclient-mock → Mock 数据生成
 
 | 版本 | 日期 | 核心内容 |
 |:-----|:-----|:---------|
-| **4.10.24** | 2026-09-15 | xCodeGen 活态文档生成缺陷修复 G9/G10 |
-| **4.10.23** | 2026-09-14 | xCodeGen 生成期可插拔校验阶段 |
-| **4.10.22** | 2026-09-14 | DI001 扫描面信号驱动化 + DI003 扩展聚合遗漏诊断 |
+| **4.10.33** | 2026-09-19 | i18n 国际化基础设施 Phase 1 立项 |
+| **4.10.32** | 2026-09-18 | 贡献者机制 A+ 阶段 4——V5 破坏性清理 + 编译期化 + 诊断码 |
+| **4.10.31** | 2026-09-18 | 贡献者机制 A+ 阶段 3——迁 Permission/Feature 同模式批量 |
 
 > 完整变更历史见 [TKWF CHANGELOG](https://github.com/LoongBa/TKW.Framework/blob/master/docs/CHANGELOG.md)
 

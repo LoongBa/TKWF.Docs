@@ -15,7 +15,7 @@ description: 导航扩展使用指南：菜单项定义/贡献者、IMenuManager
 
 导航扩展提供**标准化的菜单数据模型 + 贡献机制**，让业务模块声明式贡献菜单项，框架负责树形组装和权限过滤——**业务只管声明，框架管编排**。
 
-> **ABP 对比**：ABP 的 `INavigationManager` + `IMenuProvider` 类似此设计，但 TKWF 的关键差异在**贡献者发现机制**——ABP 运行时反射扫描 `IMenuContributor` 实现，TKWF 用 SG1 编译期扫描 `[MenuContributor]` 标记生成类型清单（零运行时反射，镜像 Permissions 机制）。
+> **ABP 对比**：ABP 的 `INavigationManager` + `IMenuProvider` 类似此设计，但 TKWF 的关键差异在**贡献者发现机制**——ABP 运行时反射扫描 `IMenuContributor` 实现，TKWF 用 SG1 编译期接口判定扫描 `IMenuContributor` 实现生成类型清单（零运行时反射，镜像 Permissions 机制）。
 
 ---
 
@@ -25,7 +25,7 @@ description: 导航扩展使用指南：菜单项定义/贡献者、IMenuManager
 ┌──────────────────────────────────────────────────────────────┐
 │ 消费方项目（App.csproj）                                      │
 │                                                                │
-│  [MenuContributor]                                            │
+│  // 实现 IMenuContributor 即被 SG1 收集（无特性）              │
 │  class MainMenuContributor : IMenuContributor                 │
 │  { ConfigureMenu(ctx) => ctx.Add("Orders", parent=null)      │
 │                         => ctx.Add("Orders.Create", ...) }   │
@@ -39,9 +39,9 @@ description: 导航扩展使用指南：菜单项定义/贡献者、IMenuManager
 │ SG1 编译期扫描（ReferencedAssemblySymbols）                    │
 │                                                                │
 │  ① 扫描 [TKWFExtension("Navigation")] → 扩展初始器类型清单    │
-│  ② 扫描 [MenuContributor] → 贡献者类型清单                    │
+│  ② 接口判定扫描 IMenuContributor 实现 → 贡献者类型清单       │
 │  ③ 生成 typeof(global::{FullName}) 编译期类型引用             │
-│  ④ 写入 ProjectMetaContext.MenuContributors 桥               │
+│  ④ 写入 ProjectMetaContext.Contributors 单桥（TargetKind=Menu）│
 └──────────────────────────┬───────────────────────────────────┘
                            │ 启动时
                            ↓
@@ -49,8 +49,8 @@ description: 导航扩展使用指南：菜单项定义/贡献者、IMenuManager
 │ NavigationExtensionInitializer 三钩子                          │
 │                                                                │
 │  ConfigureServices（DI 构建前，同步）                          │
-│    → 读 ProjectMetaContext.MenuContributors                   │
-│    → Activator.CreateInstance(contributorType)  无参构造       │
+│    → 读 ProjectMetaContext.Contributors["Menu"] 单桥         │
+│    → CreateContributorInstances("Menu") 编译期实例化         │
 │    → contributor.ConfigureMenu(context)  ★同步 void            │
 │    → 填充 IMenuDefinitionRepository                            │
 │    → TryAdd 注册 IMenuManager + IMenuDefinitionRepository    │
@@ -94,10 +94,9 @@ description: 导航扩展使用指南：菜单项定义/贡献者、IMenuManager
 
 ### Step 2：贡献菜单项
 
-业务模块用 `[MenuContributor]` 标记一个实现 `IMenuContributor` 的类：
+业务模块实现 `IMenuContributor` 接口（V4.10.29 起 SG1 接口判定收集，无需特性标记）：
 
 ```csharp
-[MenuContributor]
 public class MainMenuContributor : IMenuContributor
 {
     public void ConfigureMenu(MenuConfigurationContext context)
@@ -136,7 +135,7 @@ public class MainMenuContributor : IMenuContributor
 }
 ```
 
-SG1 扫描 `[MenuContributor]` → 生成 `GeneratedMenuContributors` → 启动时扩展初始化器实例化贡献者、同步调用 `ConfigureMenu()` 收集菜单项（ConfigureServices 阶段）。
+SG1 接口判定扫描 `IMenuContributor` 实现 → 贡献者清单入 `ProjectMetaContext.Contributors` 单桥 → 启动时扩展初始化器 `CreateContributorInstances` 编译期实例化（V4.10.32）、同步调用 `ConfigureMenu()` 收集菜单项（ConfigureServices 阶段）。
 
 ### Step 3：获取菜单
 
@@ -162,7 +161,7 @@ public class MenuService
 | 概念 | 说明 |
 |:--|:--|
 | 菜单项（MenuItemDefinition） | 菜单数据——Name/DisplayName/Url/Icon/Order/Parent/RequiredPermissions |
-| 菜单贡献者（IMenuContributor） | 业务模块贡献菜单项的类，`[MenuContributor]` 标记 |
+| 菜单贡献者（IMenuContributor） | 业务模块贡献菜单项的类，实现接口即可（V4.10.29 起 SG1 接口判定，不再用 `[MenuContributor]` 特性） |
 | 菜单管理器（IMenuManager） | 组装树形菜单 + 权限过滤 |
 | 菜单定义仓库（IMenuDefinitionRepository） | 收集的菜单项存储（ConfigureServices 阶段填充） |
 
@@ -207,10 +206,10 @@ D17 §4.2 早期设计 `IMenuContributor.ConfigureMenuAsync`（异步），但 V
 ExtensionInitializer 三钩子时序：
   ConfigureServices  ← 同步 void（DI 构建前调用）
   ConfigureFilters  ← FilterBuilder 构建阶段
-  InitializeAsync   ← Task（系统就绪后，无 IServiceProvider 参数）
+  InitializeAsync   ← Task（系统就绪后，ADR78 V4.10.25 起经参数接收 IServiceProvider）
 ```
 
-`ConfigureServices` 是同步 void 钩子——无法 `await`。`InitializeAsync` 虽是 Task 但无 `IServiceProvider` 参数，拿不到 DI。异步贡献者**无合法调用时机**——这是 D17 设计的真实缺陷。
+`ConfigureServices` 是同步 void 钩子——无法 `await`。`InitializeAsync` 虽可经参数拿 DI（ADR78 V4.10.25 起），但它在系统就绪后才调用——此时菜单定义须已收集完毕。异步贡献者**无合法调用时机**——菜单定义必须在 `ConfigureServices`（同步钩子）阶段确定性收集。
 
 **修正**：`ConfigureMenu` 改为同步 void，在 `ConfigureServices` 阶段收集。这与 Permissions 的 `IPermissionDefinitionContributor.Define()`（同步 void）对齐——贡献者都是纯声明式（`context.Add(...)`），无异步 IO 诉求。
 

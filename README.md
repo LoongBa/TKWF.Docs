@@ -4,7 +4,7 @@
 
 [![Build and Deploy Docs](https://github.com/LoongBa/TKWF.Docs/actions/workflows/docfx.yml/badge.svg)](https://github.com/LoongBa/TKWF.Docs/actions/workflows/docfx.yml)
 
-**当前同步版本：V4.10.24**（文档与框架 [LoongBa/TKW.Framework](https://github.com/LoongBa/TKW.Framework) 保持同步）
+**当前同步版本：V4.10.33**（文档与框架 [LoongBa/TKW.Framework](https://github.com/LoongBa/TKW.Framework) 保持同步）
 
 ---
 
@@ -12,6 +12,15 @@
 
 | 版本 | 日期 | 核心内容 |
 |:-----|:-----|:---------|
+| **4.10.33** | 2026-09-19 | i18n 国际化 Phase 1（ADR31 采纳）——Localization 项目 + `IFrameworkLocalizer` 三接口 + `DomainException` MessageKey/MessageArgs + 错误码唯一事实权威收拢 + 枚举/校验双语化（breaking：text-matcher） |
+| **4.10.32** | 2026-09-18 | 贡献者机制 A+ 阶段 4（V5 破坏性清理）——删旧特性/旧桥 + `CreateContributorInstances` 编译期实例化 + CTRB001-003 诊断码（A+ 4 阶段闭环） |
+| **4.10.31** | 2026-09-18 | 贡献者机制 A+ 阶段 3——Permission/Feature 迁移接口判定（PERM001 锁步） |
+| **4.10.30** | 2026-09-18 | 贡献者机制 A+ 阶段 2——旧桥转发 + SG 删 Menu override + ADR39 修订 |
+| **4.10.29** | 2026-09-18 | 贡献者机制 A+ 阶段 1——`ContributorDescriptor` 四元组 + `Contributors` 单桥 + SG 接口判定骨架 + xCodeGen ContributorRegistry |
+| **4.10.28** | 2026-09-17 | SignalNewJob flaky 根治残留——SignalProveStartedCeiling 3s→5s + CI 测试串行逐项目 |
+| **4.10.27** | 2026-09-16 | D20 分析服务 Stage 1 框架侧落地——`TKW.Framework.Utility.Analytics` 核心 + `TKWF.Ext.Analytics` 集成层 + flint 模板注册表快照 |
+| **4.10.26** | 2026-09-16 | SignalNewJob 测试 flaky 根治（信号证明与终态等待分离）+ D08 NuGet Trusted Publishing 迁移（OIDC） |
+| **4.10.25** | 2026-09-15 | V5 破坏性变更收尾 F1-F5（ADR78 `InitializeAsync(IServiceProvider)` 断代升级）+ xCodeGen 中枢化完成 + dotnet tool 发布就绪（ADR77 商业许可）+ VEntity-Sql 静态产出 |
 | **4.10.24** | 2026-09-15 | xCodeGen 活态文档生成缺陷修复 G9/G10——DOMAIN_MAP 收录 VEntity + 实体描述去占位（XiaoShuTong 问题单，Oracle PASS） |
 | **4.10.23** | 2026-09-14 | xCodeGen 生成期可插拔校验阶段（ADR76 U3b）——`IValidationChecker` 快/重两档 + `ValidationRunner`，默认关闭零行为变化 |
 | **4.10.22** | 2026-09-14 | DI001 扫描面信号驱动化（ADR74）+ DI003 扩展聚合遗漏诊断（ADR75）——编译期 DI 校验三件套闭环 |

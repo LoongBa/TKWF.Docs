@@ -6,7 +6,7 @@ description: TKWF 源文档 D/G/T/xCodeGen 系列与公开文章的完整映射�
 
 > 本文档建立 TKWF 源文档（`_TKWF/docs/`）与公开文档站文章的对应关系，
 > 便于 Agent 与贡献者定位权威来源。
-> 源文档体系以 `_TKWF/docs/00-文档体系说明.md` 为准（v4.30，D 系列含 D06D/D17A/D17B/D18A/D19/D20/D20B/D21/D071，G 系列 18 份）。
+> 源文档体系以 `_TKWF/docs/00-文档体系说明.md` 为准（v4.33，D 系列含 D06D/D17A/D17B/D18A/D19/D20/D20B/D21/D071，G 系列 24 份）。
 > V4.9.80 起扩展独立仓库：扩展代码/指南迁至公开仓库 [`TKWF.Extensions`](https://github.com/LoongBa/TKWF.Extensions)，扩展模块文档（开发方案/ADR/总览）留在主框架 `03_扩展模块/`（私有）。
 
 ---
@@ -64,7 +64,7 @@ description: TKWF 源文档 D/G/T/xCodeGen 系列与公开文章的完整映射�
 | `D11-系统角色-SystemActor-设计方案.md` | [SystemActor 体系](../explanation/system-actor-explained.md) | 系统角色：BeginSystemScopeAsync、scope.System/scope.IsSystem、IEntityActorAuditable、[DenySystemActor]、StandaloneDomainUserAccessor（ADR 14/15/16） |
 | `D13-多租户：加字段与分库双模式设计方案.md` | [多租户](../explanation/multi-tenancy.md) · [门控机制](../explanation/gates.md) | 多租户架构（v2.2）：加字段（共享库行级隔离）与分库（Database-per-Tenant）双模式、租户识别与授权（ITenantContext/ITenantAuthorization）、身份租户（A）与目标租户（B）双场景、跨租户作用域（ExecuteInTenantAsync）、运行时门控 |
 | `D18-TKWF门控机制-设计方案.md` | [门控机制](../explanation/gates.md) | 门控机制设计：三级门控（1 编译时 / 2 混合 / 3 运行时热路径）、优先级原则（尽量 1、2 不得已才用 3）、GateRules 数据驱动规则集、RuntimeGateOptions 严重级别、SG1 特征门控生成、12 缺口全景、与扩展机制门控衔接 |
-| `D18A-TKWF诊断码总表.md` | — | TKWF 诊断码总表（V4.10.22）：D18/ADR47/50 各诊断码汇总（`TKWF_SG1a_DI001/DI002/DI003` 编译期 DI 校验三件套、TKWF0030-33、TKWF0020-22 等，69 条含双级别） |
+| `D18A-TKWF诊断码总表.md` | — | TKWF 诊断码总表（V4.10.33）：D18/ADR47/50 各诊断码汇总——82 属性/87 条目（`VIEW003`/`DI001`/`DI002`/`DI003`/`TKWF0034` 双级别）+ CTRB001-003 贡献者诊断（V4.10.32 已实施）+ v4.10.33 错误码收拢刷新（`TKWF_SG1a_ERR_002`/`TKWF_SG2a_MULTI_DS`）+ Guard.cs 双向漂移门禁 |
 | `G13-多租户使用指南.md` | [多租户](../explanation/multi-tenancy.md) | 多租户消费方实操手册：双模式选型决策树、加字段/分库/混合快速开始、跨租户操作、安全要点、测试要点 |
 
 ## 数据与查询
@@ -76,7 +76,7 @@ description: TKWF 源文档 D/G/T/xCodeGen 系列与公开文章的完整映射�
 | `G06-领域数据服务与数据存取使用指南.md` | [DataService](../core-concepts/data-services.md) | 数据服务使用 |
 | `G06B-条件表达式构建器使用指南.md` | [条件构建器](../advanced/conditions-builder.md) | Conditions 条件工厂 API、Expression 两阶段构建、并发隔离 |
 | `G06C-Entity映射与查询条件配置指南.md` | [VEntity 读写分离（CQRS）](../explanation/cqrs-read-write.md) · [VEntity 统计与聚合](../explanation/ventity-aggregate.md) | 数据库映射（Table/Column/Index）+ Conditions 生成配置（DtoField/SearchGroup/Index 派生） |
-| `D20-TKWF分析服务设计方案.md` | — | 通用分析服务（V5 候选，讨论中）：三段式流水线（tkwf-analytics-view 意图分解 → tkwf-service 取数 → 消费端 flint-chart 渲染；tkwf-entity 复用既有链路）；语义/视觉解耦（semantic_types 固定 + chart_spec 可切换，直接采用 flint 原生格式，单一真相归 flint）；AnalysisSpec 产物规范（DDL + 数据契约 + semantic_types + chart_spec + manifest，docs/analytics-specs/ 文件级落地）；服务端返回 spec/Excel artifact 不做像素渲染；一数多图由 flint pivot 承接。v1.1（2026-09-04）经 Oracle 评审修订（对齐 D20B） |
+| `D20-TKWF分析服务设计方案.md` | — | 通用分析服务（v4.10.27 Stage 1 已落地）：三段式流水线（tkwf-analytics-view 意图分解 → tkwf-service 取数 → 消费端 flint-chart 渲染；tkwf-entity 复用既有链路）；语义/视觉解耦（semantic_types 固定 + chart_spec 可切换，直接采用 flint 原生格式，单一真相归 flint）；AnalysisSpec 产物规范（DDL + 数据契约 + semantic_types + chart_spec + manifest，docs/analytics-specs/ 文件级落地）；服务端返回 spec/Excel artifact 不做像素渲染；一数多图由 flint pivot 承接。v1.1（2026-09-04）经 Oracle 评审修订（对齐 D20B）；**v4.10.27 Stage 1 落地（Utility.Analytics 核心 + TKWF.Ext.Analytics 集成层）** |
 | `D20B-分析服务开源对标与语义层定位.md` | — | D20 对标文档：ABP 分析能力矩阵（无 Reporting/Analytics/BI 模块——D20 落地即差异化）+ 开源方案分层全景 + 语义层三裁定（SMB 不引运行期语义服务/单一真相归 flint/Ossie 预留不实现）+ flint schema 实况比对（semantic_types=flat map/模板注册表名/原生 overflow+pivot）+ D20 简化建议 P0-P3（V4.9.92 后新增，v4.27） |
 | `D21-TKWF指标引擎-MetricsEngine-设计记录.md` | — | 指标引擎（MetricsEngine）设计记录：原 StatEngine（`_Extensions/DMPCore`）裁定为 POC 失败品（废弃归档）；正式形态 = `TKWF.Ext.Metrics` 扩展模块——纯计算内核、计算器非泛型 + MetricRow 委托访问、v0.1.0 静态注册表零反射（v0.2.0 SG 可选）、内置计算器仅复合业务指标（flint+LINQ 已覆盖简单聚合）、MetricsOptions + 规格校验（V4.9.92 后新增，v4.27） |
 
@@ -104,7 +104,7 @@ description: TKWF 源文档 D/G/T/xCodeGen 系列与公开文章的完整映射�
 | `G15-事件机制-使用指南.md` | [事件总线与消息基础设施](../explanation/event-bus.md) | 事件机制消费方实操手册（v1.0）：三种派发模式（阻塞post-commit/异步Outbox/fire-and-forget）+ API参考 + 8个场景示例 + 反模式 + FAQ + 选型决策树 |
 | `D17-TKWF扩展机制与业务模块全景-设计方案.md` | [扩展机制：如何使用](../explanation/extensions/usage.md) · [扩展机制：如何开发扩展](../explanation/extensions/development.md) · [扩展子系列](../explanation/extensions/index.md) | TKWF V5 扩展机制架构：三层模型（核心/内置扩展/业务扩展）、编译期发现（vs ABP 运行时 DI）、SG1 增量扫描、ADR35 统一门控 + 编译期验证三件套。V4.9.70 基座 + V4.9.71 三钩子接线 + V4.9.72 Permissions + V4.9.74 Navigation 已落地。**V4.9.80 剥离**：业务模块全景（§三/§五/§六）迁至 `03_扩展模块/总览和跟踪.md`（私有），本文档聚焦扩展机制。**v5（2026-09）**：新增 §4.5A Abstractions 决策框架（ADR48 D7 依赖倒置指南） |
 | `G17A-设计扩展模块-使用指南.md` | [扩展机制：如何开发扩展](../explanation/extensions/development.md) | 扩展模块设计实操手册（作者视角）：扩展项目结构、SG1 声明式实体、三钩子、Abstractions 决策框架、测试、README 技术规范（D17 v5 §4.4/§4.5A + ADR47/48/50） |
-| `G17B-使用扩展模块-使用指南.md` | [扩展机制：如何使用](../explanation/extensions/usage.md) | 扩展模块接入实操手册（消费方视角）：发现与启用（`[TKWFEnabledExtension]` 白名单）、消费方接线、宿主初始化器、多扩展组合、`.Abstractions` 依赖（D17 v5 + V4.9.85 三层门控） |
+| `G17B-使用扩展模块-使用指南.md` | [扩展机制：如何使用](../explanation/extensions/usage.md) | 扩展模块接入实操手册（消费方视角）：发现与启用（`[TKWFEnabledExtension]` 白名单）、消费方接线、宿主初始化器、多扩展组合、`.Abstractions` 依赖（D17 v5 + V4.9.85 三层门控 + **V4.10.31 贡献者机制 A+ 阶段 3：贡献者声明改 SG1 接口判定，不再用 `[PermissionContributor]` 等特性**） |
 | `D17A-扩展间数据关联策略-模块数据边界与跨模块查询.md` | — | 扩展间数据关联架构立场：首选"主键 + 模块服务查询 + 内存拼装 + 业务逻辑缓存"（领域业务逻辑思维）；DB 层兜底用 VEntity 视图实体（同库内只读聚合，优于 ABP Dapper——编译期列名校验/自动 DTO/只读守卫）；禁止跨模块实体引用与面向数据库编程（V4.9.92 新增，v4.24） |
 | `D17B-ABP与TKWF扩展设计机制对比.md` | — | ABP 模块系统 vs TKWF 扩展机制逐项对比：根本差异 = 编译期确定性（SG 编译期发现 + 编译期验证三件套 + 白名单启用 + 门控硬约束 + VEntity）vs 运行时灵活性（ABP 运行时扫描 + Dapper 自由 SQL）；ABP 缺陷与 TKWF 短板 + V5 借鉴方向（V4.9.92 新增，v4.24） |
 
@@ -114,7 +114,7 @@ description: TKWF 源文档 D/G/T/xCodeGen 系列与公开文章的完整映射�
 
 | 源文档 | 公开文章 | 说明 |
 |:-------|:---------|:-----|
-| `D16-TKWF国际化支持-设计方案.md` | — | TKWF 全栈国际化：服务端 + 客户端 + TS SDK 三端架构，英文默认/中文卫星程序集（V5 规划，ADR31） |
+| `D16-TKWF国际化支持-设计方案.md` | — | TKWF 全栈国际化：服务端 + 客户端 + TS SDK 三端架构，英文默认/中文卫星程序集（ADR31 已采纳，**v4.10.33 Phase 1 落地——Localization 基础设施 + 错误边界键化 + 枚举/校验双语化**） |
 
 ## Agentic 专用
 
@@ -134,7 +134,7 @@ description: TKWF 源文档 D/G/T/xCodeGen 系列与公开文章的完整映射�
 
 ---
 
-> 对齐 TKWF：V4.10.24 · 2026-09-15
+> 对齐 TKWF：V4.10.33 · 2026-09-19
 
 
 

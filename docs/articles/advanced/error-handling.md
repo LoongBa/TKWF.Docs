@@ -47,7 +47,7 @@ Web 集成自动捕获异常并返回标准响应格式：
 ```json
 {
   "error": {
-    "code": "ENTITY_NOT_FOUND",
+    "code": "NOT_FOUND",
     "message": "Order 12345 not found",
     "details": null
   }
