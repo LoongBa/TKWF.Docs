@@ -6,7 +6,8 @@ description: TKWF 源文档 D/G/T/xCodeGen 系列与公开文章的完整映射�
 
 > 本文档建立 TKWF 源文档（`_TKWF/docs/`）与公开文档站文章的对应关系，
 > 便于 Agent 与贡献者定位权威来源。
-> 源文档体系以 `_TKWF/docs/00-文档体系说明.md` 为准（v4.33，D 系列含 D06D/D17A/D17B/D18A/D19/D20/D20B/D21/D071，G 系列 24 份）。
+> 源文档体系以 `_TKWF/docs/00-文档体系说明.md` 为准（v4.33，D 系列含 D06D/D17A/D17B/D18A/D19/D19A/D20/D20B/D21/D22/D071，G 系列含 G18 共 25 份）。
+> 注：D19A/D22/G18 为主框架 V4.10.41-45 新增编号文档（D19A = AOT TrimAnalyzer 基线，D22/G18 = Web 装配钩子），`00-文档体系说明.md` 修订记录尚未登记（主框架侧滞后），本站按实际文件收录。
 > V4.9.80 起扩展独立仓库：扩展代码/指南迁至公开仓库 [`TKWF.Extensions`](https://github.com/LoongBa/TKWF.Extensions)，扩展模块文档（开发方案/ADR/总览）留在主框架 `03_扩展模块/`（私有）。
 
 ---
@@ -27,7 +28,8 @@ description: TKWF 源文档 D/G/T/xCodeGen 系列与公开文章的完整映射�
 | `D06C-Entity映射与DB Schema-设计方案.md` | [VEntity 读写分离（CQRS）](../explanation/cqrs-read-write.md) · [VEntity 统计与聚合](../explanation/ventity-aggregate.md) | Entity 映射策略：ORM 特性体系（Table/Column/Index/Navigate）、接口标记 vs 基类继承、查询条件生成管线（三阶段 SearchGroup 提取） |
 | `D06D-命名谓词预设-设计方案.md` | — | 第四层（命名成品层）：命名谓词预设 `Entity.Predicates`——`Conditions` 原子谓词之上的常用过滤组合固化；时间相关谓词须用静态方法（防 `DateTime.Today` 冻结 bug）；增强版 `PredicatePreset<TEntity>` Phase 2 延迟（V4.9.92 后新增，v4.27） |
 | `D07-三层SG-原则和设计方案.md` | [代码生成管线](../core-concepts/code-generation.md) | 三层 SG 管线：SG1 元数据提取 → SG2 服务端生成 → SG3 客户端生成；ProjectMetaContext 唯一元数据源。V4.9.32 IsExposed 暴露过滤；V4.9.34 EntityFieldList 字段白名单；V4.9.35 Phase-C 实体连接 resolver（`IsGraphQLQueryable` 三侧过滤，V4.9.102 起统一为 `ExposeGraphqlQuery`） |
-| `D19-TKWF反射使用与AOT跟踪.md` | [SG 管线解剖](../explanation/sg-pipeline-anatomy.md) | TKWF 反射使用全景 + AOT 兼容跟踪（V4.9.88+）：反射消除与 SG 化三层原则（"SG 化 → 消灭 → 缓存兜底"）、[RequiresDynamicCode]/[RequiresUnreferencedCode] 标注清单、无法消灭的反射（JsonConverter $type 多态 / EventTypeResolver 跨程序集） |
+| `D19-TKWF反射使用与AOT跟踪.md` | [SG 管线解剖](../explanation/sg-pipeline-anatomy.md) | TKWF 反射使用全景 + AOT 兼容跟踪（V4.9.88+）：反射消除与 SG 化三层原则（"SG 化 → 消灭 → 缓存兜底"）、[RequiresDynamicCode]/[RequiresUnreferencedCode] 标注清单、无法消灭的反射（JsonConverter $type 多态 / EventTypeResolver 跨程序集）。V4.10.41-44 AOT 三件套（ADR84）：JIT 为主 + 诚实标注策略 + 会话 JSON 注册表编译期闭集（ADR86，v4.10.43/44 `SessionJsonTypeRegistry` + `[SessionUserType]` SG 生成） |
+| `D19A-TrimAnalyzer基线清单.md` | — | 全仓 `<EnableTrimAnalyzer>true` Release 基线产物（AOT 补充文档，V4.10.41 ADR84 落地）：IL202x/IL30xx 警告清单 + 分类处置 + 复跑流程（已产出基线 2026-10-01） |
 | `D08-框架CI-CD与脚本架构.md` | — | 三仓库 CI/CD 管线、三引用模式（NuGet/DLL/Project）、MSBuild 基础设施、§九 Schema 导出管线（buildSchema.ps1） |
 
 ## 传输与客户端
@@ -63,8 +65,8 @@ description: TKWF 源文档 D/G/T/xCodeGen 系列与公开文章的完整映射�
 | `D10D-限流架构-设计方案.md` | [全局过滤器体系](../core-concepts/filters.md) | 限流架构：V4.9.26 退役自定义 IRateLimiter → 官方 System.Threading.RateLimiting。PartitionedRateLimiter 分区限流、EnforceAsync 扩展方法、AOP 集成、429 错误码映射 |
 | `D11-系统角色-SystemActor-设计方案.md` | [SystemActor 体系](../explanation/system-actor-explained.md) | 系统角色：BeginSystemScopeAsync、scope.System/scope.IsSystem、IEntityActorAuditable、[DenySystemActor]、StandaloneDomainUserAccessor（ADR 14/15/16） |
 | `D13-多租户：加字段与分库双模式设计方案.md` | [多租户](../explanation/multi-tenancy.md) · [门控机制](../explanation/gates.md) | 多租户架构（v2.2）：加字段（共享库行级隔离）与分库（Database-per-Tenant）双模式、租户识别与授权（ITenantContext/ITenantAuthorization）、身份租户（A）与目标租户（B）双场景、跨租户作用域（ExecuteInTenantAsync）、运行时门控 |
-| `D18-TKWF门控机制-设计方案.md` | [门控机制](../explanation/gates.md) | 门控机制设计：三级门控（1 编译时 / 2 混合 / 3 运行时热路径）、优先级原则（尽量 1、2 不得已才用 3）、GateRules 数据驱动规则集、RuntimeGateOptions 严重级别、SG1 特征门控生成、12 缺口全景、与扩展机制门控衔接 |
-| `D18A-TKWF诊断码总表.md` | — | TKWF 诊断码总表（V4.10.33）：D18/ADR47/50 各诊断码汇总——82 属性/87 条目（`VIEW003`/`DI001`/`DI002`/`DI003`/`TKWF0034` 双级别）+ CTRB001-003 贡献者诊断（V4.10.32 已实施）+ v4.10.33 错误码收拢刷新（`TKWF_SG1a_ERR_002`/`TKWF_SG2a_MULTI_DS`）+ Guard.cs 双向漂移门禁 |
+| `D18-TKWF门控机制-设计方案.md` | [门控机制](../explanation/gates.md) | 门控机制设计：三级门控（1 编译时 / 2 混合 / 3 运行时热路径）、优先级原则（尽量 1、2 不得已才用 3）、GateRules 数据驱动规则集、RuntimeGateOptions 严重级别、SG1 特征门控生成、12 缺口全景、与扩展机制门控衔接。V4.10.41 缺口 #2 已实现（OutboxSenderRegistered 规则）+ #5/#9/#11 触发式候选 |
+| `D18A-TKWF诊断码总表.md` | — | TKWF 诊断码总表（V4.10.33）：D18/ADR47/50 各诊断码汇总——82 属性/87 条目（`VIEW003`/`DI001`/`DI002`/`DI003`/`TKWF0034` 双级别）+ CTRB001-003 贡献者诊断（V4.10.32 已实施）+ v4.10.33 错误码收拢刷新（`TKWF_SG1a_ERR_002`/`TKWF_SG2a_MULTI_DS`）+ Guard.cs 双向漂移门禁 + v4.10.34 登记 `TKWF_I18N_001`（i18n 键集一致性门禁）+ v4.10.44 登记 `TKWF_SG1a_SESS001-004`（会话 JSON 注册表 SG 生成诊断）+ v4.10.45 新增 `TKWF_SG1b_WEBEXT_001`（Web 装配钩子领域自治边界门控） |
 | `G13-多租户使用指南.md` | [多租户](../explanation/multi-tenancy.md) | 多租户消费方实操手册：双模式选型决策树、加字段/分库/混合快速开始、跨租户操作、安全要点、测试要点 |
 
 ## 数据与查询
@@ -102,11 +104,13 @@ description: TKWF 源文档 D/G/T/xCodeGen 系列与公开文章的完整映射�
 | `D15-事件总线与消息基础设施-设计方案.md` | [事件总线与消息基础设施](../explanation/event-bus.md) · [后台作业](../explanation/background-jobs.md) · [事件的表现层消费](../explanation/event-consumption.md) | 事件总线与消息基础设施：领域事件（AddLocalEvent）、本地/分布式事件总线、后台作业管理器、Outbox/Inbox 事务性消息、EntityHistory 属性级 Diff。对标 ABP 事件/消息体系 11 维功能。与 ADR21-25 互补（ADR 讲 HOW，D15 讲 WHY+WHAT）。V4.9.52 ADR26 已实施 |
 | `D15-事件机制-架构复盘总结.md` | [事件总线与消息基础设施](../explanation/event-bus.md) | V4.9.64 事件机制完整架构复盘总结：W2 本地事件总线 + W4 SG 静态派发表 + W5 EntityHistory + W7 后台作业 |
 | `G15-事件机制-使用指南.md` | [事件总线与消息基础设施](../explanation/event-bus.md) | 事件机制消费方实操手册（v1.0）：三种派发模式（阻塞post-commit/异步Outbox/fire-and-forget）+ API参考 + 8个场景示例 + 反模式 + FAQ + 选型决策树 |
-| `D17-TKWF扩展机制与业务模块全景-设计方案.md` | [扩展机制：如何使用](../explanation/extensions/usage.md) · [扩展机制：如何开发扩展](../explanation/extensions/development.md) · [扩展子系列](../explanation/extensions/index.md) | TKWF V5 扩展机制架构：三层模型（核心/内置扩展/业务扩展）、编译期发现（vs ABP 运行时 DI）、SG1 增量扫描、ADR35 统一门控 + 编译期验证三件套。V4.9.70 基座 + V4.9.71 三钩子接线 + V4.9.72 Permissions + V4.9.74 Navigation 已落地。**V4.9.80 剥离**：业务模块全景（§三/§五/§六）迁至 `03_扩展模块/总览和跟踪.md`（私有），本文档聚焦扩展机制。**v5（2026-09）**：新增 §4.5A Abstractions 决策框架（ADR48 D7 依赖倒置指南） |
+| `D17-TKWF扩展机制与业务模块全景-设计方案.md` | [扩展机制：如何使用](../explanation/extensions/usage.md) · [扩展机制：如何开发扩展](../explanation/extensions/development.md) · [扩展子系列](../explanation/extensions/index.md) | TKWF V5 扩展机制架构：三层模型（核心/内置扩展/业务扩展）、编译期发现（vs ABP 运行时 DI）、SG1 增量扫描、ADR35 统一门控 + 编译期验证三件套。V4.9.70 基座 + V4.9.71 三钩子接线 + V4.9.72 Permissions + V4.9.74 Navigation 已落地。**V4.9.80 剥离**：业务模块全景（§三/§五/§六）迁至 `03_扩展模块/总览和跟踪.md`（私有），本文档聚焦扩展机制。**v5（2026-09）**：新增 §4.5A Abstractions 决策框架（ADR48 D7 依赖倒置指南）。**V4.10.45**：P0 扩展模块 11/11 全部落地（PrintTemplates V0.2.0 最后一项）+ Web 装配钩子（ADR87）正交注记（Domain 三钩子与 `IWebExtension` 分工：领域自治 vs Web 宿主面） |
 | `G17A-设计扩展模块-使用指南.md` | [扩展机制：如何开发扩展](../explanation/extensions/development.md) | 扩展模块设计实操手册（作者视角）：扩展项目结构、SG1 声明式实体、三钩子、Abstractions 决策框架、测试、README 技术规范（D17 v5 §4.4/§4.5A + ADR47/48/50） |
 | `G17B-使用扩展模块-使用指南.md` | [扩展机制：如何使用](../explanation/extensions/usage.md) | 扩展模块接入实操手册（消费方视角）：发现与启用（`[TKWFEnabledExtension]` 白名单）、消费方接线、宿主初始化器、多扩展组合、`.Abstractions` 依赖（D17 v5 + V4.9.85 三层门控 + **V4.10.31 贡献者机制 A+ 阶段 3：贡献者声明改 SG1 接口判定，不再用 `[PermissionContributor]` 等特性**） |
 | `D17A-扩展间数据关联策略-模块数据边界与跨模块查询.md` | — | 扩展间数据关联架构立场：首选"主键 + 模块服务查询 + 内存拼装 + 业务逻辑缓存"（领域业务逻辑思维）；DB 层兜底用 VEntity 视图实体（同库内只读聚合，优于 ABP Dapper——编译期列名校验/自动 DTO/只读守卫）；禁止跨模块实体引用与面向数据库编程（V4.9.92 新增，v4.24） |
 | `D17B-ABP与TKWF扩展设计机制对比.md` | — | ABP 模块系统 vs TKWF 扩展机制逐项对比：根本差异 = 编译期确定性（SG 编译期发现 + 编译期验证三件套 + 白名单启用 + 门控硬约束 + VEntity）vs 运行时灵活性（ABP 运行时扫描 + Dapper 自由 SQL）；ABP 缺陷与 TKWF 短板 + V5 借鉴方向（V4.9.92 新增，v4.24） |
+| `D22-TKWF Web装配钩子-设计方案.md` | — | Web 层生命周期装配钩子（`IWebExtension`，V4.10.45 ADR87）：ConfigureServices（宿主注册）/ConfigureMiddleware（`MiddlewareAnchor` 分桶，默认 BeforeAuthentication）/ConfigureEndpoints 三阶段 + `UseWebExtensions` 消费方装配；与 Domain 扩展机制（D17 三钩子）正交零改动（领域自治边界 `TKWF_SG1b_WEBEXT_001` 门控） |
+| `G18-Web扩展装配-使用指南.md` | — | Web 扩展装配钩子（`IWebExtension`）消费方装配与扩展作者实现规范（V4.10.45）：为什么需要、消费方 UseWebExtensions、作者实现、与 Domain 钩子职责分工、诊断码（关联 D22/ADR87） |
 
 > **具体扩展指南**（Permissions/Navigation/Identity 等）在扩展仓库 [`TKWF.Extensions/docs/`](https://github.com/LoongBa/TKWF.Extensions/tree/main/docs)，每扩展一份独立使用指南（如 `docs/Permissions/权限扩展-使用指南.md`）。本表 G17A/G17B 为**通用扩展机制指南**，非具体扩展。
 
@@ -114,7 +118,7 @@ description: TKWF 源文档 D/G/T/xCodeGen 系列与公开文章的完整映射�
 
 | 源文档 | 公开文章 | 说明 |
 |:-------|:---------|:-----|
-| `D16-TKWF国际化支持-设计方案.md` | — | TKWF 全栈国际化：服务端 + 客户端 + TS SDK 三端架构，英文默认/中文卫星程序集（ADR31 已采纳，**v4.10.33 Phase 1 落地——Localization 基础设施 + 错误边界键化 + 枚举/校验双语化**） |
+| `D16-TKWF国际化支持-设计方案.md` | — | TKWF 全栈国际化：服务端 + 客户端 + TS SDK 三端架构，英文默认/中文卫星程序集（ADR31 已采纳，**v4.10.33 Phase 1 落地——Localization 基础设施 + 错误边界键化 + 枚举/校验双语化**；**v4.10.34 Phase 2 落地（ADR79）——构建时发射器 `Localization.Gen` 生成 TS JSON + `JsonFileLocalizationContributor` 运行时热更新 + `TKWF_I18N_001` 键集漂移门禁**） |
 
 ## Agentic 专用
 
@@ -134,7 +138,7 @@ description: TKWF 源文档 D/G/T/xCodeGen 系列与公开文章的完整映射�
 
 ---
 
-> 对齐 TKWF：V4.10.33 · 2026-09-19
+> 对齐 TKWF：V4.10.45 · 2026-10-02
 
 
 

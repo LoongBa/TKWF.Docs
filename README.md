@@ -4,7 +4,7 @@
 
 [![Build and Deploy Docs](https://github.com/LoongBa/TKWF.Docs/actions/workflows/docfx.yml/badge.svg)](https://github.com/LoongBa/TKWF.Docs/actions/workflows/docfx.yml)
 
-**当前同步版本：V4.10.33**（文档与框架 [LoongBa/TKW.Framework](https://github.com/LoongBa/TKW.Framework) 保持同步）
+**当前同步版本：V4.10.45**（文档与框架 [LoongBa/TKW.Framework](https://github.com/LoongBa/TKW.Framework) 保持同步）
 
 ---
 
@@ -12,6 +12,18 @@
 
 | 版本 | 日期 | 核心内容 |
 |:-----|:-----|:---------|
+| **4.10.45** | 2026-10-01 | Web 装配钩子（ADR87，V5前收尾 #47）——`IWebExtension` 机制（ConfigureServices/ConfigureMiddleware/ConfigureEndpoints + `MiddlewareAnchor` 分桶）+ `UseWebExtensions` 装配；新增 D22/G18 文档 + `TKWF_SG1b_WEBEXT_001` 诊断 |
+| **4.10.44** | 2026-10-01 | 会话 JSON 注册表 SG 生成（ADR86 偏离注记）——`[SessionUserType]` 标记 + `SessionUserTypeGenerator`（SG1a）自动注册 + `TKWF_SG1a_SESS001-004` 诊断 |
+| **4.10.43** | 2026-10-01 | 会话 JSON 注册表 API（ADR86）——`SessionJsonTypeRegistry` 编译期闭集替换反射兜底 + `DomainUserJsonConverter.Read` 零反射命中路径 + StrictMode 硬失败 |
+| **4.10.42** | 2026-10-01 | D19 AOT 三件套复查补丁——LoggerMessage 补迁 12 文件 30 调用点（含 6 热路径 AOP 过滤器）+ `DomainUserJsonConverter.Write` 标注 + D19A 分类修正 |
+| **4.10.41** | 2026-10-01 | D19 AOT 三件套（ADR84 落地）——JIT 为主 + 诚实标注策略 + TrimAnalyzer 基线产出（D19A）；新增 D19A 清单文档 |
+| **4.10.40** | 2026-10-01 | SG1a 空骨架早退点生成空壳 ProjectMetaContext（ADR85，消除 CS0103）+ 部署包 local-feed 机制（扩展侧方案 B） |
+| **4.10.39** | 2026-10-01 | 分组聚合 API（F7，V5 候选转正）——`GroupByAsync`/`GroupCountAsync`/`GroupByAsync` 三方法（GROUP BY + ORDER BY + LIMIT 全下推，ADR15 决策 3 落地） |
+| **4.10.38** | 2026-09-30 | `EntityUpdateBatchAsync` 游离实体批量更新失败修复（ADR83，XiaoShuTong G15）——DAC `UpdateBatchAsync` 改 SetSource 裸 IUpdate 路径（对齐 `UpdateColumnsBatchAsync`，公共 API 签名零变化） |
+| **4.10.37** | 2026-09-29 | Core 解耦 Localization 编译期强依赖（ADR82）——`EnumDisplayNameAttribute(key)` 语言中性键契约替代 `[Display(ResourceType)]` + `FallbackFrameworkLocalizer.Get(key, culture)` + Core 零运行时依赖（Minor breaking：框架枚举外部反射 `[Display]` 不命中） |
+| **4.10.36** | 2026-09-28 | SG3 GraphQL 字段名跟随 SG2 消歧（ADR81，XiaoShuTong G11）——`ApiMethodInfo` 契约加 `GraphQLField` 字段 + 消歧算法共享（无冲突项目零行为变化） |
+| **4.10.35** | 2026-09-26 | GraphQL 通道登录会话激活失败修复（ADR80）——`WebSessionManager` 泛型门面缓存类型标签统一（`T=SessionInfo` 与读取路径一致，修复 HybridCache 类型敏感检查 miss） |
+| **4.10.34** | 2026-09-22 | i18n 国际化 Phase 2 前端 TS 消费与贡献者（ADR79 采纳）——构建时发射器 `Localization.Gen`（resx→JSON + `keys.ts` + `FrameworkMessageKeys.g.cs`）+ `JsonFileLocalizationContributor` 热更新 + `I18nKeyDriftGateTests` 漂移守卫（`TKWF_I18N_001`） |
 | **4.10.33** | 2026-09-19 | i18n 国际化 Phase 1（ADR31 采纳）——Localization 项目 + `IFrameworkLocalizer` 三接口 + `DomainException` MessageKey/MessageArgs + 错误码唯一事实权威收拢 + 枚举/校验双语化（breaking：text-matcher） |
 | **4.10.32** | 2026-09-18 | 贡献者机制 A+ 阶段 4（V5 破坏性清理）——删旧特性/旧桥 + `CreateContributorInstances` 编译期实例化 + CTRB001-003 诊断码（A+ 4 阶段闭环） |
 | **4.10.31** | 2026-09-18 | 贡献者机制 A+ 阶段 3——Permission/Feature 迁移接口判定（PERM001 锁步） |

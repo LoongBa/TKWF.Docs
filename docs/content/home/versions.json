@@ -1,17 +1,17 @@
 [
   {
-    "version": "4.10.33",
-    "date": "2026-09-19",
-    "description": "i18n 国际化基础设施 Phase 1 立项"
+    "version": "4.10.45",
+    "date": "2026-10-01",
+    "description": "Web 装配钩子"
   },
   {
-    "version": "4.10.32",
-    "date": "2026-09-18",
-    "description": "贡献者机制 A+ 阶段 4——V5 破坏性清理 + 编译期化 + 诊断码"
+    "version": "4.10.44",
+    "date": "2026-10-01",
+    "description": "会话 JSON 注册表 SG 生成"
   },
   {
-    "version": "4.10.31",
-    "date": "2026-09-18",
-    "description": "贡献者机制 A+ 阶段 3——迁 Permission/Feature 同模式批量"
+    "version": "4.10.43",
+    "date": "2026-10-01",
+    "description": "会话 JSON 注册表 API"
   }
 ]
