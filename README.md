@@ -4,7 +4,7 @@
 
 [![Build and Deploy Docs](https://github.com/LoongBa/TKWF.Docs/actions/workflows/docfx.yml/badge.svg)](https://github.com/LoongBa/TKWF.Docs/actions/workflows/docfx.yml)
 
-**当前同步版本：V4.10.45**（文档与框架 [LoongBa/TKW.Framework](https://github.com/LoongBa/TKW.Framework) 保持同步）
+**当前同步版本：V4.10.59**（文档与框架 [LoongBa/TKW.Framework](https://github.com/LoongBa/TKW.Framework) 保持同步）
 
 ---
 
@@ -12,7 +12,19 @@
 
 | 版本 | 日期 | 核心内容 |
 |:-----|:-----|:---------|
-| **4.10.45** | 2026-10-01 | Web 装配钩子（ADR87，V5前收尾 #47）——`IWebExtension` 机制（ConfigureServices/ConfigureMiddleware/ConfigureEndpoints + `MiddlewareAnchor` 分桶）+ `UseWebExtensions` 装配；新增 D22/G18 文档 + `TKWF_SG1b_WEBEXT_001` 诊断 |
+| **4.10.59** | 2026-10-05 | 领域自治整改文档同步 + D/G 系列对齐 v4.10.36-58（会话 JSON/周期调度/能力探测/UpdateWhereAsync） |
+| **4.10.58** | 2026-10-05 | 消费方反馈根治（ADR95）——REST 动词规范化 + SG2 编译期能力探测择一（GraphQL/REST-only）+ 运行时 GraphQL fail-fast；`TKWF_SG2_*` 诊断 | 
+| **4.10.57** | 2026-10-04 | SG2 权威注册选择契约化（ADR94，问题单 G20）——权限注册选择契约化 + 扩展空壳同名歧义消除；D18A 登记 ERR004/WARN006 |
+| **4.10.56** | 2026-10-04 | SG3 属性类型分类元数据完备化（ADR93，问题单 G19）——`ClassifyType` 权威推导 + Category 纯消费 + `TKWF_SG3_GUARD_006` 守卫 |
+| **4.10.55** | 2026-10-04 | 多实现集合守卫工厂（ADR92）——`TryAddEnumerableConstructible` + Authentication 登录编排门面 + 4 扩展守卫迁移 |
+| **4.10.54** | 2026-10-04 | 转达兑现——后台作业周期调度 `IRecurringBackgroundJobManager`（ADR91）+ 测试辅助 `BindTestScope`/`AssertConstructible` |
+| **4.10.53** | 2026-10-03 | 领域自治根治（ADR90）——Store 概念废弃 + `AddConstructibleService` 门面注册 + 批次整改（DI004/DI005 归零） |
+| **4.10.52** | 2026-10-03 | IEntityDAC 条件原子更新原语（ADR89）——`UpdateWhereAsync` 单语句条件原子更新 |
+| **4.10.51** | 2026-10-03 | 构造注入门控（ADR88）——`DI004` 禁止构造注入域服务 + `DI005` 契约缺口 + 运行期可诊断 |
+| **4.10.50** | 2026-10-02 | SG.Tests 运行时隔离测试跨平台路径修复（CI Linux）+ 扩展 DataService 聚合失效根治 |
+| **4.10.48** | 2026-10-02 | GraphQLClient 读 `extensions.code` 恒 null 修复（业务码映射全失效，BUG007）+ G18 修复 |
+| **4.10.47** | 2026-10-02 | 会话 JSON `$type` 读路径取消反射回退（R3 决策逆向）——未注册一律硬失败 |
+| **4.10.46** | 2026-10-02 | 内置控制器 GraphQL 契约字段名对齐 HC 运行时 Async 裁剪（G17/BUG005） |
 | **4.10.44** | 2026-10-01 | 会话 JSON 注册表 SG 生成（ADR86 偏离注记）——`[SessionUserType]` 标记 + `SessionUserTypeGenerator`（SG1a）自动注册 + `TKWF_SG1a_SESS001-004` 诊断 |
 | **4.10.43** | 2026-10-01 | 会话 JSON 注册表 API（ADR86）——`SessionJsonTypeRegistry` 编译期闭集替换反射兜底 + `DomainUserJsonConverter.Read` 零反射命中路径 + StrictMode 硬失败 |
 | **4.10.42** | 2026-10-01 | D19 AOT 三件套复查补丁——LoggerMessage 补迁 12 文件 30 调用点（含 6 热路径 AOP 过滤器）+ `DomainUserJsonConverter.Write` 标注 + D19A 分类修正 |

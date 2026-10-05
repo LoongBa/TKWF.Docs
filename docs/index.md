@@ -7,7 +7,7 @@ _layout: landing
 <div class="hero-section">
   <div class="hero-badges">
     <img src="https://img.shields.io/badge/.NET-10-blue" alt=".NET 10" />
-    <img src="https://img.shields.io/badge/version-4.10.45-green" alt="Version 4.10.45" />
+    <img src="https://img.shields.io/badge/version-4.10.59-green" alt="Version 4.10.59" />
     <img src="https://img.shields.io/badge/Agentic-Engineering-purple" alt="Agentic Engineering" />
   </div>
 <h1>TKW.Framework — 让 Agentic Engineering 更可控、更可靠的软件开发框架</h1>
@@ -524,9 +524,9 @@ tkwf-tsclient-mock → Mock 数据生成
 
 | 版本 | 日期 | 核心内容 |
 |:-----|:-----|:---------|
-| **4.10.45** | 2026-10-01 | Web 装配钩子 |
-| **4.10.44** | 2026-10-01 | 会话 JSON 注册表 SG 生成 |
-| **4.10.43** | 2026-10-01 | 会话 JSON 注册表 API |
+| **4.10.59** | 2026-10-05 | docs: AC-Kit guides/references/templates 审计对齐 v4.10.36-58（能力探测/UpdateWhereAsync/… |
+| **4.10.58** | 2026-10-05 | REST 动词规范化 |
+| **4.10.57** | 2026-10-04 | SG2 权威注册选择契约化 |
 
 > 完整变更历史见 [TKWF CHANGELOG](https://github.com/LoongBa/TKW.Framework/blob/master/docs/CHANGELOG.md)
 

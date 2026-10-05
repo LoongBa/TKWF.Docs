@@ -1,17 +1,17 @@
 [
   {
-    "version": "4.10.45",
-    "date": "2026-10-01",
-    "description": "Web 装配钩子"
+    "version": "4.10.59",
+    "date": "2026-10-05",
+    "description": "docs: AC-Kit guides/references/templates 审计对齐 v4.10.36-58（能力探测/UpdateWhereAsync/更名）"
   },
   {
-    "version": "4.10.44",
-    "date": "2026-10-01",
-    "description": "会话 JSON 注册表 SG 生成"
+    "version": "4.10.58",
+    "date": "2026-10-05",
+    "description": "REST 动词规范化"
   },
   {
-    "version": "4.10.43",
-    "date": "2026-10-01",
-    "description": "会话 JSON 注册表 API"
+    "version": "4.10.57",
+    "date": "2026-10-04",
+    "description": "SG2 权威注册选择契约化"
   }
 ]

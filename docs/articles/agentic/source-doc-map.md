@@ -6,8 +6,7 @@ description: TKWF 源文档 D/G/T/xCodeGen 系列与公开文章的完整映射�
 
 > 本文档建立 TKWF 源文档（`_TKWF/docs/`）与公开文档站文章的对应关系，
 > 便于 Agent 与贡献者定位权威来源。
-> 源文档体系以 `_TKWF/docs/00-文档体系说明.md` 为准（v4.33，D 系列含 D06D/D17A/D17B/D18A/D19/D19A/D20/D20B/D21/D22/D071，G 系列含 G18 共 25 份）。
-> 注：D19A/D22/G18 为主框架 V4.10.41-45 新增编号文档（D19A = AOT TrimAnalyzer 基线，D22/G18 = Web 装配钩子），`00-文档体系说明.md` 修订记录尚未登记（主框架侧滞后），本站按实际文件收录。
+> 源文档体系以 `_TKWF/docs/00-文档体系说明.md` 为准（v4.35，D 系列含 D06D/D17A/D17B/D18A/D19/D19A/D20/D20B/D21/D22/D071，G 系列含 G18 共 25 份）。
 > V4.9.80 起扩展独立仓库：扩展代码/指南迁至公开仓库 [`TKWF.Extensions`](https://github.com/LoongBa/TKWF.Extensions)，扩展模块文档（开发方案/ADR/总览）留在主框架 `03_扩展模块/`（私有）。
 
 ---
@@ -18,7 +17,7 @@ description: TKWF 源文档 D/G/T/xCodeGen 系列与公开文章的完整映射�
 |:-------|:---------|:-----|
 | `D00-TKWF.Domain-领域自治框架-V4-白皮书.md` | [框架概览](../intro.md) | 领域自治核心设计、六大工程原则（含 SystemActor 系统角色） |
 | `D00-TKWF.Domain-领域自治框架-V4-设计方案.md` | [框架概览](../intro.md) | 架构决策（Autofac 弃用、装饰器模式、AsyncLocal、宿主适配器） |
-| `D01-Domain运行时上下文.md` | [DomainUser 详解](../core-concepts/domain-user.md) | 初始化生命周期 + DomainUser + 会话管理 + 客户端认证架构（合并 D01/D02-核心/D03） |
+| `D01-Domain运行时上下文.md` | [DomainUser 详解](../core-concepts/domain-user.md) | 初始化生命周期 + DomainUser + 会话管理 + 客户端认证架构（合并 D01/D02-核心/D03）。v2.4（2026-10）补会话 JSON 序列化与 `$type` 多态：`SessionJsonTypeRegistry` 注册表（v4.10.43/44）+ `[SessionUserType]` SG 生成 + 取消反射回退硬失败（v4.10.47）+ FrameworkJsonContext 混合解析器 |
 | `D03-AOP拦截与事务与验证.md` | [AOP 管线详解](../core-concepts/aop-pipeline.md) · [全局过滤器体系](../core-concepts/filters.md) | AOP 静态拦截 + 事务横切关注 + 参数验证机制。V2.1 补充短接机制、Bag 通信、过滤器组合策略；V4.9.31 新增 ValidateParametersFilter 分层设计 |
 | `D03A-缓存框架-设计方案.md` | — | 缓存策略：ContentCacheFilter AOP 方法级缓存（ICacheProvider 抽象、短接集成、缓存键设计）、HybridCache 会话后端缓存 |
 | `D04-领域初始化器设计-模板方法体系与内置能力.md` | [Web 集成](../integration/web.md) | 初始化器钩子体系（V4.9.21+）。V4.9.61 ADR30：SyncTables 门控分层（固定流程 + AutoMigrateDatabase 生产放行开关） |
@@ -101,7 +100,7 @@ description: TKWF 源文档 D/G/T/xCodeGen 系列与公开文章的完整映射�
 
 | 源文档 | 公开文章 | 说明 |
 |:-------|:---------|:-----|
-| `D15-事件总线与消息基础设施-设计方案.md` | [事件总线与消息基础设施](../explanation/event-bus.md) · [后台作业](../explanation/background-jobs.md) · [事件的表现层消费](../explanation/event-consumption.md) | 事件总线与消息基础设施：领域事件（AddLocalEvent）、本地/分布式事件总线、后台作业管理器、Outbox/Inbox 事务性消息、EntityHistory 属性级 Diff。对标 ABP 事件/消息体系 11 维功能。与 ADR21-25 互补（ADR 讲 HOW，D15 讲 WHY+WHAT）。V4.9.52 ADR26 已实施 |
+| `D15-事件总线与消息基础设施-设计方案.md` | [事件总线与消息基础设施](../explanation/event-bus.md) · [后台作业](../explanation/background-jobs.md) · [事件的表现层消费](../explanation/event-consumption.md) | 事件总线与消息基础设施：领域事件（AddLocalEvent）、本地/分布式事件总线、后台作业管理器、Outbox/Inbox 事务性消息、EntityHistory 属性级 Diff。对标 ABP 事件/消息体系 11 维功能。与 ADR21-25 互补（ADR 讲 HOW，D15 讲 WHY+WHAT）。V4.9.52 ADR26 已实施；V4.10.54 ADR91 后台作业周期调度 `IRecurringBackgroundJobManager`（Unix 5-field cron） |
 | `D15-事件机制-架构复盘总结.md` | [事件总线与消息基础设施](../explanation/event-bus.md) | V4.9.64 事件机制完整架构复盘总结：W2 本地事件总线 + W4 SG 静态派发表 + W5 EntityHistory + W7 后台作业 |
 | `G15-事件机制-使用指南.md` | [事件总线与消息基础设施](../explanation/event-bus.md) | 事件机制消费方实操手册（v1.0）：三种派发模式（阻塞post-commit/异步Outbox/fire-and-forget）+ API参考 + 8个场景示例 + 反模式 + FAQ + 选型决策树 |
 | `D17-TKWF扩展机制与业务模块全景-设计方案.md` | [扩展机制：如何使用](../explanation/extensions/usage.md) · [扩展机制：如何开发扩展](../explanation/extensions/development.md) · [扩展子系列](../explanation/extensions/index.md) | TKWF V5 扩展机制架构：三层模型（核心/内置扩展/业务扩展）、编译期发现（vs ABP 运行时 DI）、SG1 增量扫描、ADR35 统一门控 + 编译期验证三件套。V4.9.70 基座 + V4.9.71 三钩子接线 + V4.9.72 Permissions + V4.9.74 Navigation 已落地。**V4.9.80 剥离**：业务模块全景（§三/§五/§六）迁至 `03_扩展模块/总览和跟踪.md`（私有），本文档聚焦扩展机制。**v5（2026-09）**：新增 §4.5A Abstractions 决策框架（ADR48 D7 依赖倒置指南）。**V4.10.45**：P0 扩展模块 11/11 全部落地（PrintTemplates V0.2.0 最后一项）+ Web 装配钩子（ADR87）正交注记（Domain 三钩子与 `IWebExtension` 分工：领域自治 vs Web 宿主面） |
@@ -135,10 +134,17 @@ description: TKWF 源文档 D/G/T/xCodeGen 系列与公开文章的完整映射�
 | `AC-Kit/references/EntityFieldList和Entity查询使用速查.md` | — | EntityFieldList 字段白名单与 Entity 查询使用速查 |
 | `AC-Kit/guides/SG架构规则.md` | [SG 管线解剖](../explanation/sg-pipeline-anatomy.md) | SG 架构规则 |
 | `AC-Kit/guides/生成代码防绕过规则.md` | [AI 快速上手](../agentic/quick-start-for-ai.md) | 生成代码防绕过 |
+| `AC-Kit/guides/设计原则手册.md` | — | 设计原则体系总纲（2026-10 新增）：Agent 设计决策五原则框架 + 开发规则索引 |
+| `AC-Kit/guides/设计原则/SG生成器.md` | — | 设计原则分篇：SG 生成器设计决策准则（V4.10.36-58 对齐） |
+| `AC-Kit/guides/设计原则/扩展模块.md` | — | 设计原则分篇：扩展模块设计决策准则（V4.10.36-58 对齐） |
+| `AC-Kit/guides/设计原则/数据访问测试.md` | — | 设计原则分篇：数据访问与测试设计决策准则 |
+| `AC-Kit/guides/设计原则/横切设计域.md` | — | 设计原则分篇：横切关注点设计决策准则 |
+| `AC-Kit/guides/设计原则/门控诊断码.md` | — | 设计原则分篇：门控与诊断码设计决策准则 |
+| `AC-Kit/skills/tkwf-design-principles/SKILL.md` | — | 设计原则 skill（tkwf-design-principles，2026-10 新增） |
 
 ---
 
-> 对齐 TKWF：V4.10.45 · 2026-10-02
+> 对齐 TKWF：V4.10.59 · 2026-10-05
 
 
 
