@@ -192,21 +192,22 @@ public class MyHostInitializer : DomainHostInitializerBase<MyUserInfo>
 
 ## 现有扩展清单
 
-扩展模块全景（原 D17 §5，V4.9.80 剥离至扩展仓库）已全部实施并持续演进，当前 **30 个扩展模块**（含 Abstractions 契约包），独立版本管理：
+扩展模块全景（原 D17 §5，V4.9.80 剥离至扩展仓库）已全部实施并持续演进，当前 **33 个扩展模块**（含 Abstractions 契约包），独立版本管理：
 
 | 扩展 | 版本 | 说明 |
 |:--|:--|:--|
 | Permissions（权限） | V0.7.0-0.9.3 | 权限定义 / fail-closed 检查 / 编译期权限名校验（PERM001）+ 领域自治整改 |
-| Identity（身份） | V0.3.0-0.5.0 | 用户 / 角色 / 用户角色分配 + 凭据验证 + VEntity 跨表 JOIN + REST 直接暴露 + 领域自治整改 |
+| Identity（身份） | V0.3.0-0.5.2 | 用户 / 角色 / 用户角色分配 + 凭据验证 + VEntity 跨表 JOIN + REST 直接暴露 + 领域自治整改 + 表名前缀批次 |
 | Account（账户） | V0.3.0-0.5.0 | 账户锁定 + 密码重置 + 登录历史与异常检测 + 依赖倒置 |
-| Authentication（认证中心） | V0.1.0-0.5.4 | 认证中心——令牌体系（RS256 JWT + Refresh rotation + 黑名单）/ 认证矩阵 Provider（短信/微信）/ 身份适配层 / 平台凭证 + 登录编排门面（V0.5.0）+ ITokenVerifier 修复（V0.5.1-0.5.2）+ DevRsaKeyCache（V0.5.3）+ 不传参修复（V0.5.4） |
+| AuthCenter（认证中心） | V0.1.0-0.9.1 | 认证中心（2026-10-06 由 Authentication 归层改名）——令牌体系（RS256 JWT + Refresh rotation + 黑名单）/ 认证矩阵 Provider（短信/微信）/ 身份适配层 / 平台凭证 + 归层与内建端点（V0.6.0）+ E4 密钥管理（V0.7.0）+ 认证 API 补全（V0.8.0）+ 密码策略与口令协议（V0.9.0）+ Email 找回（V0.9.1） |
+| AuthSurface（授权面） | V0.1.0 | 授权面（AuthCenter 集成，2026-10-07 立项）——跨扩展授权组合面 + 表名对齐 TKWF_AuthGrant |
 | UserCenter（用户中心） | V0.1.0 | 通用档案面扩展——契约包 + 主包零实体零存储（扩展间契约协作） |
-| Federation（联邦互联） | V0.1.1 | 认证中心联邦层（原 SSO，2026-10 归层）——跨应用 Federated SSO + token2 ES256 + 授权码 + profile API |
-| Federation.WeChat | V0.1.0 | 微信公众平台连接器（平台网关库——双通道 Oauth/Event + WeChatApiClient） |
-| MFA（多因素认证） | V0.1.0-0.1.3 | 第二因素验证服务——TOTP + SMS 双方法 + 挑战票据 + 恢复码（独立扩展零依赖）+ 原子消费 ADR89 |
+| Federation（联邦互联） | V0.1.0-0.2.1 | 认证中心联邦层（原 SSO，2026-10 归层）——跨应用 Federated SSO + token2 ES256 + 授权码 + profile API + E4 密钥管理 + OIDC 原语归并 |
+| Federation.{平台}（Oidc/Google/Microsoft/DingTalk/WeCom/WeChat/QQ） | V0.1.0 | 平台网关库 7 个——通用 OIDC 基座（M1）/ Google·Microsoft（M2）/ 钉钉·企业微信（M3/M4）/ 微信公众平台 / QQ 互联（出站-only） |
+| MFA（多因素认证） | V0.1.0-0.2.0 | 第二因素验证服务——TOTP + SMS 双方法 + 挑战票据 + 恢复码（独立扩展零依赖）+ 原子消费 ADR89 + E4 密钥管理（V0.2.0） |
 | Navigation（导航/菜单） | V0.1.0-0.1.2 | 菜单数据模型 / 贡献机制 / 权限过滤 |
 | AuditLogging（审计日志） | V0.3.0-0.5.0 | 审计日志 FreeSql 存储 + 统计聚合 + 保留天数清理 + 管理 API + 聚合 SQL 下推 + 领域自治整改 |
-| Settings（设置） | V0.2.0-0.3.0 | 全局/用户级配置持久化 + 分层读取 + 领域自治整改（删伪 Store） |
+| Settings（设置） | V0.2.0-0.3.1 | 全局/用户级配置持久化 + 分层读取 + 领域自治整改（删伪 Store）+ 配置分层倒查删死字段（V0.3.1） |
 | BlobStoring（二进制存储） | V0.2.0-0.3.0 | 大对象本地文件系统存储 + 流式下载 + 领域自治整改 |
 | Emailing（邮件） | V0.2.0-0.3.0 | SMTP/MailKit 邮件发送 + 指数退避重试 + 领域自治整改 |
 | DataDictionary（数据字典） | V0.2.0-0.3.0 | 字典定义 + 项 + 按编码查询 + VEntity 读模型联邦 + 领域自治整改 |
@@ -215,11 +216,11 @@ public class MyHostInitializer : DomainHostInitializerBase<MyUserInfo>
 | Metrics（指标引擎） | V0.2.1 | 业务指标计算引擎（规格文档驱动复合指标 + 指标结果持久化） |
 | Analytics（分析服务） | V0.1.0 | 业务分析服务（spec 文件驱动 + flint 单一真相 JsonDocument，D20 Stage 1） |
 | Dashboard / DataPort | V0.1.0-0.1.4 | 仪表盘 / 导入导出 |
-| Notifications（通知中心） | V0.2.0-0.6.1 | 通知中心——多通道路由 + SignalR 通道 + 通知本地化 + REST 直接暴露 + 领域自治整改 |
+| Notifications（通知中心） | V0.2.0-0.6.2 | 通知中心——多通道路由 + SignalR 通道 + 通知本地化 + REST 直接暴露 + 领域自治整改 + 表名前缀批次 |
 | BackgroundJobs（+Quartz） | V0.1.0-0.4.1 | 后台任务持久化 + 周期调度（IRecurringBackgroundJobManager，ADR91）+ 领域自治整改 |
 | HealthCheck / RateLimiting | V0.1.0-0.3.0 | 健康检查 / 限流 + 领域自治整改 |
 | SecurityLog（+Abstractions） | V0.1.0-0.4.0 | 安全日志（契约拆包 + 聚合 SQL 下推 + 领域自治整改） |
-| Approval / OrganizationUnit / Calendar / FileManagement / FeatureManagement | V0.1.0-0.5.0 | 审批流 / 组织单元 / 日历排程 / 文件管理 / 功能管理（含领域自治整改） |
+| Approval / OrganizationUnit / Calendar / FileManagement / FeatureManagement | V0.1.0-0.5.0 | 审批流 / 组织单元 / 日历排程 / 文件管理（V0.4.1 表名前缀批次） / 功能管理（含领域自治整改） |
 | 契约包（`.Abstractions`） | V0.1.0-0.1.2 | Permissions/Emailing/BlobStoring/SecurityLog/UserCenter/Account/Navigation 契约抽取（ADR48/50 依赖倒置） |
 
 > **完整清单/版本/状态**以扩展仓库 [`TKWF.Extensions`](https://github.com/LoongBa/TKWF.Extensions) README 扩展一览表为准（本站 [扩展子系列索引](./index.md) 已同步）。P0 全部实施完毕（原 P0 剩余 PrintTemplates 已落地）；P1/P2 候选模块约 45 个（本地化、CMS、支付、CRM、AI 等）按需作为扩展提供。

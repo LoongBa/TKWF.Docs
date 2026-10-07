@@ -4,7 +4,7 @@
 
 [![Build and Deploy Docs](https://github.com/LoongBa/TKWF.Docs/actions/workflows/docfx.yml/badge.svg)](https://github.com/LoongBa/TKWF.Docs/actions/workflows/docfx.yml)
 
-**当前同步版本：V4.10.59**（文档与框架 [LoongBa/TKW.Framework](https://github.com/LoongBa/TKW.Framework) 保持同步）
+**当前同步版本：V4.10.68**（文档与框架 [LoongBa/TKW.Framework](https://github.com/LoongBa/TKW.Framework) 保持同步）
 
 ---
 
@@ -12,7 +12,15 @@
 
 | 版本 | 日期 | 核心内容 |
 |:-----|:-----|:---------|
-| **4.10.59** | 2026-10-05 | 领域自治整改文档同步 + D/G 系列对齐 v4.10.36-58（会话 JSON/周期调度/能力探测/UpdateWhereAsync） |
+| **4.10.68** | 2026-10-07 | 密钥强度调整（转告回复闭环）——组件指南 §7 安全基线 + 适配通知 |
+| **4.10.67** | 2026-10-07 | `IRateLimitCheck` 点检查限流原语 R1（ADR104，Utility 收纳边界）——响应扩展组转达（AuthCenter 身份域频控） |
+| **4.10.66** | 2026-10-07 | 表名别名机制一等公民化（ADR100）——统一表名解析权威 + TABLE 门控族 4 码（`TKWF_SG1a_TABLE001-004`）+ 框架表前缀统一（52 实体 `TKWF_` 前缀） |
+| **4.10.65** | 2026-10-06 | V5/Iter-4 M3 扩展依赖版本门控——`[TKWFExtensionDependency]` + SemVerUtil 比较器 + SG 编译期校验（ADR50 兑现） |
+| **4.10.64** | 2026-10-06 | V5/Iter-1 请求级 UoW 上下文（ADR97 实施修正 C1-C3）+ D18A 诊断码登记 |
+| **4.10.63** | 2026-10-06 | OAuthClient 引擎 OIDC 增强（ADR103）——边界扩展与 client_credentials 新功能决策 + 跨服务身份传递基线（ADR102） |
+| **4.10.62** | 2026-10-06 | `IDacQuerySurface` 数据访问表面判定接口 + V5.0 前瞻立项 Iter-0 交付（ADR97-102 固化台账）+ nuget-unlist workflow 参数化 |
+| **4.10.61** | 2026-10-06 | E4 密钥管理抽象上提主框架（ADR96）——5 项 API（`ISymmetricKeyProvider`/`DevKeyCache` 等）+ keyed DI 首次引入 |
+| **4.10.60** | 2026-10-06 | OAuth 2.0/OIDC 协议引擎 `TKWF.Utility.OAuthClient`（Oracle 双 PASS）+ V5 清单 #21 已实施 |
 | **4.10.58** | 2026-10-05 | 消费方反馈根治（ADR95）——REST 动词规范化 + SG2 编译期能力探测择一（GraphQL/REST-only）+ 运行时 GraphQL fail-fast；`TKWF_SG2_*` 诊断 | 
 | **4.10.57** | 2026-10-04 | SG2 权威注册选择契约化（ADR94，问题单 G20）——权限注册选择契约化 + 扩展空壳同名歧义消除；D18A 登记 ERR004/WARN006 |
 | **4.10.56** | 2026-10-04 | SG3 属性类型分类元数据完备化（ADR93，问题单 G19）——`ClassifyType` 权威推导 + Category 纯消费 + `TKWF_SG3_GUARD_006` 守卫 |
