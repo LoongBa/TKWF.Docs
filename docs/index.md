@@ -7,7 +7,7 @@ _layout: landing
 <div class="hero-section">
   <div class="hero-badges">
     <img src="https://img.shields.io/badge/.NET-10-blue" alt=".NET 10" />
-    <img src="https://img.shields.io/badge/version-4.10.68-green" alt="Version 4.10.68" />
+    <img src="https://img.shields.io/badge/version-4.10.71-green" alt="Version 4.10.71" />
     <img src="https://img.shields.io/badge/Agentic-Engineering-purple" alt="Agentic Engineering" />
   </div>
 <h1>TKW.Framework — 让 Agentic Engineering 更可控、更可靠的软件开发框架</h1>
@@ -524,9 +524,9 @@ tkwf-tsclient-mock → Mock 数据生成
 
 | 版本 | 日期 | 核心内容 |
 |:-----|:-----|:---------|
-| **4.10.68** | 2026-10-07 | docs(v4.10.68): 收尾——转告回复密钥强度调整闭环 + 总览登记 + CHANGELOG + Agents_TKWF 备忘 |
-| **4.10.67** | 2026-10-07 | IRateLimitCheck 点检查限流原语 |
-| **4.10.66** | 2026-10-07 | 表名别名机制一等公民化 |
+| **4.10.71** | 2026-10-11 | OAuth 资源服务器中间件 + JWKS ES256 |
+| **4.10.70** | 2026-10-10 | SymmetricKeyProviderKeys 并入 TrustCenter 键 |
+| **4.10.69** | 2026-10-10 | SymmetricKeyProviderKeys 并入 AuthSurface 键 |
 
 > 完整变更历史见 [TKWF CHANGELOG](https://github.com/LoongBa/TKW.Framework/blob/master/docs/CHANGELOG.md)
 

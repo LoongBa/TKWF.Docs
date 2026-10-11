@@ -1,17 +1,17 @@
 [
   {
-    "version": "4.10.68",
-    "date": "2026-10-07",
-    "description": "docs(v4.10.68): 收尾——转告回复密钥强度调整闭环 + 总览登记 + CHANGELOG + Agents_TKWF 备忘"
+    "version": "4.10.71",
+    "date": "2026-10-11",
+    "description": "OAuth 资源服务器中间件 + JWKS ES256"
   },
   {
-    "version": "4.10.67",
-    "date": "2026-10-07",
-    "description": "IRateLimitCheck 点检查限流原语"
+    "version": "4.10.70",
+    "date": "2026-10-10",
+    "description": "SymmetricKeyProviderKeys 并入 TrustCenter 键"
   },
   {
-    "version": "4.10.66",
-    "date": "2026-10-07",
-    "description": "表名别名机制一等公民化"
+    "version": "4.10.69",
+    "date": "2026-10-10",
+    "description": "SymmetricKeyProviderKeys 并入 AuthSurface 键"
   }
 ]
