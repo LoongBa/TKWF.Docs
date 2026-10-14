@@ -199,11 +199,11 @@ public class MyHostInitializer : DomainHostInitializerBase<MyUserInfo>
 | Permissions（权限） | V0.7.0-0.9.3 | 权限定义 / fail-closed 检查 / 编译期权限名校验（PERM001）+ 领域自治整改 |
 | Identity（身份） | V0.3.0-0.5.2 | 用户 / 角色 / 用户角色分配 + 凭据验证 + VEntity 跨表 JOIN + REST 直接暴露 + 领域自治整改 + 表名前缀批次 |
 | Account（账户） | V0.3.0-0.5.0 | 账户锁定 + 密码重置 + 登录历史与异常检测 + 依赖倒置 |
-| AuthCenter（认证中心） | V0.1.0-0.9.3 | 认证中心（2026-10-06 由 Authentication 归层改名）——令牌体系（RS256 JWT + Refresh rotation + 黑名单）/ 认证矩阵 Provider（短信/微信/密码）/ 身份适配层 / 平台凭证 + 归层内建端点（V0.6.0）+ E4 密钥管理（V0.7.0）+ 认证 API 补全（V0.8.0）+ 密码策略与口令协议（V0.9.0）+ Email 找回（V0.9.1）+ 外部 IdP 桥接（V0.9.2/0.9.3） |
+| AuthCenter（认证中心） | V0.1.0-0.9.4 | 认证中心（2026-10-06 由 Authentication 归层改名）——令牌体系（RS256 JWT + Refresh rotation + 黑名单）/ 认证矩阵 Provider（短信/微信/密码）/ 身份适配层 / 平台凭证 + 归层内建端点（V0.6.0）+ E4 密钥管理（V0.7.0）+ 认证 API 补全（V0.8.0）+ 密码策略与口令协议（V0.9.0）+ Email 找回（V0.9.1）+ 外部 IdP 桥接（V0.9.2/0.9.3）+ 外部身份联邦 Phase1 适配（V0.9.4，ADR107） |
 | AuthSurface（授权面） | V0.1.0-0.2.0 | 授权面（AuthCenter 集成）——跨扩展授权组合面 + 表名对齐 TKWF_AuthGrant + UserCenter DTO 归主包（V0.2.0） |
-| TrustCenter（信任中心） | V0.1.0-0.2.0 | 认证体系信任中枢（2026-10-09 自 Federation 剥离）——应用注册 + token2 ES256 + accesscode + 安全数据投递；契约在 `TrustCenter.Abstractions` |
-| Federation（联邦互联） | V0.1.0-0.6.0 | 认证体系对外连接层壳（TrustCenter 剥离后重定位）——平台 IdP 连接 + `/sso/*` 端点 + 多通道设施（IChannelRegistry）+ 外部 IdP 桥接借道 |
-| Federation.{平台}（Oidc/Google/Microsoft/DingTalk/WeCom/WeChat/QQ/Alipay） | V0.1.0-0.3.0 | 平台网关库 8 个——通用 OIDC 基座（M1）/ Google·Microsoft（M2）/ 钉钉·企业微信（M3/M4）/ 微信公众平台 / QQ 互联（出站-only）/ 支付宝（RSA2 双向签名） |
+| TrustCenter（信任中心） | V0.1.0-0.2.1 | 认证体系信任中枢（2026-10-09 自 Federation 剥离）——应用注册 + token2 ES256 + accesscode + 安全数据投递；契约在 `TrustCenter.Abstractions`；外部身份联邦 Phase1 适配（V0.2.1，ADR107） |
+| Federation（联邦互联） | V0.1.0-0.7.1 | 认证体系对外连接层壳（TrustCenter 剥离后重定位）——平台 IdP 连接 + `/feberation/*` 路由（V0.7.0 破坏性变更自 `/sso/*`）+ 多通道设施（IChannelRegistry）+ 外部 IdP 桥接借道 + 外部身份联邦 Phase1 适配（V0.7.1，ADR107） |
+| Federation.{平台}（Oidc/Google/Microsoft/DingTalk/WeCom/WeChat/QQ/Alipay） | V0.1.0-0.3.1 | 平台网关库 8 个——通用 OIDC 基座（M1）/ Google·Microsoft（M2）/ 钉钉·企业微信（M3/M4）/ 微信公众平台（V0.3.1 验签纵深）/ QQ 互联（出站-only）/ 支付宝（RSA2 双向签名） |
 | MFA（多因素认证） | V0.1.0-0.2.1 | 第二因素验证服务——TOTP + SMS 双方法 + 挑战票据 + 恢复码（独立扩展零依赖）+ 原子消费 ADR89 + E4 密钥管理（V0.2.0）+ IRateLimitCheck 迁移（V0.2.1） |
 | Navigation（导航/菜单） | V0.1.0-0.1.2 | 菜单数据模型 / 贡献机制 / 权限过滤 |
 | AuditLogging（审计日志） | V0.3.0-0.5.0 | 审计日志 FreeSql 存储 + 统计聚合 + 保留天数清理 + 管理 API + 聚合 SQL 下推 + 领域自治整改 |

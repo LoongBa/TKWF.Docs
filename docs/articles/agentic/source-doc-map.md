@@ -65,7 +65,7 @@ description: TKWF 源文档 D/G/T/xCodeGen 系列与公开文章的完整映射�
 | `D11-系统角色-SystemActor-设计方案.md` | [SystemActor 体系](../explanation/system-actor-explained.md) | 系统角色：BeginSystemScopeAsync、scope.System/scope.IsSystem、IEntityActorAuditable、[DenySystemActor]、StandaloneDomainUserAccessor（ADR 14/15/16） |
 | `D13-多租户：加字段与分库双模式设计方案.md` | [多租户](../explanation/multi-tenancy.md) · [门控机制](../explanation/gates.md) | 多租户架构（v2.2）：加字段（共享库行级隔离）与分库（Database-per-Tenant）双模式、租户识别与授权（ITenantContext/ITenantAuthorization）、身份租户（A）与目标租户（B）双场景、跨租户作用域（ExecuteInTenantAsync）、运行时门控 |
 | `D18-TKWF门控机制-设计方案.md` | [门控机制](../explanation/gates.md) | 门控机制设计：三级门控（1 编译时 / 2 混合 / 3 运行时热路径）、优先级原则（尽量 1、2 不得已才用 3）、GateRules 数据驱动规则集、RuntimeGateOptions 严重级别、SG1 特征门控生成、12 缺口全景、与扩展机制门控衔接。V4.10.41 缺口 #2 已实现（OutboxSenderRegistered 规则）+ #5/#9/#11 触发式候选 |
-| `D18A-TKWF诊断码总表.md` | — | TKWF 诊断码总表（V4.10.33）：D18/ADR47/50 各诊断码汇总——82 属性/87 条目（`VIEW003`/`DI001`/`DI002`/`DI003`/`TKWF0034` 双级别）+ CTRB001-003 贡献者诊断（V4.10.32 已实施）+ v4.10.33 错误码收拢刷新（`TKWF_SG1a_ERR_002`/`TKWF_SG2a_MULTI_DS`）+ Guard.cs 双向漂移门禁 + v4.10.34 登记 `TKWF_I18N_001`（i18n 键集一致性门禁）+ v4.10.44 登记 `TKWF_SG1a_SESS001-004`（会话 JSON 注册表 SG 生成诊断）+ v4.10.45 新增 `TKWF_SG1b_WEBEXT_001`（Web 装配钩子领域自治边界门控）+ v4.10.66 新增 TABLE 门控族 `TKWF_SG1a_TABLE001-004`（表名别名机制 ADR100，实体缺 [Table]/ViewSql 基表校验等） |
+| `D18A-TKWF诊断码总表.md` | — | TKWF 诊断码总表（V4.10.33）：D18/ADR47/50 各诊断码汇总——82 属性/87 条目（`VIEW003`/`DI001`/`DI002`/`DI003`/`TKWF0034` 双级别）+ CTRB001-003 贡献者诊断（V4.10.32 已实施）+ v4.10.33 错误码收拢刷新（`TKWF_SG1a_ERR_002`/`TKWF_SG2a_MULTI_DS`）+ Guard.cs 双向漂移门禁 + v4.10.34 登记 `TKWF_I18N_001`（i18n 键集一致性门禁）+ v4.10.44 登记 `TKWF_SG1a_SESS001-004`（会话 JSON 注册表 SG 生成诊断）+ v4.10.45 新增 `TKWF_SG1b_WEBEXT_001`（Web 装配钩子领域自治边界门控）+ v4.10.66 新增 TABLE 门控族 `TKWF_SG1a_TABLE001-004`（表名别名机制 ADR100）+ v4.10.73 新增 PAGE 门控族 `TKWF_SG1b_PAGE001-004`（表现层页面装配 ADR106：页面贡献者归属/可实例化/路由冲突/资源声明） |
 | `G13-多租户使用指南.md` | [多租户](../explanation/multi-tenancy.md) | 多租户消费方实操手册：双模式选型决策树、加字段/分库/混合快速开始、跨租户操作、安全要点、测试要点 |
 
 ## 数据与查询
@@ -110,6 +110,8 @@ description: TKWF 源文档 D/G/T/xCodeGen 系列与公开文章的完整映射�
 | `D17B-ABP与TKWF扩展设计机制对比.md` | — | ABP 模块系统 vs TKWF 扩展机制逐项对比：根本差异 = 编译期确定性（SG 编译期发现 + 编译期验证三件套 + 白名单启用 + 门控硬约束 + VEntity）vs 运行时灵活性（ABP 运行时扫描 + Dapper 自由 SQL）；ABP 缺陷与 TKWF 短板 + V5 借鉴方向（V4.9.92 新增，v4.24） |
 | `D22-TKWF Web装配钩子-设计方案.md` | — | Web 层生命周期装配钩子（`IWebExtension`，V4.10.45 ADR87）：ConfigureServices（宿主注册）/ConfigureMiddleware（`MiddlewareAnchor` 分桶，默认 BeforeAuthentication）/ConfigureEndpoints 三阶段 + `UseWebExtensions` 消费方装配；与 Domain 扩展机制（D17 三钩子）正交零改动（领域自治边界 `TKWF_SG1b_WEBEXT_001` 门控） |
 | `G18-Web扩展装配-使用指南.md` | — | Web 扩展装配钩子（`IWebExtension`）消费方装配与扩展作者实现规范（V4.10.45）：为什么需要、消费方 UseWebExtensions、作者实现、与 Domain 钩子职责分工、诊断码（关联 D22/ADR87） |
+| `D23-表现层页面装配-设计方案.md` | — | 表现层页面装配（池面，V4.10.73 ADR106）：契约级页面装配机制——PageContainer/PageAssemblyService/PageReachabilityMiddleware/PageAssemblyWebExtension + SG1b 页面注册生成（`GeneratedPageCatalog`/`GeneratedPageRegistrations` + `TKWF_SG1b_PAGE001-004` 门控族）；⚠️ IPageContributor 接口本体（外部表现层 Abstractions 包）+ TS codegen 待实现（关联 D22 执行复用 + D17 页面贡献走 A+ 贡献者机制） |
+| `G19-表现层页面装配-使用指南.md` | — | 表现层页面装配消费方装配、扩展作者实现、TS 消费端接入规范（V4.10.73，关联 D23/ADR106）：✅ .NET 通道基础设施（PageAssemblyService/PageReachabilityMiddleware/DomainWebOptions.LoginPath/AuthRoutes 参数化/骨架页）+ SG1b 页面注册生成已落地；⚠️ IPageContributor 本体 + TS codegen + @tkwf/reference-components 待实现 |
 
 > **具体扩展指南**（Permissions/Navigation/Identity 等）在扩展仓库 [`TKWF.Extensions/docs/`](https://github.com/LoongBa/TKWF.Extensions/tree/main/docs)，每扩展一份独立使用指南（如 `docs/Permissions/权限扩展-使用指南.md`）。本表 G17A/G17B 为**通用扩展机制指南**，非具体扩展。
 
@@ -144,7 +146,7 @@ description: TKWF 源文档 D/G/T/xCodeGen 系列与公开文章的完整映射�
 
 ---
 
-> 对齐 TKWF：V4.10.71 · 2026-10-11
+> 对齐 TKWF：V4.10.74 · 2026-10-14
 
 
 

@@ -4,7 +4,7 @@
 
 [![Build and Deploy Docs](https://github.com/LoongBa/TKWF.Docs/actions/workflows/docfx.yml/badge.svg)](https://github.com/LoongBa/TKWF.Docs/actions/workflows/docfx.yml)
 
-**当前同步版本：V4.10.71**（文档与框架 [LoongBa/TKW.Framework](https://github.com/LoongBa/TKW.Framework) 保持同步）
+**当前同步版本：V4.10.74**（文档与框架 [LoongBa/TKW.Framework](https://github.com/LoongBa/TKW.Framework) 保持同步）
 
 ---
 
@@ -12,7 +12,9 @@
 
 | 版本 | 日期 | 核心内容 |
 |:-----|:-----|:---------|
-| **4.10.71** | 2026-10-11 | **OAuth 资源服务器中间件 + JWKS ES256（Iter-6 框架侧交付）**——OAuth 资源服务器中间件落地 + JWKS ES256 + **ADR102 生效**（跨服务身份传递基线）；扩展组统一适配通知（AuthCenter aud 契约/Federation ES256 验签路径等） |
+| **4.10.74** | 2026-10-14 | 外部身份联邦与会话绑定守卫（ADR107，D1-D5）——外部身份联邦框架机制（Federation E1-E3 配套，AuthCenter/TrustCenter 适配） |
+| **4.10.73** | 2026-10-14 | 表现层页面装配（ADR106）——PageAssembly 门面投影 + Blazor 脚手架 + AuthFlow 参数化；新增 **D23/G19** 文档 + `TKWF_SG1b_PAGE001-004` 门控族 |
+| **4.10.72** | 2026-10-11 | 微服务前瞻收尾（ADR105）——服务间认证形态基线（mTLS 与 TokenExchange 归层）+ 独立服务范式样例 + Outbox 跨进程验证 + DockerDaemonGuard 泛化 |
 | **4.10.70** | 2026-10-10 | `SymmetricKeyProviderKeys` 并入 **TrustCenter** 键（v4.10.70，ADR96 边界兑现——C11 第 5 扩展） |
 | **4.10.69** | 2026-10-10 | `SymmetricKeyProviderKeys` 并入 **AuthSurface** 键（v4.10.69，ADR96 边界兑现——C11 第 4 扩展）+ 发布纪律新增（tag 后本地部署优先） |
 | **4.10.67** | 2026-10-07 | `IRateLimitCheck` 点检查限流原语 R1（ADR104，Utility 收纳边界）——响应扩展组转达（AuthCenter 身份域频控） |

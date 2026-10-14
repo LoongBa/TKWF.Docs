@@ -1,17 +1,17 @@
 [
   {
-    "version": "4.10.71",
+    "version": "4.10.74",
+    "date": "2026-10-14",
+    "description": "feat(v4.10.74): 外部身份联邦与会话绑定守卫——D1-D5 框架机制（ADR107）"
+  },
+  {
+    "version": "4.10.73",
+    "date": "2026-10-14",
+    "description": "feat(v4.10.73): 表现层页面装配——PageAssembly 门面投影 + Blazor 脚手架 + AuthFlow 参数化"
+  },
+  {
+    "version": "4.10.72",
     "date": "2026-10-11",
-    "description": "OAuth 资源服务器中间件 + JWKS ES256"
-  },
-  {
-    "version": "4.10.70",
-    "date": "2026-10-10",
-    "description": "SymmetricKeyProviderKeys 并入 TrustCenter 键"
-  },
-  {
-    "version": "4.10.69",
-    "date": "2026-10-10",
-    "description": "SymmetricKeyProviderKeys 并入 AuthSurface 键"
+    "description": "微服务前瞻收尾"
   }
 ]
