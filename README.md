@@ -15,8 +15,10 @@
 | **4.10.74** | 2026-10-14 | 外部身份联邦与会话绑定守卫（ADR107，D1-D5）——外部身份联邦框架机制（Federation E1-E3 配套，AuthCenter/TrustCenter 适配） |
 | **4.10.73** | 2026-10-14 | 表现层页面装配（ADR106）——PageAssembly 门面投影 + Blazor 脚手架 + AuthFlow 参数化；新增 **D23/G19** 文档 + `TKWF_SG1b_PAGE001-004` 门控族 |
 | **4.10.72** | 2026-10-11 | 微服务前瞻收尾（ADR105）——服务间认证形态基线（mTLS 与 TokenExchange 归层）+ 独立服务范式样例 + Outbox 跨进程验证 + DockerDaemonGuard 泛化 |
+| **4.10.71** | 2026-10-11 | OAuth 资源服务器中间件 + JWKS ES256（Iter-6 框架侧交付）——ADR102 生效（跨服务身份传递基线）+ 扩展组统一适配通知（AuthCenter aud 契约/Federation ES256 验签路径等） |
 | **4.10.70** | 2026-10-10 | `SymmetricKeyProviderKeys` 并入 **TrustCenter** 键（v4.10.70，ADR96 边界兑现——C11 第 5 扩展） |
 | **4.10.69** | 2026-10-10 | `SymmetricKeyProviderKeys` 并入 **AuthSurface** 键（v4.10.69，ADR96 边界兑现——C11 第 4 扩展）+ 发布纪律新增（tag 后本地部署优先） |
+| **4.10.68** | 2026-10-07 | 密钥强度调整（转告回复闭环）——组件指南 §7 安全基线 + 适配通知 |
 | **4.10.67** | 2026-10-07 | `IRateLimitCheck` 点检查限流原语 R1（ADR104，Utility 收纳边界）——响应扩展组转达（AuthCenter 身份域频控） |
 | **4.10.66** | 2026-10-07 | 表名别名机制一等公民化（ADR100）——统一表名解析权威 + TABLE 门控族 4 码（`TKWF_SG1a_TABLE001-004`）+ 框架表前缀统一（52 实体 `TKWF_` 前缀） |
 | **4.10.65** | 2026-10-06 | V5/Iter-4 M3 扩展依赖版本门控——`[TKWFExtensionDependency]` + SemVerUtil 比较器 + SG 编译期校验（ADR50 兑现） |
@@ -25,6 +27,7 @@
 | **4.10.62** | 2026-10-06 | `IDacQuerySurface` 数据访问表面判定接口 + V5.0 前瞻立项 Iter-0 交付（ADR97-102 固化台账）+ nuget-unlist workflow 参数化 |
 | **4.10.61** | 2026-10-06 | E4 密钥管理抽象上提主框架（ADR96）——5 项 API（`ISymmetricKeyProvider`/`DevKeyCache` 等）+ keyed DI 首次引入 |
 | **4.10.60** | 2026-10-06 | OAuth 2.0/OIDC 协议引擎 `TKWF.Utility.OAuthClient`（Oracle 双 PASS）+ V5 清单 #21 已实施 |
+| **4.10.59** | 2026-10-05 | 领域自治整改文档同步 + D/G 系列对齐 v4.10.36-58（会话 JSON/周期调度/能力探测/UpdateWhereAsync） |
 | **4.10.58** | 2026-10-05 | 消费方反馈根治（ADR95）——REST 动词规范化 + SG2 编译期能力探测择一（GraphQL/REST-only）+ 运行时 GraphQL fail-fast；`TKWF_SG2_*` 诊断 | 
 | **4.10.57** | 2026-10-04 | SG2 权威注册选择契约化（ADR94，问题单 G20）——权限注册选择契约化 + 扩展空壳同名歧义消除；D18A 登记 ERR004/WARN006 |
 | **4.10.56** | 2026-10-04 | SG3 属性类型分类元数据完备化（ADR93，问题单 G19）——`ClassifyType` 权威推导 + Category 纯消费 + `TKWF_SG3_GUARD_006` 守卫 |
@@ -37,6 +40,7 @@
 | **4.10.48** | 2026-10-02 | GraphQLClient 读 `extensions.code` 恒 null 修复（业务码映射全失效，BUG007）+ G18 修复 |
 | **4.10.47** | 2026-10-02 | 会话 JSON `$type` 读路径取消反射回退（R3 决策逆向）——未注册一律硬失败 |
 | **4.10.46** | 2026-10-02 | 内置控制器 GraphQL 契约字段名对齐 HC 运行时 Async 裁剪（G17/BUG005） |
+| **4.10.45** | 2026-10-01 | Web 装配钩子（ADR87，V5前收尾 #47）——`IWebExtension` 机制（ConfigureServices/ConfigureMiddleware/ConfigureEndpoints + `MiddlewareAnchor` 分桶）+ `UseWebExtensions` 装配；新增 D22/G18 文档 + `TKWF_SG1b_WEBEXT_001` 诊断 |
 | **4.10.44** | 2026-10-01 | 会话 JSON 注册表 SG 生成（ADR86 偏离注记）——`[SessionUserType]` 标记 + `SessionUserTypeGenerator`（SG1a）自动注册 + `TKWF_SG1a_SESS001-004` 诊断 |
 | **4.10.43** | 2026-10-01 | 会话 JSON 注册表 API（ADR86）——`SessionJsonTypeRegistry` 编译期闭集替换反射兜底 + `DomainUserJsonConverter.Read` 零反射命中路径 + StrictMode 硬失败 |
 | **4.10.42** | 2026-10-01 | D19 AOT 三件套复查补丁——LoggerMessage 补迁 12 文件 30 调用点（含 6 热路径 AOP 过滤器）+ `DomainUserJsonConverter.Write` 标注 + D19A 分类修正 |
