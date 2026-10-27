@@ -5,29 +5,17 @@
       "src": [
         {
           "files": [
-            "src/TKW.Framework/Domain/**/*.csproj",
-            "src/TKW.Framework/Domain.Web/**/*.csproj",
-            "src/TKW.Framework/Domain.Maui/**/*.csproj",
-            "src/TKW.Framework/Domain.Blazor/**/*.csproj",
-            "src/TKW.Framework/Domain.FreeSql/**/*.csproj",
-            "src/TKW.Framework/Domain.ApiService.MinimalApi/**/*.csproj",
-            "src/TKW.Framework/Domain.ApiService.HotChocolate/**/*.csproj",
-            "src/TKW.Framework/Domain.ApiClient/**/*.csproj",
-            "src/TKW.Framework/Domain.ApiClient.Rest/**/*.csproj",
-            "src/TKW.Framework/Domain.ApiClient.GraphQL/**/*.csproj",
-            "src/TKW.Framework/Core/**/*.csproj",
-            "src/TKW.Framework/TKWF.Abstractions/**/*.csproj",
-            "src/TKW.Framework/TKWF.CodeGeneration/**/*.csproj",
-            "src/TKW.Framework/Cryptography/**/*.csproj"
+            "_Framework/**/*.csproj",
+            "_Domain.Api/**/*.csproj",
+            "_Domain.ApiService/**/*.csproj",
+            "_Domain.Infrastructure/**/*.csproj",
+            "_Domain.SG/CodeGeneration.Abstractions/**/*.csproj"
           ],
-          "src": "."
+          "src": "../src/TKW.Framework"
         }
       ],
       "dest": "api",
-      "filter": "filter.yml",
-      "properties": {
-        "TargetFramework": "net10.0"
-      }
+      "filter": "filter.yml"
     }
   ],
   "build": {

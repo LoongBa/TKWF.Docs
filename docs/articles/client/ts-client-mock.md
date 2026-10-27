@@ -1,6 +1,6 @@
 ---
 title: ts-client-mock 前端 Mock 测试
-description: @tkwf/tsclient-mock 使用指南：MockTransport 注入、createMockDb、MockHttpServer、场景切换、录制回放
+description: "@tkwf/tsclient-mock 使用指南：MockTransport 注入、createMockDb、MockHttpServer、场景切换、录制回放"
 ---
 
 # ts-client-mock 前端 Mock 测试

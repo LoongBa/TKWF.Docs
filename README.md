@@ -144,7 +144,7 @@
 | [📦 客户端 SDK](docs/articles/client/api-client.md) | 强类型 RPC 客户端 |
 | [⚙️ 配置参考](docs/articles/advanced/configuration.md) | 完整配置选项 |
 | [✨ 最佳实践](docs/articles/advanced/best-practices.md) | 架构建议与反模式 |
-| [📚 API 参考](docs/api/TKWF.Domain.yml) | 自动从 XML 注释生成 |
+| [📚 API 参考](https://tkwf.loongba.cn/api/) | 自动从 XML 注释生成（构建时 DocFX metadata 产出，不入库） |
 
 ## 本地构建
 
