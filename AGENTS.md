@@ -115,6 +115,8 @@ _TKWF（源码 + docs/ 源文档）  ←——— 唯一事实来源 ———  
 
 **tag 触发规则**：仅当 `_TKWF` 发布新版本（需同步版本号）时打 tag；文档内容微调（版本号不变）不需要 tag，普通 `git commit` + `git push` 即可。
 
+**tag 不要求连续（跳版合并）**：中间版本漏打 tag 时，**只给最新同步点打当前版本 tag**，不回补历史版本 tag（本站 v4.10.24 → v4.10.85 即此形态）。tag 形式与历史一致用 **lightweight**（`git tag v{x.y.z}`，不加 `-a`）；`docfx.yml` 仅由 `push main` / `workflow_dispatch` 触发，打 tag 不会引起额外构建。
+
 ### 2.3 内容对齐流程（TKWF 新版本发布时）
 
 | 步骤 | 动作 | 说明 |
