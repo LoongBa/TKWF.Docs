@@ -1,7 +1,9 @@
 # DocFX output
 docs/_site/
 docs/_site_local/
-docs/api/
+# API 产物由 docfx metadata 构建期生成，不入库（index.md 为手写入口页）
+docs/api/*
+!docs/api/index.md
 
 # Build artifacts
 /src/
