@@ -4,7 +4,7 @@
 
 [![Build and Deploy Docs](https://github.com/LoongBa/TKWF.Docs/actions/workflows/docfx.yml/badge.svg)](https://github.com/LoongBa/TKWF.Docs/actions/workflows/docfx.yml)
 
-**当前同步版本：V4.10.85**（文档与框架 [LoongBa/TKW.Framework](https://github.com/LoongBa/TKW.Framework) 保持同步；框架 v4.10.86 已提交 CHANGELOG 但未打 tag，内容并入下轮）
+**当前同步版本：V4.10.87**（文档与框架 [LoongBa/TKW.Framework](https://github.com/LoongBa/TKW.Framework) 保持同步）
 
 ---
 
@@ -12,7 +12,8 @@
 
 | 版本 | 日期 | 核心内容 |
 |:-----|:-----|:---------|
-| **4.10.86** | 2026-10-27 | Web 异常边界（ADR111）——DevPage 框架头注册（Development + UseWebExceptionMiddleware 自动挂载）+ `DevRethrowUnknownExceptions` 未知异常环境分流 + 脚手架移除手挂配方（⚠️ 框架侧未打 tag，内容已并入本站；版本号待 tag 后正式对齐） |
+| **4.10.87** | 2026-10-27 | SG2 ApiMetadata 暴露面口径修正（ADR113）——`IsExposed` 联动 Expose 标记（可映射 && 至少一条通道开启，与 SG2 端点发射条件逐项对齐）→ **SG3 不再为未暴露方法生成客户端代理**（升级后代理方法可能减少，编译期可见、无运行期风险） |
+| **4.10.86** | 2026-10-27 | Web 异常边界（ADR111）——DevPage 框架头注册（Development + `UseWebExceptionMiddleware` 自动挂载，消费方移除手挂）+ `DevRethrowUnknownExceptions` 未知异常环境分流（默认 `true`）+ 脚手架移除手挂配方 |
 | **4.10.85** | 2026-10-25 | 扩展端点装配前缀显式空串语义——`ResolveBasePath`/`ResolveModulePrefix` 三态判定（缺省/脏值回退，显式 `""` 跳过第一级/清除模块前缀）+ 8 前缀用例 + skill V2.1 |
 | **4.10.84** | 2026-10-25 | 端点注册表门控按共享框架程序集**精确名单**判定（`Microsoft.AspNetCore`/`Http`/`Routing`/`Builder`）——替代 `StartsWith` 前缀启发式（非 Web 扩展 CI CS0234 根治） |
 | **4.10.83** | 2026-10-24 | 端点注册表收紧为"仅 Web 扩展生成"（SG 空壳拆除：扩展程序集结构性不含 `GeneratedControllerRegistrations`） |

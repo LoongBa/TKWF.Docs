@@ -26,7 +26,7 @@ description: TKWF 源文档 D/G/T/xCodeGen 系列与公开文章的完整映射�
 | `D06B-条件表达式构建器设计.md` | [条件构建器](../advanced/conditions-builder.md) | PredicateBuilderBase、Entity.Conditions 静态类、xCodeGen + SG1 双重生成 |
 | `D06C-Entity映射与DB Schema-设计方案.md` | [VEntity 读写分离（CQRS）](../explanation/cqrs-read-write.md) · [VEntity 统计与聚合](../explanation/ventity-aggregate.md) | Entity 映射策略：ORM 特性体系（Table/Column/Index/Navigate）、接口标记 vs 基类继承、查询条件生成管线（三阶段 SearchGroup 提取） |
 | `D06D-命名谓词预设-设计方案.md` | — | 第四层（命名成品层）：命名谓词预设 `Entity.Predicates`——`Conditions` 原子谓词之上的常用过滤组合固化；时间相关谓词须用静态方法（防 `DateTime.Today` 冻结 bug）；增强版 `PredicatePreset<TEntity>` Phase 2 延迟（V4.9.92 后新增，v4.27） |
-| `D07-三层SG-原则和设计方案.md` | [代码生成管线](../core-concepts/code-generation.md) | 三层 SG 管线：SG1 元数据提取 → SG2 服务端生成 → SG3 客户端生成；ProjectMetaContext 唯一元数据源。V4.9.32 IsExposed 暴露过滤；V4.9.34 EntityFieldList 字段白名单；V4.9.35 Phase-C 实体连接 resolver（`IsGraphQLQueryable` 三侧过滤，V4.9.102 起统一为 `ExposeGraphqlQuery`） |
+| `D07-三层SG-原则和设计方案.md` | [代码生成管线](../core-concepts/code-generation.md) | 三层 SG 管线：SG1 元数据提取 → SG2 服务端生成 → SG3 客户端生成；ProjectMetaContext 唯一元数据源。V4.9.32 IsExposed 暴露过滤；V4.9.34 EntityFieldList 字段白名单；V4.9.35 Phase-C 实体连接 resolver（`IsGraphQLQueryable` 三侧过滤，V4.9.102 起统一为 `ExposeGraphqlQuery`）。**V4.10.87（ADR113）**：`ApiMetadata.IsExposed` 联动 Expose 标记（可映射 && 至少一条通道开启，与 SG2 端点发射条件逐项对齐）→ SG3 不再生成未暴露方法的客户端代理 |
 | `D19-TKWF反射使用与AOT跟踪.md` | [SG 管线解剖](../explanation/sg-pipeline-anatomy.md) | TKWF 反射使用全景 + AOT 兼容跟踪（V4.9.88+）：反射消除与 SG 化三层原则（"SG 化 → 消灭 → 缓存兜底"）、[RequiresDynamicCode]/[RequiresUnreferencedCode] 标注清单、无法消灭的反射（JsonConverter $type 多态 / EventTypeResolver 跨程序集）。V4.10.41-44 AOT 三件套（ADR84）：JIT 为主 + 诚实标注策略 + 会话 JSON 注册表编译期闭集（ADR86，v4.10.43/44 `SessionJsonTypeRegistry` + `[SessionUserType]` SG 生成） |
 | `D19A-TrimAnalyzer基线清单.md` | — | 全仓 `<EnableTrimAnalyzer>true` Release 基线产物（AOT 补充文档，V4.10.41 ADR84 落地）：IL202x/IL30xx 警告清单 + 分类处置 + 复跑流程（已产出基线 2026-10-01） |
 | `D08-框架CI-CD与脚本架构.md` | — | 三仓库 CI/CD 管线、三引用模式（NuGet/DLL/Project）、MSBuild 基础设施、§九 Schema 导出管线（buildSchema.ps1） |
@@ -146,7 +146,7 @@ description: TKWF 源文档 D/G/T/xCodeGen 系列与公开文章的完整映射�
 
 ---
 
-> 对齐 TKWF：V4.10.85 · 2026-10-25
+> 对齐 TKWF：V4.10.87 · 2026-10-27
 
 
 

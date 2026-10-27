@@ -1,17 +1,17 @@
 [
   {
+    "version": "4.10.87",
+    "date": "2026-10-27",
+    "description": "SG2 ApiMetadata 暴露面口径修正：SG3 客户端代理不再生成未暴露方法（ADR113，响应 DMP 项目组转达 Track B）"
+  },
+  {
+    "version": "4.10.86",
+    "date": "2026-10-27",
+    "description": "Web 异常边界：DevPage 框架头注册 + 未知异常环境分流（ADR111，响应项目组改进提议）"
+  },
+  {
     "version": "4.10.85",
     "date": "2026-10-25",
-    "description": "F8 前缀空串语义"
-  },
-  {
-    "version": "4.10.84",
-    "date": "2026-10-25",
-    "description": "B4 端点注册表门控精化"
-  },
-  {
-    "version": "4.10.83",
-    "date": "2026-10-24",
-    "description": "B4 端点注册表仅 Web 扩展生成"
+    "description": "扩展端点装配前缀显式空串语义 + 配套测试与跨仓文档同步"
   }
 ]

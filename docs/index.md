@@ -7,7 +7,7 @@ _layout: landing
 <div class="hero-section">
   <div class="hero-badges">
     <img src="https://img.shields.io/badge/.NET-10-blue" alt=".NET 10" />
-    <img src="https://img.shields.io/badge/version-4.10.85-green" alt="Version 4.10.85" />
+    <img src="https://img.shields.io/badge/version-4.10.87-green" alt="Version 4.10.87" />
     <img src="https://img.shields.io/badge/Agentic-Engineering-purple" alt="Agentic Engineering" />
   </div>
 <h1>TKW.Framework — 让 Agentic Engineering 更可控、更可靠的软件开发框架</h1>
@@ -524,9 +524,9 @@ tkwf-tsclient-mock → Mock 数据生成
 
 | 版本 | 日期 | 核心内容 |
 |:-----|:-----|:---------|
-| **4.10.85** | 2026-10-25 | F8 前缀空串语义 |
-| **4.10.84** | 2026-10-25 | B4 端点注册表门控精化 |
-| **4.10.83** | 2026-10-24 | B4 端点注册表仅 Web 扩展生成 |
+| **4.10.87** | 2026-10-27 | SG2 ApiMetadata 暴露面口径修正：SG3 客户端代理不再生成未暴露方法（ADR113，响应 DMP 项目组转达 Track B） |
+| **4.10.86** | 2026-10-27 | Web 异常边界：DevPage 框架头注册 + 未知异常环境分流（ADR111，响应项目组改进提议） |
+| **4.10.85** | 2026-10-25 | 扩展端点装配前缀显式空串语义 + 配套测试与跨仓文档同步 |
 
 > 完整变更历史见 [TKWF CHANGELOG](https://github.com/LoongBa/TKW.Framework/blob/master/docs/CHANGELOG.md)
 

@@ -49,8 +49,18 @@ if (-not (Test-Path $changelog)) {
 
 $content = Get-Content $changelog -Raw
 
-# 解析版本条目: ## [{version}] — {date}
-$versionPattern = '^## \[(\d+\.\d+\.\d+)\]\s*—\s*(\d{4}-\d{2}-\d{2})\s*$'
+# 解析版本条目，兼容两种格式：
+#   格式 A（旧）: ## [{version}] — {date}
+#   格式 B（v4.10.x 起）: ## [{version}]  换行  > {date} · {摘要}
+$versionPattern     = '^## \[(\d+\.\d+\.\d+)\]\s*—\s*(\d{4}-\d{2}-\d{2})\s*$'
+$versionPatternBare = '^## \[(\d+\.\d+\.\d+)\]\s*$'
+$dateDescPattern    = '^>\s*(\d{4}-\d{2}-\d{2})\s*·\s*(.+)$'
+
+function Get-TagDate([string]$ver) {
+    $d = (& git -C $TKWFSourceRoot log -1 --format='%ad' --date=short "v$ver" 2>$null)
+    if ($d) { return $d.Trim() } else { return "" }
+}
+
 $entries = [System.Collections.ArrayList]@()
 $currentVer = $null
 $currentDate = $null
@@ -66,13 +76,24 @@ foreach ($line in $content -split "`n") {
         $currentVer = $Matches[1]
         $currentDate = $Matches[2]
         $currentDesc = ""
+    } elseif ($line -match $versionPatternBare) {
+        # 格式 B：日期在随后的 blockquote 摘要行里
+        if ($currentVer) {
+            $null = $entries.Add(@{Ver=$currentVer; Date=$currentDate; Desc=$currentDesc.Trim()})
+        }
+        $currentVer = $Matches[1]
+        $currentDate = $null
+        $currentDesc = ""
     } elseif ($currentVer) {
-        if ($line -match '^> (.+)') {
-            # 优先取 blockquote 摘要行（如 "> 扩展机制...：..."）
-            $currentDesc += $Matches[1] + " "
+        if ($line -match $dateDescPattern) {
+            # "> 2026-10-27 · 摘要" —— 日期 + 摘要一次补齐
+            if (-not $currentDate) { $currentDate = $Matches[1] }
+            if ($currentDesc.Trim() -eq "") { $currentDesc = $Matches[2].Trim() }
+        } elseif ($line -match '^> (.+)') {
+            # 无日期 blockquote（如 "> 扩展机制...：..."）—— 仅当摘要尚空时取第一行
+            if ($currentDesc.Trim() -eq "") { $currentDesc += $Matches[1] + " " }
         } elseif ($currentDesc.Trim() -eq "" -and $line -match '^- (.+)') {
             # 无摘要时回退取首条 bullet（v4.9.87+ 部分版本直接 ### Fixed/Changed，无 blockquote 摘要）
-            # 截断避免把整条长 bullet 塞进表格；只取第一条
             $currentDesc += ($Matches[1] -replace '\*+', '') + " "
         }
     }
@@ -82,8 +103,13 @@ if ($currentVer) {
     $null = $entries.Add(@{Ver=$currentVer; Date=$currentDate; Desc=$currentDesc.Trim()})
 }
 
+# 日期缺失（格式 B 未取到 blockquote 日期）→ 回退 git tag 提交日期，保证排序可用
+foreach ($e in $entries) {
+    if (-not $e.Date) { $e.Date = Get-TagDate $e.Ver }
+}
+
 # 取最新 3 版本（按日期排序，取最新的 3 个）
-$latest = $entries | Sort-Object { [DateTime]::ParseExact($_.Date, "yyyy-MM-dd", $null) } -Descending | Select-Object -First 3
+$latest = $entries | Where-Object { $_.Date } | Sort-Object { [DateTime]::ParseExact($_.Date, "yyyy-MM-dd", $null) } -Descending | Select-Object -First 3
 
 # ---- 1.5 git tag 权威版本校正 ----
 # _TKWF CHANGELOG 自 v4.9.93 起格式漂移：v4.10.x 全部堆积在 [Unreleased] 块（无独立版本头）、

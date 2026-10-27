@@ -40,9 +40,13 @@ SG 编译失败时生成诊断信息而非静默降级，门禁机制（失败�
 | SG2/SG3 共存检查 | — | Error |
 | 消费项目缺框架控制器 | SG2ERR002/003 | Error |
 
-### IsExposed 编译期标志（ADR07）
+### IsExposed 编译期标志（ADR07 / v4.10.87 口径修正）
 
 SG2 计算布尔标志 → SG3 过滤代码生成。方法级暴露控制——标记为不暴露的方法不生成客户端代理。
+
+**暴露判定口径（v4.10.87 起，ADR113）**：`ApiMetadata.IsExposed` = 「返回类型可映射」**且**「至少一条传输通道开启」，与 SG2 端点发射条件**逐项对齐**——服务级 `ExposeToGraphQL`/`ExposeToRest`、方法级 `[ApiExpose(ExposeGraphQL=false, ExposeRest=false)]`、宿主 `hasAspNetCore`、`!IsQueryable`。
+
+> 修复前判定只看「返回类型可映射」，导致已显式关闭两条通道的方法**仍被 SG3 生成客户端代理**——消费方拿到的方法运行期无处可调（项目组转达的 Track B 问题）。修复后此类方法不再生成代理：属**编译期可见**的收敛，无运行期契约变化、无配置项变更。
 
 ### BCL 双标注一致性（ADR28 #4）
 
