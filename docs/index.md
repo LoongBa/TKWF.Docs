@@ -7,7 +7,7 @@ _layout: landing
 <div class="hero-section">
   <div class="hero-badges">
     <img src="https://img.shields.io/badge/.NET-10-blue" alt=".NET 10" />
-    <img src="https://img.shields.io/badge/version-4.10.74-green" alt="Version 4.10.74" />
+    <img src="https://img.shields.io/badge/version-4.10.85-green" alt="Version 4.10.85" />
     <img src="https://img.shields.io/badge/Agentic-Engineering-purple" alt="Agentic Engineering" />
   </div>
 <h1>TKW.Framework — 让 Agentic Engineering 更可控、更可靠的软件开发框架</h1>
@@ -524,9 +524,9 @@ tkwf-tsclient-mock → Mock 数据生成
 
 | 版本 | 日期 | 核心内容 |
 |:-----|:-----|:---------|
-| **4.10.74** | 2026-10-14 | feat(v4.10.74): 外部身份联邦与会话绑定守卫——D1-D5 框架机制（ADR107） |
-| **4.10.73** | 2026-10-14 | feat(v4.10.73): 表现层页面装配——PageAssembly 门面投影 + Blazor 脚手架 + AuthFlow 参数化 |
-| **4.10.72** | 2026-10-11 | 微服务前瞻收尾 |
+| **4.10.85** | 2026-10-25 | F8 前缀空串语义 |
+| **4.10.84** | 2026-10-25 | B4 端点注册表门控精化 |
+| **4.10.83** | 2026-10-24 | B4 端点注册表仅 Web 扩展生成 |
 
 > 完整变更历史见 [TKWF CHANGELOG](https://github.com/LoongBa/TKW.Framework/blob/master/docs/CHANGELOG.md)
 

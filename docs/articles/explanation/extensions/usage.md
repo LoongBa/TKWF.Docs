@@ -152,6 +152,32 @@ public class MyDomainInitializer : DomainHostInitializerBase<MyUserInfo> { ... }
 
 > 只引用扩展包但未声明白名单：扩展的 DI 注册、过滤器、种子数据都不会生效。这是编译期门控（ADR46 `TKWF0020`/ADR50 `TKWF0032`），非运行时配置。
 
+### Web 扩展装配（IWebExtension，v4.10.45+ / F13 v4.10.82）
+
+Web 层扩展（如 Federation 的 `FederationWebExtension`、AuthCenter 的 Web 钩子）实现 `IWebExtension`，经宿主 `UseWebExtensions()` 装配（与 Domain 白名单**正交**——Web 装配在 WebHost 管道侧）：
+
+```csharp
+// 消费方 Program.cs（脚手架四阶段链的 UseWebExtensions 节）
+builder.ConfigWebAppDomain<MyUserInfo, MyDomainInitializer, DomainWebOptions>(
+        "DomainOptions", cfg => { })
+    .RegisterServices(...)
+    .UseWebExtensions()          // ← 装配全部已白名单启用的 IWebExtension（Build 前收集）
+    .UseWebSession(...)
+    .UseApiService(...)
+    .Build(...);
+```
+
+**v4.10.82（F13 破坏性迁移，消费方需注意）**：
+
+| 项 | 旧（≤v4.10.81） | 新（v4.10.82+） |
+|:--|:--|:--|
+| 端点声明 | `ConfigureEndpoints(IEndpointRouteBuilder)` | **`DeclareEndpoints(IExtensionEndpointRegistry)`**（注册表唯一通道，无 builder 参数） |
+| 端点生成 | 扩展手写 minimal API | `registry.MapGenerated<TFacade>()`（DTO 首参 body 绑定 + 类型化异常 ErrorCode + 门面级门控） |
+| 厚协议 | 手写路由 | `registry.MapInfrastructure(EndpointKind)`（闭枚举）或 `DeclareProtocolEndpoints(IProtocolEndpointBuilder)` |
+| 模块前缀 | — | `[assembly: ExtensionModule("key", "default-prefix")]`（v4.10.85 起支持显式空串：跳过第一级/清除模块前缀） |
+
+> 消费方一般**零改动**（Web 装配由 `UseWebExtensions` 自动完成），仅当自行实现了 `IWebExtension` 或直接引用了扩展端点路由时才受影响。扩展作者按上述新形态实现（见 [开发扩展](development.md) §Web 装配钩子）。
+
 ### 查看扩展清单
 
 扩展发现后，通过 `ITkExtensionContainer` 查看扩展清单（可注入单例）：
@@ -195,17 +221,17 @@ public class MyHostInitializer : DomainHostInitializerBase<MyUserInfo>
 
 | 扩展 | 版本 | 说明 |
 |:--|:--|:--|
-| Permissions（权限） | V0.7.0-0.9.3 | 权限定义 / fail-closed 检查 / 编译期权限名校验（PERM001）+ 领域自治整改 |
+| Permissions（权限） | V0.7.0-0.9.5 | 权限定义 / fail-closed 检查 / 编译期权限名校验（PERM001）+ 领域自治整改 |
 | Identity（身份） | V0.3.0-0.5.3 | 用户 / 角色 / 用户角色分配 + 凭据验证 + VEntity 跨表 JOIN + REST 直接暴露 + 领域自治整改 + 表名前缀批次 |
 | Account（账户） | V0.3.0-0.5.0 | 账户锁定 + 密码重置 + 登录历史与异常检测 + 依赖倒置 |
-| AuthCenter（认证中心） | V0.1.0-0.9.4 | 认证中心（2026-10-06 由 Authentication 归层改名）——令牌体系（RS256 JWT + Refresh rotation + 黑名单）/ 认证矩阵 Provider（短信/微信/密码）/ 身份适配层 / 平台凭证 + 归层内建端点（V0.6.0）+ E4 密钥管理（V0.7.0）+ 认证 API 补全（V0.8.0）+ 密码策略与口令协议（V0.9.0）+ Email 找回（V0.9.1）+ 外部 IdP 桥接（V0.9.2/0.9.3）+ 外部身份联邦 Phase1 适配（V0.9.4，ADR107） |
+| AuthCenter（认证中心） | V0.1.0-0.10.1 | 认证中心（2026-10-06 由 Authentication 归层改名）——令牌体系（RS256 JWT + Refresh rotation + 黑名单）/ 认证矩阵 Provider（短信/微信/密码）/ 身份适配层 / 平台凭证 + 归层内建端点（V0.6.0）+ E4 密钥管理（V0.7.0）+ 认证 API 补全（V0.8.0）+ 密码策略与口令协议（V0.9.0）+ Email 找回（V0.9.1）+ 外部 IdP 桥接（V0.9.2/0.9.3）+ 外部身份联邦 Phase1 适配（V0.9.4，ADR107） |
 | AuthSurface（授权面） | V0.1.0-0.2.0 | 授权面（AuthCenter 集成）——跨扩展授权组合面 + 表名对齐 TKWF_AuthGrant + UserCenter DTO 归主包（V0.2.0） |
-| TrustCenter（信任中心） | V0.1.0-0.2.1 | 认证体系信任中枢（2026-10-09 自 Federation 剥离）——应用注册 + token2 ES256 + accesscode + 安全数据投递；契约在 `TrustCenter.Abstractions`；外部身份联邦 Phase1 适配（V0.2.1，ADR107） |
-| Federation（联邦互联） | V0.1.0-0.7.1 | 认证体系对外连接层壳（TrustCenter 剥离后重定位）——平台 IdP 连接 + `/feberation/*` 路由（V0.7.0 破坏性变更自 `/sso/*`）+ 多通道设施（IChannelRegistry）+ 外部 IdP 桥接借道 + 外部身份联邦 Phase1 适配（V0.7.1，ADR107） |
-| Federation.{平台}（Oidc/Google/Microsoft/DingTalk/WeCom/WeChat/QQ/Alipay） | V0.1.0-0.3.1 | 平台网关库 8 个——通用 OIDC 基座（M1）/ Google·Microsoft（M2）/ 钉钉·企业微信（M3/M4）/ 微信公众平台（V0.3.1 验签纵深）/ QQ 互联（出站-only）/ 支付宝（RSA2 双向签名） |
+| TrustCenter（信任中心） | V0.1.0-0.3.3 | 认证体系信任中枢（2026-10-09 自 Federation 剥离）——应用注册 + token2 ES256 + accesscode + 安全数据投递；契约在 `TrustCenter.Abstractions`；外部身份联邦 Phase1 适配（V0.2.1，ADR107） |
+| Federation（联邦互联） | V0.1.0-0.15.0 | 认证体系对外连接层壳（TrustCenter 剥离后重定位）——平台 IdP 连接 + `/feberation/*` 路由（V0.7.0 破坏性变更自 `/sso/*`）+ 多通道设施（IChannelRegistry）+ 外部 IdP 桥接借道 + 外部身份联邦 Phase1 适配（V0.7.1，ADR107） |
+| Federation.{平台}（Oidc/Google/Microsoft/DingTalk/WeCom/WeChat/QQ/Alipay） | V0.1.0-0.16.1 | 平台网关库 8 个——通用 OIDC 基座（M1）/ Google·Microsoft（M2）/ 钉钉·企业微信（M3/M4）/ 微信公众平台（V0.3.1 验签纵深）/ QQ 互联（出站-only）/ 支付宝（RSA2 双向签名） |
 | MFA（多因素认证） | V0.1.0-0.2.1 | 第二因素验证服务——TOTP + SMS 双方法 + 挑战票据 + 恢复码（独立扩展零依赖）+ 原子消费 ADR89 + E4 密钥管理（V0.2.0）+ IRateLimitCheck 迁移（V0.2.1） |
 | Navigation（导航/菜单） | V0.1.0-0.1.2 | 菜单数据模型 / 贡献机制 / 权限过滤 |
-| AuditLogging（审计日志） | V0.3.0-0.5.0 | 审计日志 FreeSql 存储 + 统计聚合 + 保留天数清理 + 管理 API + 聚合 SQL 下推 + 领域自治整改 |
+| AuditLogging（审计日志） | V0.3.0-0.5.1 | 审计日志 FreeSql 存储 + 统计聚合 + 保留天数清理 + 管理 API + 聚合 SQL 下推 + 领域自治整改 |
 | Settings（设置） | V0.2.0-0.3.1 | 全局/用户级配置持久化 + 分层读取 + 领域自治整改（删伪 Store）+ 配置分层倒查删死字段（V0.3.1） |
 | BlobStoring（二进制存储） | V0.2.0-0.3.0 | 大对象本地文件系统存储 + 流式下载 + 领域自治整改 |
 | Emailing（邮件） | V0.2.0-0.3.0 | SMTP/MailKit 邮件发送 + 指数退避重试 + 领域自治整改 |
@@ -215,7 +241,7 @@ public class MyHostInitializer : DomainHostInitializerBase<MyUserInfo>
 | Metrics（指标引擎） | V0.2.1 | 业务指标计算引擎（规格文档驱动复合指标 + 指标结果持久化） |
 | Analytics（分析服务） | V0.1.0 | 业务分析服务（spec 文件驱动 + flint 单一真相 JsonDocument，D20 Stage 1） |
 | Dashboard / DataPort | V0.1.0-0.1.4 | 仪表盘 / 导入导出 |
-| Notifications（通知中心） | V0.2.0-0.6.2 | 通知中心——多通道路由 + SignalR 通道 + 通知本地化 + REST 直接暴露 + 领域自治整改 + 表名前缀批次 |
+| Notifications（通知中心） | V0.2.0-0.6.3 | 通知中心——多通道路由 + SignalR 通道 + 通知本地化 + REST 直接暴露 + 领域自治整改 + 表名前缀批次 |
 | BackgroundJobs（+Quartz） | V0.1.0-0.4.1 | 后台任务持久化 + 周期调度（IRecurringBackgroundJobManager，ADR91）+ 领域自治整改 |
 | HealthCheck / RateLimiting | V0.1.0-0.3.0 | 健康检查 / 限流（含点检查原语 SqlCountRateLimitCheck V0.3.0） |
 | SecurityLog（+Abstractions） | V0.1.0-0.4.0 | 安全日志（契约拆包 + 聚合 SQL 下推 + 领域自治整改） |

@@ -90,6 +90,49 @@ ServiceProviderBuiltCallbackAsync
 
 ---
 
+## Web 装配钩子（IWebExtension，与 Domain 机制正交）
+
+除 Domain 三钩子（`ExtensionInitializer`）外，Web 层扩展通过 **`IWebExtension`** 接入 WebHost 四阶段管道（`ConfigWebAppDomain` 路径）——**与 Domain 扩展机制正交**（ADR87/D22）：
+
+```csharp
+public interface IWebExtension
+{
+    void ConfigureServices(IServiceCollection services) { }                    // 仅 Web 宿主注册（Build 前）
+    MiddlewareAnchor MiddlewareAnchor => MiddlewareAnchor.BeforeAuthentication; // 挂载锚点
+    void ConfigureMiddleware(IApplicationBuilder app, DomainWebOptions options) { }
+    void DeclareEndpoints(IExtensionEndpointRegistry registry) { }             // F13：唯一端点登记通道
+    void DeclareProtocolEndpoints(IProtocolEndpointBuilder builder) { }        // 厚协议逃生（Oracle C+E）
+}
+```
+
+**关键约束**：
+
+| 钩子 | 时机 | 边界 |
+|:--|:--|:--|
+| `ConfigureServices` | `UseWebExtensions` 收集时立即执行（Build 前） | 仅 Web 宿主注册；**注册领域业务类型（Store/Manager/DataService/门面）→ 编译报错**（`TKWF_SG1b_WEBEXT_001`） |
+| `ConfigureMiddleware` | `MiddlewareAnchor`（默认 `BeforeAuthentication`；`AfterRouting` 在 UseRouting 后） | 扩展不得接触 builder/路径之外的宿主设施 |
+| `DeclareEndpoints` | 与 `UseApiService` 共用延迟端点队列 | **F13 破坏性迁移**：`ConfigureEndpoints(builder)` 已移除（不留 Obsolete），`IExtensionEndpointRegistry` 是全仓唯一端点登记通道 |
+| `DeclareProtocolEndpoints` | 厚协议专用 | raw body/XML 回复/302/GET+POST 同路径等**不可生成化**端点（Oracle C+E 裁定） |
+
+**端点声明形态（v4.10.82 F13）**——扩展门面契约经注册表生成化，不手写 minimal API：
+
+```csharp
+public sealed class XxxWebExtension : IWebExtension
+{
+    public void DeclareEndpoints(IExtensionEndpointRegistry registry)
+    {
+        // 生成化端点：门面 DTO 首参 body 绑定 + 类型化异常 ErrorCode 映射 + 门面级门控
+        registry.MapGenerated<XxxFacade>();
+        // 基础设施端点（闭枚举，无 Custom 逃生口）
+        registry.MapInfrastructure(EndpointKind.Metadata);
+    }
+}
+```
+
+> **门禁语义（F13/R2-3）**：端点注册表是**唯一**登记通道——扩展**不得**在 Web 钩子接触 `IEndpointRouteBuilder`/路径（否则类型系统无法拦截）。扩展还须声明模块前缀：`[assembly: ExtensionModule("key", "default-prefix")]`（v4.10.85 起前缀支持显式空串：跳过第一级/清除模块前缀，详见 [使用扩展](./usage.md) 与框架 ADR112）。
+
+---
+
 ## SG1 编译期扫描
 
 SG1（`IIncrementalGenerator`）新增 `CollectFeatureGates` 扫描，编译期生成两套数据：

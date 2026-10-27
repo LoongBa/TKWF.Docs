@@ -28,28 +28,37 @@ builder.ConfigWebAppDomain<AppUserInfo, AppDomainInitializer>()
 ## 中间件管线（V4.9.21+）
 
 从 V4.9.21 起，`ContextExtractionMiddleware` 替代 `SessionUserMiddleware`，
-采用**两阶段架构**解决上下文提取与会话解析的时序耦合：
+采用**两阶段架构**解决上下文提取与会话解析的时序耦合。整体 Web 管道为**四阶段**：
 
 ```
 HTTP Request
     ↓
-阶段 1：上下文提取（ContextExtractionMiddleware）
-    ├── 提取请求上下文（路径/查询参数/Header）
-    ├── 写入 IAmbientContext（Scoped，实时读写）
-    └── 每个提取器（IContextExtractor）独立处理
+① CorrelationIdMiddleware（最前，端到端关联 ID 传播）
     ↓
-阶段 2：会话解析（可选，同一中间件内顺序执行）
-    ├── 从 IAmbientContext 读取 SessionKey（提取器产出）
-    ├── 回退请求解析（Header > Cookie > Query > Form）
-    ├── 验证 Token → 绑定 DomainUser
-    └── 注入 HttpContext.Items
+② ContextExtractionMiddleware（两阶段）
+    ├── 阶段 1：上下文提取
+    │     ├── 提取请求上下文（路径/查询参数/Header）
+    │     ├── 写入 IAmbientContext（Scoped，实时读写）
+    │     └── 每个提取器（IContextExtractor）独立处理
+    └── 阶段 2：会话解析（可选，同一中间件内顺序执行）
+          ├── 从 IAmbientContext 读取 SessionKey（提取器产出）
+          ├── 回退请求解析（Header > Cookie > Query > Form）
+          ├── 验证 Token → 绑定 DomainUser
+          └── 注入 HttpContext.Items
     ↓
-HttpAuthenticationMiddleware（排除路径快速放过）
+③ [BeforeAuthentication 桶]（ContextExtraction 之后、HttpAuthentication 之前）
+    └── JwtAuthentication 等扩展中间件（IWebExtension.MiddlewareAnchor 挂载点）
+    ↓
+④ HttpAuthenticationMiddleware（排除路径快速放过）→ WebExceptionMiddleware（ProblemDetails）
     ↓
 AOP 边界 → Controller / Service 执行
     ↓
 HTTP Response
 ```
+
+**锚点演进（v4.10.76 ADR108）**：`HttpAuthenticationMiddleware` 的挂载锚点移至 **`UseRouting` 之后、`UseEndpoints` 之前**（此前在路由之前）——仅 `UseAspNetCoreRouting` 路径排空该桶；`UseCustomRouting` 宿主不挂载。扩展端点经 `IAllowAnonymous` 元数据声明匿名即放行（消费方零配置，响应扩展组转达）。
+
+**DevPage 自动注册（v4.10.86 ADR111）**：`UseWebExceptionMiddleware` 且 `Development` 环境下，框架在管道头（CORS 之后、WebExceptionMiddleware 之前）**自动挂载** `UseDeveloperExceptionPage()`——消费方**不要**再手动挂（脚手架已移除手挂配方，双实例会截走 DomainException 破坏契约映射）。未知异常分流由 `DomainWebOptions.DevRethrowUnknownExceptions`（默认 `true`）控制：Development 下记录日志后 rethrow，交 DevPage 展示。
 
 ### 核心变化
 

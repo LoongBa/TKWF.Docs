@@ -4,7 +4,7 @@
 
 [![Build and Deploy Docs](https://github.com/LoongBa/TKWF.Docs/actions/workflows/docfx.yml/badge.svg)](https://github.com/LoongBa/TKWF.Docs/actions/workflows/docfx.yml)
 
-**当前同步版本：V4.10.74**（文档与框架 [LoongBa/TKW.Framework](https://github.com/LoongBa/TKW.Framework) 保持同步）
+**当前同步版本：V4.10.85**（文档与框架 [LoongBa/TKW.Framework](https://github.com/LoongBa/TKW.Framework) 保持同步；框架 v4.10.86 已提交 CHANGELOG 但未打 tag，内容并入下轮）
 
 ---
 
@@ -12,6 +12,17 @@
 
 | 版本 | 日期 | 核心内容 |
 |:-----|:-----|:---------|
+| **4.10.86** | 2026-10-27 | Web 异常边界（ADR111）——DevPage 框架头注册（Development + UseWebExceptionMiddleware 自动挂载）+ `DevRethrowUnknownExceptions` 未知异常环境分流 + 脚手架移除手挂配方（⚠️ 框架侧未打 tag，内容已并入本站；版本号待 tag 后正式对齐） |
+| **4.10.85** | 2026-10-25 | 扩展端点装配前缀显式空串语义——`ResolveBasePath`/`ResolveModulePrefix` 三态判定（缺省/脏值回退，显式 `""` 跳过第一级/清除模块前缀）+ 8 前缀用例 + skill V2.1 |
+| **4.10.84** | 2026-10-25 | 端点注册表门控按共享框架程序集**精确名单**判定（`Microsoft.AspNetCore`/`Http`/`Routing`/`Builder`）——替代 `StartsWith` 前缀启发式（非 Web 扩展 CI CS0234 根治） |
+| **4.10.83** | 2026-10-24 | 端点注册表收紧为"仅 Web 扩展生成"（SG 空壳拆除：扩展程序集结构性不含 `GeneratedControllerRegistrations`） |
+| **4.10.82** | 2026-10-24 | 扩展端点自注册底座（**F13 破坏性迁移**）——`IWebExtension.ConfigureEndpoints(builder)` → `DeclareEndpoints(IExtensionEndpointRegistry)`（不留 Obsolete）；`MapGenerated<TFacade>()`/`MapInfrastructure(EndpointKind)` 闭枚举 + `[ExtensionModule]` 组前缀 + Oracle C+E 协议适配通道（`IProtocolEndpointBuilder`）；ADR112 |
+| **4.10.81** | 2026-10-18 | SG1 生成文件自包含修复（GeneratedContributors 缺 using → CS0246）——生成器补 using，不依赖宿主 ImplicitUsings |
+| **4.10.80** | 2026-10-17 | 稳健性修复批次（契约边界 / 并发竞态 / 启动自检 / D3 决策关闭） |
+| **4.10.79** | 2026-10-17 | 票据多次消费有界配额（ADR110 Phase 1）——MaxRedeems 上限 + 消费计数落库 |
+| **4.10.78** | 2026-10-17 | 票据 CAS 标准 compare-and-swap + xCodeGen 模板 using 补漏（重打 tag） |
+| **4.10.77** | 2026-10-16 | D3 Phase 2 票据契约演进（TicketRedeemContext / ADR109）——赎回上下文 + 扩展侧 AuthCenter 适配 |
+| **4.10.76** | 2026-10-15 | HttpAuth 匿名端点排除机制（ADR108）——扩展声明匿名端点即放行（消费方零配置）+ HttpAuthentication 锚点移至 UseRouting 之后 |
 | **4.10.74** | 2026-10-14 | 外部身份联邦与会话绑定守卫（ADR107，D1-D5）——外部身份联邦框架机制（Federation E1-E3 配套，AuthCenter/TrustCenter 适配） |
 | **4.10.73** | 2026-10-14 | 表现层页面装配（ADR106）——PageAssembly 门面投影 + Blazor 脚手架 + AuthFlow 参数化；新增 **D23/G19** 文档 + `TKWF_SG1b_PAGE001-004` 门控族 |
 | **4.10.72** | 2026-10-11 | 微服务前瞻收尾（ADR105）——服务间认证形态基线（mTLS 与 TokenExchange 归层）+ 独立服务范式样例 + Outbox 跨进程验证 + DockerDaemonGuard 泛化 |
