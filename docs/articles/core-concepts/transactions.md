@@ -17,9 +17,11 @@ description: TKWF 事务管理：声明式 [Transactional] 到 ORM 无关的 ITr
 [Transactional]
 public async Task CreateOrderAsync(CreateOrderDto dto)
 {
-    var order = await _orderRepo.InsertAsync(orderEntity);
-    await _inventoryRepo.UpdateAsync(stockEntity); // 如果这里失败，order 应回滚
-    AddLocalEvent(new OrderCreatedEvent(order.Id));
+    var orderSvc = User.Use<OrderDataService>();             // 经 SG1 生成的 DataService
+    var order = await orderSvc.CreateAsync(dto);              // 写入经 DataService（含验证/钩子/事务）
+    var stockSvc = User.Use<InventoryDataService>();
+    await stockSvc.DecreaseStockAsync(dto.ProductId, dto.Quantity); // 如果这里失败，order 应回滚
+    AddEvent(new OrderCreatedEvent(order.Id));
 }
 ```
 
@@ -76,12 +78,9 @@ public class OrderService(DomainUser<AppUserInfo> user) : DomainServiceBase<AppU
         // 方法进入时已开启事务
         // 方法正常退出时自动提交
         // 方法抛出异常时自动回滚
-        var order = await User.GetEntityDAC<Order>().InsertAsync(new Order
-        {
-            Title = dto.Title,
-            UserId = User.UserId
-        });
-        AddLocalEvent(new OrderCreatedEvent(order.Id));
+        var orderSvc = User.Use<OrderDataService>();          // 经 SG1 DataService（禁裸 IEntityDAC/ORM 直用）
+        var order = await orderSvc.CreateAsync(dto);
+        AddEvent(new OrderCreatedEvent(order.Id));
         return order;
     }
 }
@@ -109,16 +108,16 @@ public async Task<Order> RepeatableReadExampleAsync() { ... }
 [Transactional]
 public async Task<Order> CreateOrderAsync(CreateOrderDto dto)
 {
-    var order = await _orderRepo.InsertAsync(orderEntity);
-    await DeductStockAsync(order); // 内层方法加入外层事务
+    var order = await User.Use<OrderDataService>().CreateAsync(dto);
+    await DeductStockAsync(dto); // 内层方法加入外层事务
     return order;
 }
 
-[Transactional]  // 不新建事务，加入外层
-private async Task DeductStockAsync(Order order)
+[Transactional]  // 不新建事务，加入外层（Propagation.Required）
+private async Task DeductStockAsync(CreateOrderDto dto)
 {
     // 与 CreateOrderAsync 在同一事务内
-    await _inventoryRepo.UpdateAsync(stockEntity);
+    await User.Use<InventoryDataService>().DecreaseStockAsync(dto.ProductId, dto.Quantity);
 }
 ```
 
@@ -258,28 +257,27 @@ services.AddScoped<ITransactionManager, FreeSqlTransactionManager>();
 `DomainDataServiceBase` 的 CRUD 方法内建事务包裹——即使在非 `[Transactional]` 路径下（如后台作业），每次写入操作也会自动开启事务：
 
 ```csharp
-public abstract class DomainDataServiceBase<TDto, TEntity> : ...
+public abstract class DomainDataServiceBase<TEntity, TDto> : ...
 {
-    // 每个 CRUD 方法自动调用 BeginTxScope()
+    // 每个 CRUD 公开方法自动调用 BeginTxScopeAsync()
     public async Task<TDto> CreateAsync(TDto dto, CancellationToken ct = default)
     {
-        using var tx = BeginTxScope();  // 自动开启事务
+        using var tx = await BeginTxScopeAsync(ct);  // 自动开启/加入事务（Serializable）
         // ... 业务逻辑
-        if (tx?.IsActive == true)
-            await tx.CommitAsync();
+        if (tx != null && tx.IsActive) await tx.CommitAsync(ct);
         return result;
     }
 }
 ```
 
-`BeginTxScope()` 内部通过 `User.GetService<ITransactionManager>()` 获取事务管理器。当 `ITransactionManager` 未注册时（如 InMemory DAC 测试场景），返回 `null`，跳过事务包裹——**安全降级，无需修改测试代码**：
+`BeginTxScopeAsync(ct)` 内部经事务管理器获取事务作用域。当 `ITransactionManager` 未注册时（如 InMemory DAC 测试场景），返回 `null`，调用方判空后继续——**设计内兼容路径，无需修改测试代码**：
 
 ```csharp
 // 简化示意
-protected ITransactionScope? BeginTxScope()
+protected async Task<ITransactionScope?> BeginTxScopeAsync(CancellationToken ct = default)
 {
-    var txManager = User.GetService<ITransactionManager>();
-    return txManager?.Begin(IsolationLevel.Serializable);
+    var txManager = User.Use<ITransactionManager>();   // 域内懒解析（User.Use<T>()）
+    return txManager is null ? null : await txManager.BeginAsync(IsolationLevel.Serializable, ct);
 }
 ```
 

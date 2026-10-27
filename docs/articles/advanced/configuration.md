@@ -97,15 +97,16 @@ builder.ConfigWebAppDomain<AppUserInfo, AppDomainInitializer>(cfg =>
 | `SetEntityDAC` | `UseEntityDAC` | 通用 Entity DAC 注册 |
 | `SetNoEntityDAC` | `UseNoEntityDAC` | 无 Entity DAC（纯逻辑项目） |
 | `SetFreeSqlEntityDAC` | `UseFreeSqlEntityDAC` | FreeSql + 连接串模板 |
-| `SetTestingEntityDAC` | `UseTestingEntityDAC` | 测试环境 Entity DAC |
+| `SetTestingEntityDAC` | `UseMockDbEntityDAC` | 测试环境内存 Entity DAC（`TestingEntityDAC` 已退役，唯一内存 DAC 为 `MockDbEntityDAC`） |
 
 ### UseFreeSqlEntityDAC
 
 ```csharp
+// 有效重载：仅 (connectionStringTemplate) 或 (DataType, connectionStringTemplate)
+// isDevelopment 不在此方法签名内——经 DomainOptions.IsDevelopment / 环境配置提供
 cfg.UseFreeSqlEntityDAC(
-    connectionStringTemplate: "Host={0};Port=5432;Database=db_{1};Username=postgres",
-    isDevelopment: true,
-    DataType.PgSql);
+    FreeSql.DataType.PostgreSQL,
+    connectionStringTemplate: "Host={0};Port=5432;Database=db_{1};Username=postgres");
 ```
 
 - **连接串模板**：配合 `OnResolveTenantConnectionString` 钩子实现多租户逐请求解析

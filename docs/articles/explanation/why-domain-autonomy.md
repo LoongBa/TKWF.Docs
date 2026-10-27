@@ -63,11 +63,11 @@ public class OrderService : DomainServiceBase<DmpUserInfo>
     public async Task CreateOrderAsync(OrderDto dto)
     {
         // 通过 User.Use<T>() 获取服务（AOP 生效）
-        var repo = User.Use<Repository<Order>>();
+        // T=接口（IAopContract）→ DI 装饰器；T=具体域服务 → ActivatorUtilities 现造（均不进 DI 容器）
         var audit = User.Use<IAuditLogger>();
+        var orderSvc = User.Use<OrderDataService>();   // 经 SG1 生成的 DataService（框架无 Repository 构件）
 
-        var order = new Order { /* ... */ };
-        await repo.InsertAsync(order);
+        var order = await orderSvc.CreateAsync(dto);
         await audit.LogAsync("Order created", order.Id);  // 自动审计
     }
 }
@@ -78,20 +78,17 @@ public class OrderService : DomainServiceBase<DmpUserInfo>
 ```
 User.Use<T>()
   ↓
-1. 从当前作用域解析 T（DI 容器）
+1. T 是接口（IAopContract）？
+  │   是 → 从 DI 解析（触发装饰器工厂）→ 返回 {Contract}Decorator（AOP 生效）
+  │   否 → T 是具体 IDomainService 类 → ActivatorUtilities 直接创建（域内组合，不走 AOP）
+  │        ⚠ 具体类且实现 IAopContract → 守卫拒绝（"请改用接口"）
   ↓
-2. 检查 T 是否有 AOP 标记（[Transactional] / [AuthorityFilter] 等）
-  ↓
-3. 如果有 → 返回 Decorator（拦截器包裹）
-  ↓
-4. 如果没有 → 返回原始实例
-  ↓
-5. 绑定到当前 DomainUser 上下文（AsyncLocal）
+2. 绑定到当前 DomainUser 上下文（AsyncLocal CurrentAopUser）
 ```
 
 **关键区别**：
 - 传统 DI：`services.GetRequiredService<T>()` → 直接返回实例，AOP 不生效
-- TKWF：`User.Use<T>()` → 返回 Decorator，AOP 自动生效
+- TKWF：`User.Use<T>()` 接口 → 返回 Decorator（AOP 自动生效）；具体类 → 帧内现造（不走 DI 容器）
 
 ---
 
@@ -127,8 +124,8 @@ User.Use<T>()
 │ 领域层（Service）                         │
 │  ↓ 只关注业务逻辑                         │
 ├─────────────────────────────────────────┤
-│ 抽象层（IEntityDAC / IRepository）       │
-│  → ORM 无关                             │
+│ 抽象层（IEntityDAC / DataService）       │
+│  → ORM 无关（框架无 Repository 构件）     │
 └─────────────────────────────────────────┘
 ```
 
@@ -172,11 +169,11 @@ public async Task TransferFundsAsync(Account from, Account to, decimal amount)
 ### 2. AOP 编译期生成
 
 ```csharp
-// SG1 编译期生成 Decorator（不是运行时反射）
+// SG1b 编译期生成 Decorator（不是运行时反射；SG1a 出元数据 / SG1b 出代码）
 [Transactional]  // 标记
 public async Task TransferFundsAsync(...) { /* ... */ }
 
-// SG1 生成：
+// SG1b 生成（示意）：
 public class OrderServiceDecorator : IOrderService
 {
     private readonly OrderService _inner;
@@ -197,7 +194,8 @@ public class OrderServiceDecorator : IOrderService
 public async Task ProcessOrderAsync(long orderId)
 {
     // DomainUser 自动传播到下游调用
-    var order = await orderService.EntityGetAsync(orderId);
+    // （经 DataService 读 API——EntityGetAsync 是 internal 生成物，公开面用 GetRequiredAsync）
+    var order = await orderService.GetRequiredAsync(e => e.Id == orderId);
     await inventoryService.ReserveStockAsync(order.Items);  // 自动继承用户上下文
     await paymentService.ChargeAsync(order.TotalAmount);    // 自动继承用户上下文
     // 审计日志自动记录"谁执行了什么操作"

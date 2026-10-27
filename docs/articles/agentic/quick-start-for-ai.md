@@ -14,7 +14,7 @@ description: 面向 AI Agent 的快速上手文档，含速查卡、6 条框架�
 ```
 TKWF 框架核心规则：
   1. 领域服务继承 DomainServiceBase<TUserInfo>
-  2. 数据访问通过 IEntityDAC<T>（ORM 无关）
+  2. 数据访问经 SG1 生成的 DataService（服务内 User.Use<IXxxDataService>() 门面调取）
   3. AOP 拦截器编译期生成（[Transactional] / [AuthorityFilter]）
   4. 用户上下文通过 User.Use<T>() 显式注入
   5. 查询条件用 Entity.Where.ByXxx() 链式构建
@@ -22,7 +22,7 @@ TKWF 框架核心规则：
 
 禁止事项：
   ❌ 不要 new Service()——用 User.Use<T>()
-  ❌ 不要直接 new EntityDAC()——用 DI 注入
+  ❌ 不要直用 IEntityDAC / IFreeSql——数据访问只经 SG1 生成的 DataService
   ❌ 不要手写 Controller（SG 自动生成）
   ❌ 不要运行时代理（Castle / Autofac）
   ❌ 不要手动管理事务（用 [Transactional]）
@@ -48,15 +48,15 @@ public class OrderService  // 没有继承基类
 }
 ```
 
-### 规则 2：数据访问通过 IEntityDAC\<T\>
+### 规则 2：数据访问经 SG1 生成的 DataService
 
 ```csharp
-// ✅ 正确
+// ✅ 正确（服务内 User.Use<IXxxDataService>() 门面调取；读 API 用 GetRequiredAsync 等公开方法）
+var order = await User.Use<IOrderDataService>().GetRequiredAsync(x => x.Id == id);
+
+// ❌ 错误（裸 IEntityDAC / IFreeSql 直用——绕过 SG）
 var order = await _dac.FirstOrDefaultAsync(
     _dac.Query.Where(e => e.Id == id));
-
-// ❌ 错误
-var order = await _dbContext.Orders.FindAsync(id);  // 直接用 ORM
 ```
 
 ### 规则 3：AOP 拦截器编译期生成
@@ -75,7 +75,7 @@ public async Task TransferFundsAsync(decimal amount) { /* ... */ }
 ```csharp
 // ✅ 正确
 var memberSvc = User.Use<MemberService>();
-var member = await memberSvc.EntityGetAsync(memberId);
+var member = await memberSvc.GetRequiredAsync(x => x.Id == memberId);   // 公开读 API
 
 // ❌ 错误
 var memberSvc = new MemberService(dac);  // 直接 new
@@ -128,28 +128,31 @@ public class TodoItem : IDomainEntity
 1. 继承 DomainServiceBase<DmpUserInfo>
 2. 构造函数注入 DomainUser<DmpUserInfo>
 3. 实现 CRUD 方法（Get / List / Create / Update / Delete）
-4. 使用 IEntityDAC<TodoItem> 访问数据
+4. 数据访问经 SG1 生成的 DataService（服务内 User.Use<ITodoItemDataService>() 门面调取）
 5. 查询条件用 Entity.Where.ByXxx() 链式构建
 ```
 
 ### Prompt 2：生成 Controller
 
 ```
-为 ITodoService 接口生成 Controller：
+为 TodoService 服务类生成 Controller（B 路径：契约接口由 SG 生成，不手写）：
 
-接口定义：
-public interface ITodoService : IDomainServiceContract<DmpUserInfo>
+Service 类定义：
+[GenerateController]
+public class TodoService : DomainServiceBase<DmpUserInfo>
 {
-    Task<TodoItemDto?> GetAsync(long id, CancellationToken ct = default);
-    Task<List<TodoItemDto>> ListPendingAsync(CancellationToken ct = default);
-    Task<long> CreateAsync(string title, CancellationToken ct = default);
-    Task CompleteAsync(long id, CancellationToken ct = default);
+    public TodoService(DomainUser<DmpUserInfo> user) : base(user) { }
+
+    public Task<TodoItemDto?> GetAsync(long id, CancellationToken ct = default);
+    public Task<List<TodoItemDto>> ListPendingAsync(CancellationToken ct = default);
+    public Task<long> CreateAsync(string title, CancellationToken ct = default);
+    public Task CompleteAsync(long id, CancellationToken ct = default);
 }
 
 要求：
-1. 使用 [GenerateController(typeof(ITodoService))] 标注
-2. SG1 自动生成 Controller + IAopContract
-3. 不要手写 Controller（SG 自动生成）
+1. 在 Service 类上标注 [GenerateController]（属性无 typeof 构造参数）
+2. SG1 自动生成契约接口（如 ITodoService）+ Controller + IAopContract
+3. 不要手写 Controller / 手写接口（SG 自动生成）
 ```
 
 ### Prompt 3：生成查询条件
@@ -189,15 +192,16 @@ var service = new OrderService(dac, user);
 var service = User.Use<OrderService>();
 ```
 
-### 错误 2：直接用 ORM
+### 错误 2：绕过 DataService 裸访问数据
 
 ```csharp
-// ❌ 错误
+// ❌ 错误（裸 ORM / 裸 IEntityDAC 直用）
 var order = await _dbContext.Orders.FindAsync(id);
-
-// ✅ 正确
 var order = await _dac.FirstOrDefaultAsync(
     _dac.Query.Where(e => e.Id == id));
+
+// ✅ 正确（经 SG1 生成的 DataService；读 API 用 GetRequiredAsync 等公开方法）
+var order = await User.Use<IOrderDataService>().GetRequiredAsync(x => x.Id == id);
 ```
 
 ### 错误 3：手写表达式

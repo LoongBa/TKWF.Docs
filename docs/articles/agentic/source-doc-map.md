@@ -6,7 +6,7 @@ description: TKWF 源文档 D/G/T/xCodeGen 系列与公开文章的完整映射�
 
 > 本文档建立 TKWF 源文档（`_TKWF/docs/`）与公开文档站文章的对应关系，
 > 便于 Agent 与贡献者定位权威来源。
-> 源文档体系以 `_TKWF/docs/00-文档体系说明.md` 为准（v4.35，D 系列含 D06D/D17A/D17B/D18A/D19/D19A/D20/D20B/D21/D22/D071，G 系列含 G18 共 25 份）。
+> 源文档体系以 `_TKWF/docs/00-文档体系说明.md` 为准（v4.35，D 系列含 D06D/D17A/D17B/D18A/D19/D19A/D20/D20B/D21/D22/D23/D071，G 系列含 G18/G19 共 25 份）。
 > V4.9.80 起扩展独立仓库：扩展代码/指南迁至公开仓库 [`TKWF.Extensions`](https://github.com/LoongBa/TKWF.Extensions)，扩展模块文档（开发方案/ADR/总览）留在主框架 `03_扩展模块/`（私有）。
 
 ---
@@ -36,10 +36,10 @@ description: TKWF 源文档 D/G/T/xCodeGen 系列与公开文章的完整映射�
 | 源文档 | 公开文章 | 说明 |
 |:-------|:---------|:-----|
 | `D02-多形态客户端认证架构.md` | [认证与授权](../security/authentication.md) | 客户端认证架构总览（V4.9.26 起拆分 D02A-D02D） |
-| `D02A-多形态客户端认证-进程内(Console-CLI-后台-测试)认证.md` | — | ① 进程内认证：Console/CLI/后台任务/单元测试、LoginAsUserAsync 重载、LocalSessionManager/TestSessionManager |
-| `D02B-多形态客户端认证-进程内WebServer(BlazorServer-MAUI)认证.md` | — | ② 进程内+RPC：Blazor Server/MAUI 混合、双通道认证（HTTP + 非 HTTP） |
-| `D02C-多形态客户端认证-进程外Wasm(BlazorWasm)认证.md` | — | ③ 进程外+RPC（C#）：Blazor WASM 认证组件（WasmAuthenticationStateProvider/AuthRoutes/UseWasmAuth） |
-| `D02D-多形态客户端认证-进程外ts-client(React-Vue-小程序)认证.md` | — | ③ 进程外+RPC（TS）：@tkwf/tsclient DomainHostClient（init/GetUser/GetGuest/loginSecure/registerSecure） |
+| `D02A-多形态客户端认证-进程内(Console-CLI-后台-测试).md` | — | ① 进程内认证：Console/CLI/后台任务/单元测试、LoginAsUserAsync 重载、LocalSessionManager/TestSessionManager |
+| `D02B-多形态客户端认证-进程内WebServer(BlazorServer-MAUI).md` | — | ② 进程内+RPC：Blazor Server/MAUI 混合、双通道认证（HTTP + 非 HTTP） |
+| `D02C-多形态客户端认证-进程外Wasm(BlazorWasm).md` | — | ③ 进程外+RPC（C#）：Blazor WASM 认证组件（WasmAuthenticationStateProvider/AuthRoutes/UseWasmAuth） |
+| `D02D-多形态客户端认证-进程外ts-client(React-Vue-小程序).md` | — | ③ 进程外+RPC（TS）：@tkwf/tsclient DomainHostClient（init/GetUser/GetGuest/loginSecure/registerSecure） |
 | `D07A-RPC-远程过程调用-设计方案V2.md` | [RPC 传输](../transport/rpc.md) | RPC 主文档：SG 管线、IAopContract、A/B 控制器路径、DataService 方法提取规则、ExcludeMethods。V4.9.35 Phase-C 双轨并行；V4.9.40 查询架构简化（EQR 统一 + IGlobalQueryFilter） |
 | `D07B-C#客户端SDK架构-设计方案.md` | [客户端 SDK](../client/api-client.md) | C# 客户端 SDK：DomainClientUser 架构、IApiClient 双协议传输层、表达式树→GraphQL 查询管线、Wasm 管道。V4.9.28 起 Use<T>() 客户端服务端统一命名 |
 | `D07C-TS客户端SDK架构-设计方案.md` | — | TS 客户端 SDK（@tkwf/tsclient）：两层架构（SDK 层 vs 消费端集成层）、Tkwf 门面工厂、Transport 抽象、ServiceProxy JS Proxy 引擎、ChainablePromise |
@@ -65,7 +65,7 @@ description: TKWF 源文档 D/G/T/xCodeGen 系列与公开文章的完整映射�
 | `D11-系统角色-SystemActor-设计方案.md` | [SystemActor 体系](../explanation/system-actor-explained.md) | 系统角色：BeginSystemScopeAsync、scope.System/scope.IsSystem、IEntityActorAuditable、[DenySystemActor]、StandaloneDomainUserAccessor（ADR 14/15/16） |
 | `D13-多租户：加字段与分库双模式设计方案.md` | [多租户](../explanation/multi-tenancy.md) · [门控机制](../explanation/gates.md) | 多租户架构（v2.2）：加字段（共享库行级隔离）与分库（Database-per-Tenant）双模式、租户识别与授权（ITenantContext/ITenantAuthorization）、身份租户（A）与目标租户（B）双场景、跨租户作用域（ExecuteInTenantAsync）、运行时门控 |
 | `D18-TKWF门控机制-设计方案.md` | [门控机制](../explanation/gates.md) | 门控机制设计：三级门控（1 编译时 / 2 混合 / 3 运行时热路径）、优先级原则（尽量 1、2 不得已才用 3）、GateRules 数据驱动规则集、RuntimeGateOptions 严重级别、SG1 特征门控生成、12 缺口全景、与扩展机制门控衔接。V4.10.41 缺口 #2 已实现（OutboxSenderRegistered 规则）+ #5/#9/#11 触发式候选 |
-| `D18A-TKWF诊断码总表.md` | — | TKWF 诊断码总表（V4.10.33）：D18/ADR47/50 各诊断码汇总——82 属性/87 条目（`VIEW003`/`DI001`/`DI002`/`DI003`/`TKWF0034` 双级别）+ CTRB001-003 贡献者诊断（V4.10.32 已实施）+ v4.10.33 错误码收拢刷新（`TKWF_SG1a_ERR_002`/`TKWF_SG2a_MULTI_DS`）+ Guard.cs 双向漂移门禁 + v4.10.34 登记 `TKWF_I18N_001`（i18n 键集一致性门禁）+ v4.10.44 登记 `TKWF_SG1a_SESS001-004`（会话 JSON 注册表 SG 生成诊断）+ v4.10.45 新增 `TKWF_SG1b_WEBEXT_001`（Web 装配钩子领域自治边界门控）+ v4.10.66 新增 TABLE 门控族 `TKWF_SG1a_TABLE001-004`（表名别名机制 ADR100）+ v4.10.73 新增 PAGE 门控族 `TKWF_SG1b_PAGE001-004`（表现层页面装配 ADR106：页面贡献者归属/可实例化/路由冲突/资源声明） |
+| `D18A-TKWF诊断码总表.md` | — | TKWF 诊断码总表（以 Guard.cs 实测为准，v4.10.85：111 属性/51E/51W/9I，去重子 ID 102）：D18/ADR47/50 各诊断码汇总（`VIEW003`/`DI001`/`DI002`/`DI003`/`TKWF0034` 双级别）+ CTRB001-003 贡献者诊断（V4.10.32 已实施）+ v4.10.33 错误码收拢刷新（`TKWF_SG1a_ERR_002`/`TKWF_SG2a_MULTI_DS`）+ Guard.cs 双向漂移门禁 + v4.10.34 登记 `TKWF_I18N_001`（i18n 键集一致性门禁）+ v4.10.44 登记 `TKWF_SG1a_SESS001-004`（会话 JSON 注册表 SG 生成诊断）+ v4.10.45 新增 `TKWF_SG1b_WEBEXT_001`（Web 装配钩子领域自治边界门控）+ v4.10.66 新增 TABLE 门控族 `TKWF_SG1a_TABLE001-004`（表名别名机制 ADR100）+ v4.10.73 新增 PAGE 门控族 `TKWF_SG1b_PAGE001-004`（表现层页面装配 ADR106：页面贡献者归属/可实例化/路由冲突/资源声明） |
 | `G13-多租户使用指南.md` | [多租户](../explanation/multi-tenancy.md) | 多租户消费方实操手册：双模式选型决策树、加字段/分库/混合快速开始、跨租户操作、安全要点、测试要点 |
 
 ## 数据与查询
@@ -77,7 +77,7 @@ description: TKWF 源文档 D/G/T/xCodeGen 系列与公开文章的完整映射�
 | `G06-领域数据服务与数据存取使用指南.md` | [DataService](../core-concepts/data-services.md) | 数据服务使用 |
 | `G06B-条件表达式构建器使用指南.md` | [条件构建器](../advanced/conditions-builder.md) | Conditions 条件工厂 API、Expression 两阶段构建、并发隔离 |
 | `G06C-Entity映射与查询条件配置指南.md` | [VEntity 读写分离（CQRS）](../explanation/cqrs-read-write.md) · [VEntity 统计与聚合](../explanation/ventity-aggregate.md) | 数据库映射（Table/Column/Index）+ Conditions 生成配置（DtoField/SearchGroup/Index 派生） |
-| `D20-TKWF分析服务设计方案.md` | — | 通用分析服务（v4.10.27 Stage 1 已落地）：三段式流水线（tkwf-analytics-view 意图分解 → tkwf-service 取数 → 消费端 flint-chart 渲染；tkwf-entity 复用既有链路）；语义/视觉解耦（semantic_types 固定 + chart_spec 可切换，直接采用 flint 原生格式，单一真相归 flint）；AnalysisSpec 产物规范（DDL + 数据契约 + semantic_types + chart_spec + manifest，docs/analytics-specs/ 文件级落地）；服务端返回 spec/Excel artifact 不做像素渲染；一数多图由 flint pivot 承接。v1.1（2026-09-04）经 Oracle 评审修订（对齐 D20B）；**v4.10.27 Stage 1 落地（Utility.Analytics 核心 + TKWF.Ext.Analytics 集成层）** |
+| `D20-TKWF-分析服务设计方案.md` | — | 通用分析服务（v4.10.27 Stage 1 已落地）：三段式流水线（tkwf-analytics-view 意图分解 → tkwf-service 取数 → 消费端 flint-chart 渲染；tkwf-entity 复用既有链路）；语义/视觉解耦（semantic_types 固定 + chart_spec 可切换，直接采用 flint 原生格式，单一真相归 flint）；AnalysisSpec 产物规范（DDL + 数据契约 + semantic_types + chart_spec + manifest，docs/analytics-specs/ 文件级落地）；服务端返回 spec/Excel artifact 不做像素渲染；一数多图由 flint pivot 承接。v1.1（2026-09-04）经 Oracle 评审修订（对齐 D20B）；**v4.10.27 Stage 1 落地（Utility.Analytics 核心 + TKWF.Ext.Analytics 集成层）** |
 | `D20B-分析服务开源对标与语义层定位.md` | — | D20 对标文档：ABP 分析能力矩阵（无 Reporting/Analytics/BI 模块——D20 落地即差异化）+ 开源方案分层全景 + 语义层三裁定（SMB 不引运行期语义服务/单一真相归 flint/Ossie 预留不实现）+ flint schema 实况比对（semantic_types=flat map/模板注册表名/原生 overflow+pivot）+ D20 简化建议 P0-P3（V4.9.92 后新增，v4.27） |
 | `D21-TKWF指标引擎-MetricsEngine-设计记录.md` | — | 指标引擎（MetricsEngine）设计记录：原 StatEngine（`_Extensions/DMPCore`）裁定为 POC 失败品（废弃归档）；正式形态 = `TKWF.Ext.Metrics` 扩展模块——纯计算内核、计算器非泛型 + MetricRow 委托访问、v0.1.0 静态注册表零反射（v0.2.0 SG 可选）、内置计算器仅复合业务指标（flint+LINQ 已覆盖简单聚合）、MetricsOptions + 规格校验（V4.9.92 后新增，v4.27） |
 

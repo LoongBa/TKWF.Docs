@@ -20,7 +20,7 @@ description: 在 Web/Blazor/MAUI/Testing 四种宿主集成形态间选型的决
 |:--|:--|:--|:--|:--|:--|
 | **运行位置** | 服务端 | 服务端（SignalR） | 客户端（浏览器） | 客户端（设备） | 测试进程 |
 | **用户上下文** | `DomainUser` | `DomainUser` + `DomainClientUser` | `DomainClientUser` | `DomainClientUser` | `DomainUser`（TestSession） |
-| **通信方式** | HTTP/gRPC | SignalR（进程内） | GraphQL/REST（HTTP） | GraphQL/REST（HTTP） | 进程内调用 |
+| **通信方式** | GraphQL/REST（HTTP，SG2 生成端点） | SignalR（进程内） | GraphQL/REST（HTTP） | GraphQL/REST（HTTP） | 进程内调用 |
 | **认证形态** | ② 进程内+RPC | ② 进程内+RPC | ③ 进程外+RPC | ③ 进程外+RPC | ① 进程内 |
 | **AOP 拦截器** | 全部生效 | 全部生效 | 客户端无 AOP | 客户端无 AOP | 全部生效 |
 | **事务管理** | 服务端事务 | 服务端事务 | 客户端无事务 | 客户端无事务 | 可 Mock |
@@ -50,18 +50,25 @@ description: 在 Web/Blazor/MAUI/Testing 四种宿主集成形态间选型的决
 最通用的宿主形态，支持 API 服务和 SSR：
 
 ```csharp
+// 脚手架真实接线（以 _xCodeGen/xCodeGen.Cli/scaffolding/webapi/Program.cs 为准，按需简化）
+var builder = WebApplication.CreateBuilder(args);
+
 var app = builder.ConfigWebAppDomain<DmpUserInfo, MyDomainInitializer, DomainWebOptions>(
         "DomainOptions", cfg =>
         {
             cfg.UseWebExceptionMiddleware = true;
-            cfg.UseFreeSqlEntityDAC();
+            cfg.UseFreeSqlEntityDAC(); // 或 EFCore（见文末数据访问小节）
         })
     .RegisterServices((services, cfg) => { /* ... */ })
-    .Build(...);
+    .UseWebSession(o => { /* 会话配置 */ })
+    .UseApiService(opt =>
+    {
+        opt.UseGraphQL("/graphql"); // GraphQL 端点（SG2 生成 Resolver）
+        opt.UseRest("/api");        // REST 端点（SG2 生成）
+    })
+    .Build(app => { /* 中间件（CORS 等） */ });
 
-// 标准 ASP.NET Core 路由
-app.MapControllers();
-app.Run();
+await app.RunWithGraphQLCommandsAsync(args);
 ```
 
 ### Blazor Server
@@ -113,7 +120,7 @@ builder.Services.AddBlazoredLocalStorage();
 // MauiProgram.cs
 builder.Services.AddMauiBlazorWebView();
 
-var app = builder.ConfigMauiAppDomain<DmpUserInfo, MyDomainInitializer, DomainMauiOptions>(
+var app = builder.ConfigMauiAppDomain<DmpUserInfo, MyDomainInitializer, DomainOptions>( // 选项类型以源码为准（DomainMauiOptions 不存在）
         "DomainOptions", cfg => { /* ... */ })
     .Build(...);
 ```
@@ -128,30 +135,30 @@ var app = builder.ConfigMauiAppDomain<DmpUserInfo, MyDomainInitializer, DomainMa
 单元测试 / 集成测试：
 
 ```csharp
-// xUnit 测试
-public class OrderServiceTests
+// xUnit 测试（标准形态：测试类继承 DomainXunitTestBase<TUserInfo, TFixture>）
+public sealed class OrderServiceFixture : DomainXunitTestFixtureBase
 {
-    private readonly DomainTestHost<DmpUserInfo> _host;
-
-    public OrderServiceTests()
+    // InitializeAsync 内调用 ConfigTestDomainAsync 建立 DomainHost.Root（详见 tkwf-test skill / G6b）
+    public override async ValueTask InitializeAsync()
     {
-        _host = DomainTestHost<DmpUserInfo>.Create(builder =>
-        {
-            builder.ConfigTestDomainAsync<DmpUserInfo, MyDomainInitializer, DomainTestOptions>(
-                    "DomainOptions", cfg => { /* ... */ })
-                .Build(...);
-        });
+        var services = new ServiceCollection();
+        await services.ConfigTestDomainAsync<DmpUserInfo, MyDomainInitializer, DomainWebOptions>(
+            options => { /* ... */ }); // 选项类型以源码为准（DomainTestOptions 不存在）
     }
+}
+
+public sealed class OrderServiceTests : DomainXunitTestBase<DmpUserInfo, OrderServiceFixture>
+{
+    public OrderServiceTests(OrderServiceFixture fixture, ITestOutputHelper output)
+        : base(fixture, output) { }
 
     [Fact]
     public async Task CreateOrder_ShouldSucceed()
     {
-        await _host.RunAsync(async user =>
-        {
-            var orderService = user.Use<OrderService>();
-            var orderId = await orderService.CreateAsync(new CreateOrderDto { /* ... */ });
-            Assert.True(orderId > 0);
-        });
+        // 基类 InitializeAsync → host.CreateSessionScopeAsync() → User（测试用户上下文）
+        var orderService = User.Use<OrderService>();
+        var orderId = await orderService.CreateAsync(new CreateOrderDto { /* ... */ });
+        Assert.True(orderId > 0);
     }
 }
 ```
@@ -180,6 +187,15 @@ public class OrderServiceTests
   │ WASM     │  │ SPA      │  │ 移动端    │
   └──────────┘  └──────────┘  └──────────┘
 ```
+
+---
+
+## 数据访问与引用模式
+
+- **FreeSql / EFCore**：Web / Blazor / Testing 宿主通过配置选项接入 ORM，如 `cfg.UseFreeSqlEntityDAC()`（FreeSql）；EFCore 有对应接入形态（以源码为准）。ORM 选择不影响领域层——数据访问统一收敛在 SG1 生成的 DataService 层，见架构笔记 06「数据访问与测试分层」。
+- **三种引用模式**：消费方项目引用 TKWF 框架有三种方式——**Project**（`ProjectReference`，默认，可断点调试 / 与框架同构开发）、**Dll**（`<Reference HintPath>`，由 `build/TKWF.Domain.targets` 按 `TKWFRole` 注入，离线 / 验证发布一致性）、**NuGet**（`PackageReference`，标准分发）。详见架构笔记 01 §五「双仓 + 三引用模式」。
+
+> 接线事实来源：`_xCodeGen/xCodeGen.Cli/scaffolding/` 下各宿主（webapi / blazorweb / blazorwasm）的 `Program.cs` 与 `.csproj` 模板。
 
 ---
 

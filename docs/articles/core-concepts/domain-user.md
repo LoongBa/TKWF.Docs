@@ -27,8 +27,9 @@ public class OrderService(DomainUser<AppUserInfo> user)  // ← 直接注入
 {
     public async Task<List<Order>> GetMyOrdersAsync()
     {
-        // 直接使用 User.UserId 获取当前用户
-        return await Repository.Where(o => o.UserId == User.UserId).ToListAsync();
+        // 直接使用 User.UserId 获取当前用户（经 SG1 生成的 DataService 查询）
+        return await User.Use<OrderDataService>()
+            .SelectAsync(o => new OrderListView(), e => e.UserId == User.UserId);
     }
 }
 ```
@@ -101,7 +102,7 @@ public class TodoService(DomainUser<AppUserInfo> user)
     // AI 可以直接使用 User.UserId，结果完全可预测
     public async Task<Todo> CreateAsync(string title)
     {
-        return await Repository.InsertAsync(new Todo
+        return await User.Use<TodoDataService>().CreateAsync(new TodoDto
         {
             Title = title,
             UserId = User.UserId  // ← 确定性的，不依赖外部状态
@@ -113,16 +114,14 @@ public class TodoService(DomainUser<AppUserInfo> user)
 ### 可测试性
 
 ```csharp
-// 单元测试：直接构造 DomainUser，不需要 mock 框架
-var user = new DomainUser<AppUserInfo>(new AppUserInfo
-{
-    UserName = "test",
-    Roles = new() { "Admin" }
-});
-
+// 单元测试：走标准契约测试形态（DomainXunitTestBase + CreateSessionScopeAsync），不要手动 new
+// （DomainUser 仅 public 无参构造；无接收 TUserInfo 的构造重载）
+var user = host.CreateSessionScopeAsync().Result.User;
 var service = user.Use<TodoService>();
 var result = await service.CreateAsync("Test Todo");
 ```
+
+> **注意**：`DomainUser<TUserInfo>` 没有接收 `TUserInfo` 的公开构造——正确创建路径是测试宿主/会话作用域（`CreateSessionScopeAsync`），或由 AOP 帧提供。手动 `new DomainUser<UserInfo>(info)` 不是受支持形态。
 
 ## 最佳实践
 

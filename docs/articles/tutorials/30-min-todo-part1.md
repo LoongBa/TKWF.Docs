@@ -34,7 +34,7 @@ public class TodoItem : IDomainEntity
 **关键约束**：
 - 必须有无参构造函数（ORM 需要）
 - `Id` 为 `long` 类型（框架约定）
-- 标记 `[DomainGenerateCode]` 可控制 SG 生成行为（本例暂不需要）
+- 实体必须标注 `[DomainGenerateCode]`（脚手架模板默认带），否则 SG1a 不产元数据，后续生成全断
 
 ---
 
@@ -47,23 +47,24 @@ using TKW.Framework.Domain.DataServices;
 using TKW.Framework.Domain.DataServices.Base;
 
 public class TodoDataService 
-    : DomainDataServiceBase<DmpUserInfo, TodoItem, TodoItemDto>
+    : DomainDataServiceBase<TodoItem, TodoItemDto>
 {
-    // 构造函数注入 DAC（ORM 无关抽象层）
+    // 构造函数注入 DAC（ORM 无关抽象层）；user 在前、dac 在后
     public TodoDataService(
+        DomainUser<DmpUserInfo> user,
         IEntityDAC<TodoItem> dac,
-        DomainUser<DmpUserInfo> user)
-        : base(dac, user)
+        bool hasSoftDelete = false)
+        : base(user, dac)
     {
     }
 }
 ```
 
 **基类选择**：
-| 基类 | 用途 | 写方法 |
+| 基类 | 用途 | 公开写 API |
 |:--|:--|:--|
-| `DomainDataServiceBase<TUser, TEntity, TDto>` | 完整 CRUD（读写） | Insert / Update / Delete |
-| `DomainReadOnlyDataServiceBase<TUser, TEntity, TDto>` | 只读服务 | 仅查询 |
+| `DomainDataServiceBase<TEntity, TDto>` | 完整 CRUD（读写） | `CreateAsync(TDto)` / `UpdateAsync(long id, TDto)` / `DeleteAsync(long id)` |
+| `DomainReadOnlyDataServiceBase<TEntity, TDto>` | 只读服务 | 仅查询（`GetByIdAsync` / `SelectAsync` / `CountAsync` 等） |
 
 **核心约定**：
 - DAC 通过构造函数注入，**不手动 new**
@@ -95,15 +96,16 @@ var app = builder.ConfigWebAppDomain<DmpUserInfo, MyDomainInitializer, DomainWeb
 **验证注册成功**：
 
 ```csharp
-// 启动后检查 DAC 是否可用
+// 启动后检查数据层是否可用
+// 禁裸 IEntityDAC 直用（数据访问红线：必须经 SG1 DataService，经 user.Use<T>() 帧内发起）
 public class HealthCheckService
 {
-    private readonly IEntityDAC<TodoItem> _dac;
-    public HealthCheckService(IEntityDAC<TodoItem> dac) => _dac = dac;
+    private readonly DomainUser<DmpUserInfo> _user;
+    public HealthCheckService(DomainUser<DmpUserInfo> user) => _user = user;
 
     public async Task<bool> PingAsync()
     {
-        _ = await _dac.CountAsync(_dac.Query.Where(e => e.Id > 0));
+        _ = await _user.Use<TodoDataService>().CountAsync(e => e.Id > 0);
         return true;
     }
 }
@@ -116,24 +118,24 @@ public class HealthCheckService
 ### 创建
 
 ```csharp
-// 在 Controller 或领域服务中
-var item = new TodoItem
+// 在 Controller 或领域服务中（DTO 承载输入，Entity 由 CreateAsync 内部 ToEntity 转换）
+// （TodoItemDto 由 xCodeGen 生成 {Entity}Dto.g.cs，构造形态以生成产物为准）
+var dto = new TodoItemDto
 {
     Title = "学习 TKWF",
-    IsDone = false,
-    CreateTime = DateTime.UtcNow
+    IsDone = false
 };
 
-// DataService 内部调用 dac.InsertAsync
-await todoService.EntityAddAsync(item);
-// item.Id 已被框架自动回填
+// 公开写 API：CreateAsync(TDto)
+var created = await todoService.CreateAsync(dto);
+// created.Id 已被框架自动回填
 ```
 
 ### 查询
 
 ```csharp
-// 按 Id 查询
-var todo = await todoService.EntityGetAsync(item.Id);
+// 按 Id 查询（基类读 API）
+var todo = await todoService.GetByIdAsync(created.Id);
 
 // 条件查询（IQueryable 组合）
 var pendingTodos = await todoService.SelectAsync(
@@ -141,35 +143,33 @@ var pendingTodos = await todoService.SelectAsync(
 
 // 投影查询（只取需要的字段）
 var titles = await todoService.SelectAsync(
-    e => e.IsDone == false,
-    e => new { e.Id, e.Title });
+    e => new { e.Id, e.Title },
+    e => e.IsDone == false);  // selector 在前、谓词在后
 ```
 
 ### 更新
 
 ```csharp
-var todo = await todoService.EntityGetAsync(id);
-todo.IsDone = true;
-await todoService.EntityUpdateAsync(todo);
+var dto = await todoService.GetByIdAsync(id);
+dto.IsDone = true;
+await todoService.UpdateAsync(id, dto);
 ```
 
 ### 删除
 
 ```csharp
-var todo = await todoService.EntityGetAsync(id);
-await todoService.EntityDeleteAsync(todo);
+// 按 Id 删除（软删/硬删由 HasSoftDelete 自动分派）
+await todoService.DeleteAsync(id);
 ```
 
 ### 批量操作
 
 ```csharp
-// 批量插入
-await todoService.EntityAddBatchAsync(newList);
+// 批量插入（CreateBatchAsync(IEnumerable<TDto>)）
+await todoService.CreateBatchAsync(dtoList);
 
-// 批量更新指定列（性能极佳）
-await todoService.UpdateColumnsBatchAsync(
-    items,
-    e => new { e.IsDone });  // 只更新 IsDone 列
+// 批量更新指定列：DAC 原语（UpdateColumnsBatchAsync），DataService 侧仅以同程序集
+// internal 的 EntityUpdateColumnsBatchAsync 内部转发，不在公开 API 面——示例从略
 ```
 
 ---
@@ -182,12 +182,12 @@ await todoService.UpdateColumnsBatchAsync(
 [Transactional]  // AOP 自动开启事务，成功自动提交，异常自动回滚
 public async Task CompleteTodoAndNotifyAsync(long todoId)
 {
-    var todo = await todoService.EntityGetAsync(todoId);
-    todo.IsDone = true;
-    await todoService.EntityUpdateAsync(todo);
+    var dto = await todoService.GetByIdAsync(todoId);
+    dto.IsDone = true;
+    await todoService.UpdateAsync(todoId, dto);
 
     // 跨 Service 调用——在同一个事务内
-    await notificationService.SendAsync($"Todo {todo.Title} completed");
+    await notificationService.SendAsync($"Todo {dto.Title} completed");
 }
 ```
 
@@ -214,15 +214,15 @@ public class TodoItem : IDomainEntity
     public DateTime? UpdateTime { get; set; }
 }
 
-// 2. DTO（可选，如需投影）
-public record TodoItemDto(long Id, string Title, bool IsDone);
+// 2. DTO：由 xCodeGen 生成 {Entity}Dto.g.cs，勿手写（TDto 约束 IDomainDto<TEntity>）
 
 // 3. DataService
 public class TodoDataService 
-    : DomainDataServiceBase<DmpUserInfo, TodoItem, TodoItemDto>
+    : DomainDataServiceBase<TodoItem, TodoItemDto>
 {
-    public TodoDataService(IEntityDAC<TodoItem> dac, DomainUser<DmpUserInfo> user)
-        : base(dac, user) { }
+    public TodoDataService(DomainUser<DmpUserInfo> user, IEntityDAC<TodoItem> dac,
+        bool hasSoftDelete = false)
+        : base(user, dac) { }
 }
 
 // 4. 注册（Program.cs）

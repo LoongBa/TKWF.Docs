@@ -17,12 +17,13 @@ dotnet add package TKWF.Domain.Maui
 ## 配置
 
 ```csharp
-// MauiProgram.cs
-builder.ConfigMauiDomain<AppUserInfo, AppDomainInitializer>()
-    .UseApiClient<AppUserInfo>(options =>
+// MauiProgram.cs（签名以源码/脚手架为准：泛型 + 节名 + Action<TOptions> 形态）
+var gql = new GraphQLClient("https://api.example.com");   // 协议选择器 ApiClientType.GraphQL
+builder.ConfigMauiDomain<AppUserInfo, AppDomainInitializer, DomainWebOptions>(
+        "DomainOptions", cfg => { })
+    .UseApiClient<AppUserInfo>(gql, options =>
     {
-        options.BaseUrl = "https://api.example.com";
-        options.Transport = TransportType.GraphQL;
+        // DomainClientOptions（无 BaseUrl/Transport 选项；协议经 ApiClientType）
     })
     .Build();
 ```
@@ -38,8 +39,8 @@ public class OfflineTodoService(DomainUser<AppUserInfo> user)
 {
     public async Task<List<Todo>> GetTodosAsync()
     {
-        // 支持离线读取
-        return await Repository.SelectAsync();
+        // 经 SG1 生成的 DataService（框架无 Repository 构件）
+        return await User.Use<TodoDataService>().SelectAsync(e => true);
     }
 }
 ```

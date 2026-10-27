@@ -19,7 +19,7 @@ description: 在 GraphQL、REST、RPC 三协议间做选型的决策指南，含
 | 维度 | GraphQL | REST | RPC |
 |:--|:--|:--|:--|
 | **协议风格** | 查询语言（声明式） | 资源导向（名词） | 方法调用（动词） |
-| **端点** | 单一端点（`/graphql`） | 多端点（`/api/orders`） | 多端点（`/api/OrderService/Create`） |
+| **端点** | 单一端点（`/graphql`） | 多端点（`/api/orders`） | 进程内调用 / 客户端代理（无 HTTP 端点；`/api/...` 属 REST） |
 | **查询能力** | 强（嵌套查询、字段裁剪） | 弱（需多个端点组合） | 中（方法参数） |
 | **类型安全** | 强（Schema + 代码生成） | 中（OpenAPI） | 强（接口契约） |
 | **缓存** | 复杂（需要客户端缓存） | 简单（HTTP 缓存） | 不适用 |
@@ -34,7 +34,7 @@ description: 在 GraphQL、REST、RPC 三协议间做选型的决策指南，含
 你的 API 消费者是谁？
 ├─ 前端 SPA / 移动端 ─────────────→ GraphQL（复杂查询）或 REST（简单 CRUD）
 ├─ 公开 API（外部开发者）────────→ REST（标准化）
-├─ 服务间通信 ───────────────────→ RPC（进程内 / gRPC）
+├─ 服务间通信 ───────────────────→ RPC（进程内 / 客户端代理；gRPC 规划中未落地）
 ├─ 内部管理后台 ─────────────────→ GraphQL（灵活查询）或 RPC（快速开发）
 └─ 混合场景 ─────────────────────→ 三协议并行（SG2 自动生成）
 ```
@@ -130,10 +130,10 @@ DELETE /api/orders/1              # 删除
 
 ```csharp
 // 服务端（进程内调用）
-var result = await user.Use<ITodoService>().CreateAsync("New Todo");
+var result = await user.Use<ITodoServiceController>().CreateAsync("New Todo");
 
-// 客户端（跨进程 RPC）
-var result = await _user.Use<ITodoService>().CreateAsync("New Todo");
+// 客户端（客户端代理，SG3 生成）
+var result = await _user.Use<ITodoServiceController>().CreateAsync("New Todo");
 ```
 
 ### 适用场景
@@ -149,8 +149,8 @@ var result = await _user.Use<ITodoService>().CreateAsync("New Todo");
 TKWF 的 SG2 管线**自动生成三协议端点**——你只需声明接口，无需手写 Controller：
 
 ```csharp
-// 声明接口（SG2 自动生成 GraphQL/REST/RPC）
-public interface ITodoService : IDomainServiceContract<DmpUserInfo>
+// 声明契约接口（继承 IAopContract；SG2 自动生成 GraphQL/REST 端点，RPC 为进程内/客户端代理形态）
+public interface ITodoServiceController : IAopContract
 {
     Task<TodoItemDto?> GetAsync(long id, CancellationToken ct = default);
     Task<long> CreateAsync(string title, CancellationToken ct = default);
@@ -163,7 +163,7 @@ public interface ITodoService : IDomainServiceContract<DmpUserInfo>
 |:--|:--|:--|
 | GraphQL | `/graphql` | `todoService.get(id: 1)` |
 | REST | `/api/TodoService/Get?id=1` | 标准 HTTP GET |
-| RPC | 进程内调用 | `user.Use<ITodoService>().GetAsync(1)` |
+| RPC | 进程内调用 | `user.Use<ITodoServiceController>().GetAsync(1)` |
 
 ---
 
@@ -175,7 +175,7 @@ public interface ITodoService : IDomainServiceContract<DmpUserInfo>
 ┌─────────────────────────────────────────────────┐
 │                  SG2 自动生成                      │
 │                                                   │
-│  ITodoService → GraphQL + REST + RPC             │
+│  ITodoServiceController → GraphQL + REST + RPC  │
 └──────────────────────┬──────────────────────────┘
                        │
          ┌─────────────┼─────────────┐

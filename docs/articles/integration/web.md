@@ -205,13 +205,18 @@ V4.9.61 将 `SyncTables` 从 `protected` opt-in（派生类需显式调用）改
 
 Web 集成内置全局异常处理中间件，自动将领域异常映射为 HTTP 状态码：
 
-| 异常类型 | HTTP 状态码 |
+| 异常/错误码 | HTTP 状态码 |
 |:---------|:------------|
-| `UnauthorizedAccessException` | 401 Unauthorized |
-| `ForbiddenAccessException` | 403 Forbidden |
-| `EntityNotFoundException` | 404 Not Found |
-| `ValidationException` | 422 Unprocessable Entity |
-| 其他 | 500 Internal Server Error |
+| `InvalidCredentials` | 401 Unauthorized |
+| `UnauthorizedAccessException`（GraphQL 侧） | 403 Forbidden |
+| `EntityNotFound` | 404 Not Found |
+| `EntityDuplicated` | 409 Conflict |
+| `RateLimited` | 429 Too Many Requests |
+| `UpstreamService` | 502 Bad Gateway |
+| `ServiceNotConfigured` | 503 Service Unavailable |
+| 其他 `DomainException` | 400 Bad Request（REST）/ `DOMAIN_ERROR` |
+
+> **注**：`ForbiddenAccessException`/`ValidationException`/`BusinessException`/`ConcurrencyException` 等类型**不存在**于框架——异常统一继承 `DomainException` 并按 `ErrorCode` 映射（错误码全集见 `DomainException.ErrorCodes`，传输层映射唯一事实源；响应形状为 RFC 9457 ProblemDetails，详见 [异常处理](../advanced/error-handling.md)）。
 
 ## 参考
 

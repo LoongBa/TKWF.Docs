@@ -42,7 +42,7 @@ public abstract class ExtensionInitializer<TUserInfo> : ITKWFExtension
 {
     public virtual void ConfigureServices(IServiceCollection services) { }
     public virtual void ConfigureFilters(FilterBuilder<TUserInfo> builder) { }
-    public virtual Task InitializeAsync() => Task.CompletedTask;
+    public virtual Task InitializeAsync(IServiceProvider sp) => Task.CompletedTask;   // ADR78 断代升级：已带 sp
 }
 ```
 
@@ -84,9 +84,9 @@ ServiceProviderBuiltCallbackAsync
 
 ### 扩展实例创建
 
-三个钩子各自独立实例化——用 `Activator.CreateInstance(type)` 无参创建，不从 DI 解析（`ConfigureServices` 阶段 DI 容器尚未构建）。
+三个钩子的**实例化已编译期化（ADR48 D4）**——SG 生成 `CreateInstances()`，**零 `Activator.CreateInstance` 反射**（`ConfigureServices` 阶段 DI 容器尚未构建，不依赖 DI 解析）。
 
-> **注意**：扩展应保持无状态。跨钩子共享实例需等待 Phase 3（扩展单例 + DI 解析）。
+> **注意**：扩展应保持无状态。有状态扩展单例与 DI 解析（Phase 3，V4.9.76-77）**已实施**——扩展单例经 SG 生成实例 + 可选 DI 解析，见下文"实施状态表"。
 
 ---
 
@@ -185,32 +185,18 @@ public interface ITkExtensionContainer
 }
 ```
 
-### ITkExtensionRegistry（开发者配置入口）
+### ITkExtensionRegistry（⚠️ 已降级，非启停通道）
+
+旧版 `ITkExtensionRegistry.Enable/Disable/Configure` 曾作为运行时启停入口——**已降级为防御性覆盖**（三钩子仍由编译期发现 + 白名单决定）。
+
+> **唯一启用通道（ADR47）**：消费方初始化器 `[assembly: TKWFEnabledExtension(typeof(XxxExtensionInitializer<>))]` 白名单声明（可多个）；发现 ≠ 启用。运行时 registry 启停**不改变**白名单门控结果。
 
 ```csharp
-public interface ITkExtensionRegistry
-{
-    void Enable(string name);
-    void Disable(string name);
-    void Configure(string name, Action<object> configure);
-}
+// 消费方合法做法（启用靠白名单，不靠此处）：
+// [assembly: TKWFEnabledExtension(typeof(PermissionExtensionInitializer<>))]
 ```
 
-消费方通过 `DomainHostInitializerBase<TUserInfo>` 的 `ConfigureExtensions` 虚方法访问：
-
-```csharp
-protected override void ConfigureExtensions(ITkExtensionRegistry registry, IServiceCollection services)
-{
-    // 按需禁用——三钩子均跳过
-    registry.Disable("SomeUnusedExtension");
-
-    // 自定义配置
-    registry.Configure("AuditLogging", opt =>
-    {
-        // opt 由扩展自行定义类型
-    });
-}
-```
+> 旧 `ConfigureExtensions(registry)` 写法仅保留为兼容钩子，新代码不应依赖其启停语义（见 `docs/AC-Kit/guides/迭代与发布纪律.md`）。
 
 ---
 
@@ -227,11 +213,12 @@ public class PermissionExtensionInitializer : ExtensionInitializer<MyUserInfo>
     // 2. 注册 DI 服务（DI 容器构建前）
     public override void ConfigureServices(IServiceCollection services)
     {
-        services.AddScoped<IPermissionChecker, PermissionChecker<MyUserInfo>>();
-        services.AddScoped<IPermissionDefinitionRepository, InMemoryPermissionDefinitionRepository>();
-        // 注意：IPermissionStore 不由本扩展注册——
-        // 官方 FreeSql 实现 FreeSqlPermissionStore 在 TKWF.Domain.FreeSql 包内条件注册
-        // （已注册 IFreeSql → FreeSqlPermissionStore；否则回退 NoOp，避免本包强依赖 FreeSql）
+        // 领域业务组合经 AddConstructibleService<TInterface,TImpl> 注册（ADR90 门面注册）
+        services.AddConstructibleService<IPermissionChecker, PermissionChecker<MyUserInfo>>();
+        services.AddConstructibleService<IPermissionDefinitionRepository, InMemoryPermissionDefinitionRepository>();
+        // 注意：持久化经 SG1 DataService（PermissionGrantEntityDataService），
+        // 不再有 Store 伪 DataService 层（ADR90 Store 概念废弃）——
+        // 自定义 IPermissionStore 由消费方按需实现并注册
     }
 
     // 3. 注册 AOP 过滤器（FilterBuilder 构建阶段）
@@ -240,8 +227,8 @@ public class PermissionExtensionInitializer : ExtensionInitializer<MyUserInfo>
         builder.Add<PermissionFilter<MyUserInfo>>(FilterTier.Security);
     }
 
-    // 4. 种子数据 / 运行时初始化（系统就绪后）
-    public override async Task InitializeAsync()
+    // 4. 种子数据 / 运行时初始化（系统就绪后；ADR78：已带 sp 参数）
+    public override async Task InitializeAsync(IServiceProvider sp)
     {
         // 例如：创建默认角色、初始化权限表
     }
@@ -254,10 +241,9 @@ public class PermissionExtensionInitializer : ExtensionInitializer<MyUserInfo>
 TKWF.Ext.Permissions/
 ├── PermissionExtensionInitializer<TUserInfo>.cs（[TKWFExtension] + 三钩子）
 ├── IPermissionChecker.cs / PermissionChecker<TUserInfo>.cs
-├── IPermissionStore.cs / NoOpPermissionStore.cs（默认回退，非持久化）
 ├── PermissionDefinition.cs / IPermissionDefinitionContributor.cs
 ├── PermissionFilter<TUserInfo>.cs（DomainFilterAttribute，Tier-S）
-└── TKWF.Ext.Permissions.csproj（零 ORM 依赖；FreeSql 持久化在 TKWF.Domain.FreeSql 包）
+└── TKWF.Ext.Permissions.csproj（持久化经 DataService；不再含 Store 层，无 ORM 依赖）
 ```
 
 > **包边界（Oracle H4，V4.9.75）**：`FreeSqlPermissionStore` 刻意**不进** Permissions 包——否则权限包强依赖 FreeSql，会污染所有非 FreeSql 宿主。持久化实现随 ORM 包走，权限包只定义契约 + 回退实现。

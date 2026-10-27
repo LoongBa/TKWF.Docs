@@ -29,6 +29,9 @@ Thumbs.db
 # Internal planning (private, not published)
 .sisyphus/
 
+# OpenCode 会话续接元数据（本地运行产物，不进仓库）
+.omo/
+
 # Cloudflare Static Pages 本地产物（未纳入文档站）
 cfstaticpages/
 

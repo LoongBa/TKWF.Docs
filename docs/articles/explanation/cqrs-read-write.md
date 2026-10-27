@@ -289,7 +289,7 @@ const page = await Tkwf.User.Query<OrderListView>()
 |:--|:--|
 | 简单单表 CRUD | 直接用 Entity + `DomainDataServiceBase`（无需 VEntity） |
 | 高频写入 + 强一致性事务 | Entity + `[Transactional]`（走写模型） |
-| 复杂跨表事务 | Entity + `[Transactional]` + 手写 DAC |
+| 复杂跨表事务 | Entity + `[Transactional]` + 经 SG1 DataService 编排（禁裸 IEntityDAC/手写 DAC——数据访问红线） |
 | 实时订阅/推送 | 事件机制（Outbox/Inbox）+ SignalR（V5） |
 
 ---

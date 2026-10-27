@@ -6,14 +6,14 @@ description: TKWF 扩展机制子系列索引：扩展模块一览（V4.9.80 起
 
 > TKWF 扩展机制子系列（每扩展一篇）。V4.9.80 起扩展迁至公开仓库 [`TKWF.Extensions`](https://github.com/LoongBa/TKWF.Extensions)，独立版本（v0.1.0+）。
 > 设计依据：D17 扩展机制（业务模块全景 V4.9.80 剥离至扩展仓库总览）
-> 各扩展独立版本演进；**事实来源：扩展仓库 [`README`](https://github.com/LoongBa/TKWF.Extensions) 扩展一览表**（本站表格同步自该表）。
+> 各扩展独立版本演进；**事实来源：扩展仓库 `git tag --list` 已发布 tag**（版本列一律按"已发布 tag"口径，不含功能线领先值）。⚠️ WEB 概览 README 一览表**常滞后于实际 tag**（曾实测 18 行落后）——表中版本以本仓库与扩展仓 tag 交叉核对为准，README 仅作入口。
 
 | 扩展 | 版本 | 说明 | 指南（扩展仓库） |
 |:-----|:-----|:-----|:-----|
 | **Permissions**（权限） | V0.9.3 | 细粒度权限定义 / fail-closed 检查 / 编译期权限名校验（PERM001）/ 多用户批量权限检查（`IPermissionBatchChecker`）/ 领域自治整改（v4.10.53：Store 概念废弃 + 守卫工厂） | [本地文章](./permissions.md) · [指南](https://github.com/LoongBa/TKWF.Extensions/blob/main/docs/Permissions/权限扩展-使用指南.md) |
 | **Permissions.Abstractions** | V0.1.0 | 权限契约抽象（`IPermissionChecker`/`RequirePermission`/`IRoleProvider`） | —（并入 Permissions） |
 | **Permissions.Validation** | V0.8.0 | 扩展侧 PERM001 DiagnosticAnalyzer（从内核移除耦合） | —（并入 Permissions） |
-| **Identity**（身份） | V0.5.2 | 用户 / 角色 / 用户角色分配 + PasswordHasher 凭据验证；`GetRolesAsync` VEntity 跨表 JOIN + **REST 直接暴露（`UserRoleViewQueryService`）** + 领域自治整改 + 表名前缀批次（`TKWF_` 前缀，v4.10.66） | [指南](https://github.com/LoongBa/TKWF.Extensions/blob/main/docs/Identity/身份管理扩展-使用指南.md) |
+| **Identity**（身份） | V0.5.3 | 用户 / 角色 / 用户角色分配 + PasswordHasher 凭据验证；`GetRolesAsync` VEntity 跨表 JOIN + **REST 直接暴露（`UserRoleViewQueryService`）** + 领域自治整改 + 表名前缀批次（`TKWF_` 前缀，v4.10.66） | [指南](https://github.com/LoongBa/TKWF.Extensions/blob/main/docs/Identity/身份管理扩展-使用指南.md) |
 | **Account**（账户） | V0.5.0 | 账户锁定 + 密码重置 + 登录历史与异常检测 + 依赖倒置（SecurityLog 契约改引 Abstractions）+ 领域自治整改 | [指南](https://github.com/LoongBa/TKWF.Extensions/blob/main/docs/Account/账户管理扩展-使用指南.md) |
 | **Account.Abstractions** | V0.1.2 | 账户契约抽象（`IAccountPasswordManager` 等——ADR48 D7 依赖倒置，零框架引用纯 BCL） | —（并入 Account） |
 | **AuthCenter**（认证中心） | V0.9.4 | 认证中心（2026-10-06 归层：`Authentication` → `AuthCenter` 全面归层）——令牌体系（手写 RS256 JWT + kid 轮换 + 黑名单落库 + Refresh rotation + TokenVersion）/ 认证矩阵 Provider（短信 + 微信 + **密码**）/ 登录保护 / 票据换令牌（PKCE）/ 身份适配层 / 跨系统映射 / 平台凭证（AES-GCM）+ **归层与内建标准对内端点（V0.6.0）+ E4 密钥管理（V0.7.0）+ 认证 API 补全与票据绑定（V0.8.0）+ 身份域重构与密码能力（V0.9.0：`SecurePassword` 协议 + 密码策略 + 账号冻结 + `IRateLimitCheck` 频控 + 找回多通道）+ Email 找回 6 项裁定（V0.9.1）+ 外部 IdP 桥接（V0.9.2/0.9.3：`IExternalIdpLoginService` 借道 Federation——微信双源 Provider/ApiClient 归层）+ 外部身份联邦 Phase1 E1-E3 适配（V0.9.4，框架 v4.10.74 ADR107 配套）** | [指南](https://github.com/LoongBa/TKWF.Extensions/blob/main/docs/AuthCenter/认证中心-使用指南.md) |
@@ -37,7 +37,7 @@ description: TKWF 扩展机制子系列索引：扩展模块一览（V4.9.80 起
 | **Emailing**（邮件） | V0.3.0 | SMTP/MailKit 发送 + FreeSql 发送记录 + 指数退避重试 + 领域自治整改（域作用域警示）；契约抽取至 `.Abstractions` | [指南](https://github.com/LoongBa/TKWF.Extensions/blob/main/docs/Emailing/邮件发送扩展-使用指南.md) |
 | **Emailing.Abstractions** | V0.1.0 | 邮件发送契约（`IEmailSender`/`EmailMessage`，ADR48 D7 依赖倒置） | —（并入 Emailing） |
 | **DataDictionary**（数据字典） | V0.3.0 | 数据字典集中管理（定义 + 项 + 按编码查询）+ VEntity 读模型联邦（`vw_DictionaryItemView`）+ 领域自治整改 | [指南](https://github.com/LoongBa/TKWF.Extensions/blob/main/docs/DataDictionary/数据字典扩展-使用指南.md) |
-| **Tagging**（标签存储） | V0.4.5 | 标签存储扩展（算法回归 `TKW.Framework.Utility.Tags`；AC 自动机 `DictMatch` 批量匹配）+ 聚合 SQL 下推 + 领域自治整改 | [指南](https://github.com/LoongBa/TKWF.Extensions/blob/main/docs/Tagging/标签服务扩展-使用指南.md) |
+| **Tagging**（标签存储） | V0.4.6 | 标签存储扩展（算法回归 `TKW.Framework.Utility.Tags`；AC 自动机 `DictMatch` 批量匹配）+ 聚合 SQL 下推 + 领域自治整改 | [指南](https://github.com/LoongBa/TKWF.Extensions/blob/main/docs/Tagging/标签服务扩展-使用指南.md) |
 | **PrintTemplates**（打印模板） | V0.3.0 | 打印模板引擎与版本化（Scriban 沙箱渲染 + Draft/Active/Archived 生命周期）+ VEntity 化 + 领域自治整改 | [指南](https://github.com/LoongBa/TKWF.Extensions/blob/main/docs/PrintTemplates/打印模板扩展-使用指南.md) |
 | **Metrics**（指标引擎） | V0.2.1 | 业务指标计算引擎（规格文档驱动复合指标；核心计算在 `TKW.Framework.Utility.Metrics`）+ 指标结果持久化 | [指南](https://github.com/LoongBa/TKWF.Extensions/blob/main/docs/Metrics/指标扩展-使用指南.md) |
 | **Analytics**（分析服务） | V0.1.0 | 业务分析服务（spec 文件驱动 + flint 单一真相 JsonDocument——D20 Stage 1 骨架，v4.10.27 框架核心 + 本包集成层） | [指南](https://github.com/LoongBa/TKWF.Extensions/blob/main/docs/Analytics/Analytics分析服务-使用指南.md) |

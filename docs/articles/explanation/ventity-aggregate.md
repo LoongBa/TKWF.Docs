@@ -275,7 +275,7 @@ query {
 | 多表 JOIN + 聚合 | 走特化 Service 方法 + 手写 StatsDto（AggregationDetector 产出仍可复用） |
 | 普通 Entity 聚合 | 需先配置 `[DomainGenerateCode(IsView=true)]` 成为 VEntity |
 | Join / Any / Exists 查询 | 进程内用完整 LINQ；进程外通过 ViewSql 的 SQL JOIN 实现；Any/Exists 通过 `Count > 0` 变通 |
-| 分组聚合（GroupBy） | Phase 2 评估中（需额外 schema 设计，参考 PostGraphile 模式） |
+| 分组聚合（GroupBy） | 已落地基础：v4.10.39 分组聚合 API（F7）——`GroupByAsync`/`GroupCountAsync`/`GroupByAsync` 三方法（GROUP BY + ORDER BY + LIMIT 全下推，ADR15 决策 3）；VEntity GraphQL `_groupBy`（PostGraphile 式 schema）仍在评估 |
 
 ---
 
@@ -289,6 +289,7 @@ query {
 | V4.9.40 | EQR 统一入口（8跳→3跳）+ IGlobalQueryFilter | ADR14 |
 | V4.9.78 | `QueryExposureDefaults` 统一推导 `ExposeGraphqlQuery`（VEntity 默认开放） | ADR40 |
 | V4.9.102 | VEntity 明确不支持 REST 端点 + `AutoQuery`/`IsGraphQLQueryable` 旧属性移除 | ADR40 落地 |
+| V4.10.39 | 分组聚合 API（F7 转正）：`GroupByAsync`/`GroupCountAsync`/`GroupByAsync`（GROUP BY 全下推） | ADR15 决策 3 |
 | V4.9.53 | 聚合 GraphQL 自动生成（Hasura 风格）+ QueryBuilder `.Aggregate()` 链 | ADR20 |
 
 ---

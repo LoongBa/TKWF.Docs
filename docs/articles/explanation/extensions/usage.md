@@ -101,7 +101,6 @@ TKWF 的能力按"框架介入程度"分为三层：
 | 能力 | 实现方 | 定位 |
 |:--|:--|:--|
 | `IDistributedEventBus` | `TKW.Framework.EventBus.RabbitMQ` | 需要 RabbitMQ |
-| `IDistributedCache` | `TKW.Framework.Caching.Redis` | 需要 Redis |
 | Outbox/Inbox | `TKW.Framework.Outbox` | 需要表结构 |
 | 后台作业 | `TKW.Framework.BackgroundJobs` | 需要表结构 |
 
@@ -115,7 +114,7 @@ TKWF 的能力按"框架介入程度"分为三层：
 | `IMenuManager` | `TKWF.Ext.Navigation` | 菜单数据模型 + 权限过滤 |
 | `IAuditLogger` | `TKWF.Ext.AuditLogging` | 审计日志持久化 |
 | `ISettingManager` | `TKWF.Ext.Settings` | 配置持久化 |
-| `ITagService`（存储） | `TKWF.Ext.Tagging` | 标签存储（算法已回归 `TKW.Framework.Utility.Tags`，ADR52 瘦身） |
+| `ITagService`（标签算法/存储） | 算法接口在 `TKW.Framework.Utility.Tags`（ADR52 回归）；存储实现 `TKWF.Ext.Tagging` | 标签存储扩展（算法已回归框架 Utility） |
 
 ---
 
@@ -197,7 +196,7 @@ public class MyHostInitializer : DomainHostInitializerBase<MyUserInfo>
 | 扩展 | 版本 | 说明 |
 |:--|:--|:--|
 | Permissions（权限） | V0.7.0-0.9.3 | 权限定义 / fail-closed 检查 / 编译期权限名校验（PERM001）+ 领域自治整改 |
-| Identity（身份） | V0.3.0-0.5.2 | 用户 / 角色 / 用户角色分配 + 凭据验证 + VEntity 跨表 JOIN + REST 直接暴露 + 领域自治整改 + 表名前缀批次 |
+| Identity（身份） | V0.3.0-0.5.3 | 用户 / 角色 / 用户角色分配 + 凭据验证 + VEntity 跨表 JOIN + REST 直接暴露 + 领域自治整改 + 表名前缀批次 |
 | Account（账户） | V0.3.0-0.5.0 | 账户锁定 + 密码重置 + 登录历史与异常检测 + 依赖倒置 |
 | AuthCenter（认证中心） | V0.1.0-0.9.4 | 认证中心（2026-10-06 由 Authentication 归层改名）——令牌体系（RS256 JWT + Refresh rotation + 黑名单）/ 认证矩阵 Provider（短信/微信/密码）/ 身份适配层 / 平台凭证 + 归层内建端点（V0.6.0）+ E4 密钥管理（V0.7.0）+ 认证 API 补全（V0.8.0）+ 密码策略与口令协议（V0.9.0）+ Email 找回（V0.9.1）+ 外部 IdP 桥接（V0.9.2/0.9.3）+ 外部身份联邦 Phase1 适配（V0.9.4，ADR107） |
 | AuthSurface（授权面） | V0.1.0-0.2.0 | 授权面（AuthCenter 集成）——跨扩展授权组合面 + 表名对齐 TKWF_AuthGrant + UserCenter DTO 归主包（V0.2.0） |
@@ -211,7 +210,7 @@ public class MyHostInitializer : DomainHostInitializerBase<MyUserInfo>
 | BlobStoring（二进制存储） | V0.2.0-0.3.0 | 大对象本地文件系统存储 + 流式下载 + 领域自治整改 |
 | Emailing（邮件） | V0.2.0-0.3.0 | SMTP/MailKit 邮件发送 + 指数退避重试 + 领域自治整改 |
 | DataDictionary（数据字典） | V0.2.0-0.3.0 | 字典定义 + 项 + 按编码查询 + VEntity 读模型联邦 + 领域自治整改 |
-| Tagging（标签存储） | V0.4.0-0.4.5 | 标签存储扩展（算法已回归 `TKW.Framework.Utility.Tags`；AC 自动机批量匹配 + 聚合 SQL 下推 + 领域自治整改） |
+| Tagging（标签存储） | V0.4.0-0.4.6 | 标签存储扩展（算法已回归 `TKW.Framework.Utility.Tags`；AC 自动机批量匹配 + 聚合 SQL 下推 + 领域自治整改） |
 | PrintTemplates（打印模板） | V0.1.0-0.3.0 | 打印模板引擎与版本化（Scriban + Draft/Active/Archived 生命周期）+ VEntity 化 |
 | Metrics（指标引擎） | V0.2.1 | 业务指标计算引擎（规格文档驱动复合指标 + 指标结果持久化） |
 | Analytics（分析服务） | V0.1.0 | 业务分析服务（spec 文件驱动 + flint 单一真相 JsonDocument，D20 Stage 1） |

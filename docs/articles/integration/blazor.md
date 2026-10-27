@@ -41,10 +41,9 @@ builder.ConfigWebAssemblyDomain<AppUserInfo, AppDomainInitializer>()
 
 ```razor
 @* Pages/TodoPage.razor *@
-@inject DomainUser<AppUserInfo> User
 @inject TodoServiceClient Client
 
-<h3>@User.UserInfo.DisplayName 的待办事项</h3>
+<h3>我的待办事项</h3>
 
 @if (todos is null)
 {
@@ -70,13 +69,14 @@ else
 }
 ```
 
+> **注意**：`DomainUser<TUserInfo>` **永不注册进 DI 容器**（D01 铁律）——它经 `DomainUserContext.CurrentAopUser`（AsyncLocal）在 `Use<T>()` 帧内传递，组件内不从容器 `@inject` 解析。取当前用户：通过服务方法（在 `User.Use<T>()` 帧内访问）或客户端形态下使用 `DomainClientUser.Current`，详见 [ApiClient 详解](../client/api-client.md)。
+
 ## 自动注入
 
 Blazor 集成自动注册以下服务：
 
 | 服务 | 生命周期 | 说明 |
 |:-----|:---------|:-----|
-| `DomainUser<AppUserInfo>` | Scoped | 当前用户 |
 | `TodoServiceClient` | Scoped | 自动生成的客户端代理 |
 | `IAuthenticationService` | Scoped | 认证服务 |
 

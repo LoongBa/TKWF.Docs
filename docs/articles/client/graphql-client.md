@@ -4,32 +4,32 @@ description: GraphQL 客户端：GraphQL 客户端配置与查询
 ---
 # GraphQL 客户端
 
-`TKWF.Domain.ApiClient.GraphQL` 提供基于 GraphQL 的 RPC 客户端实现。
+`TKWF.Domain.ApiClient` 提供基于 GraphQL 的 RPC 客户端实现（GraphQL 传输含于基座包，无独立 `TKWF.Domain.ApiClient.GraphQL` 包）。
 
 ---
 
 ## 安装
 
 ```shell
-dotnet add package TKWF.Domain.ApiClient.GraphQL
+# GraphQL 传输在基座包内，无需单独安装 GraphQL 包
+dotnet add package TKWF.Domain.ApiClient
 ```
 
 ## 配置
 
 ```csharp
-builder.Services.AddApiClient<AppUserInfo>(options =>
+// 协议选择器为 ApiClientType；无 Transport/TransportType 选项
+builder.Services.ConfigWasmClient<AppUserInfo>("https://api.example.com", options =>
 {
-    options.BaseUrl = "https://api.example.com/graphql";
-    options.Transport = TransportType.GraphQL;
-});
+    options.IsDevelopment = true;
+})
+    .UseApiClient(ApiClientType.GraphQL);
 ```
 
 ## 特性
 
 - **强类型查询** — 自动生成客户端代理，编译期类型安全
 - **按需取字段** — 支持 Select 表达式选择返回字段
-- **批量查询** — 支持 GraphQL 批量操作
-- **订阅** — 支持 GraphQL Subscription（实时推送）
 
 ## 示例
 
@@ -38,13 +38,6 @@ builder.Services.AddApiClient<AppUserInfo>(options =>
 var summary = await _client.GetTodosAsync(
     select: t => new { t.Id, t.Title }  // 只取 Id 和 Title
 );
-
-// 批量查询
-var batch = await _client.BatchAsync(new[]
-{
-    _client.GetTodosAsync(),
-    _client.GetUserProfileAsync()
-});
 ```
 
 ## 参考

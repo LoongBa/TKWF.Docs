@@ -31,14 +31,14 @@ TKWF 选择"非空上下文 + 系统身份"——`DomainUser` 永远不为 null�
 
 ```csharp
 // 后台 Job 中
-await domainHost.BeginSystemScopeAsync(async scope =>
-{
-    // scope.System = true（系统身份）
-    // 审计写 ActorType=System, ActorId="BackgroundJob"
+// 无回调重载：await using 接收 DomainSessionScope<TUserInfo>，出作用域自动恢复上下文
+await using var sysScope = await domainHost.BeginSystemScopeAsync(sp);
+// sysScope.System = true（系统身份）
+// 审计写 ActorType=System, ActorId="BackgroundJob"
 
-    var orderService = scope.ServiceProvider.GetRequiredService<OrderService>();
-    await orderService.ReconcileUnsettledOrdersAsync();
-});
+// 经作用域内 User.Use<T>() 解析（不要 GetRequiredService 直取）
+var orderService = sysScope.User.Use<OrderService>();
+await orderService.ReconcileUnsettledOrdersAsync();
 ```
 
 ### 1.3 审计区分
@@ -57,8 +57,8 @@ await domainHost.BeginSystemScopeAsync(async scope =>
 [NoAuditFlag]  // 跳过 IEntityAuditable 字段，IEntityActorAuditable 始终写入
 public async Task HealthCheckAsync()
 {
-    // 高频探针不污染审计日志
-    _ = await _dac.CountAsync(_dac.Query.Where(e => e.Id > 0));
+    // 高频探针不污染审计日志（统计经 DataService；裸 DAC 直用违反数据访问红线）
+    _ = await User.Use<OrderDataService>().CountAsync(e => e.Id > 0);
 }
 ```
 
@@ -106,12 +106,12 @@ public async Task<List<OrderDto>> SearchOrdersAsync(
         .If(!string.IsNullOrEmpty(keyword), b => b.LikeOrderNo(keyword))
         .If(startDate.HasValue, b => b.ByCreateTimeRange(startDate.Value, DateTime.UtcNow));
 
-    return await orderService.SelectAsync(query, e => new OrderDto
+    return await orderService.SelectAsync(e => new OrderDto
     {
         Id = e.Id,
         OrderNo = e.OrderNo,
         TotalAmount = e.TotalAmount
-    });
+    }, query);  // selector 在前，predicate/query 在后
 }
 ```
 
@@ -134,12 +134,12 @@ var query = Entity.Where
     .ByStatus(1)
     .ByCreateTimeRange(lastWeek, DateTime.UtcNow);
 
-// 追加排序和分页
+// 追加排序和分页（第二参 int 分页，排序为第 4 参）
 var page = await orderService.SelectPageAsync(
     query,
-    e => e.OrderByDescending(o => o.CreateTime),
-    page: 1,
-    pageSize: 20);
+    pageNumber: 1,
+    pageSize: 20,
+    orderBy: e => e.OrderByDescending(o => o.CreateTime));
 ```
 
 ---
@@ -178,7 +178,7 @@ public class OrderListPage
 | `User.Use<TService>()` | 服务端域内调用 | 直接执行，无网络开销 |
 | `User.Use<IController>()` | 跨进程 RPC 调用 | 完整契约调用 |
 | `User.Query<T>()`（客户端） | 远程复杂查询 | 组合过滤/排序/分页，自动生成 GraphQL |
-| `User.Query<T>()`（服务端） | 域内直接查询 | 经 EQR 直连 IEntityReadOnlyDAC |
+| `User.Query<T>()`（服务端/域内） | 域内直接查询 | 直连 `IEntityReadOnlyDAC.Query`，不经 EQR、不过 AOP；EQR 是域外入口（`Use<IEntityQueryRoot>()`） |
 
 ### 3.3 字段裁剪（Select 投影）
 
@@ -192,7 +192,7 @@ var result = await _user.Query<OrderDto>()
 
 ### 3.4 实体连接查询（V4.9.35+）
 
-对于启用了 `IsGraphQLQueryable` 的实体，`User.Query<T>()` 自动映射到实体连接查询：
+对于启用了 `ExposeGraphqlQuery` 的实体（V4.9.78 起由 `QueryExposureDefaults` 统一推导，旧 `IsGraphQLQueryable` 属性已移除），`User.Query<T>()` 自动映射到实体连接查询：
 
 ```csharp
 // 查询 Order 实体连接（HC 标准 Connection 类型）

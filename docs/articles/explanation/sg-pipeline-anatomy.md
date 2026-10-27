@@ -1,6 +1,6 @@
 ---
 title: 三层 SG 管线解剖
-description: 解剖 TKWF 四层 Source Generator 管线（SG#1~#4），理解全自动代码生成链路
+description: 解剖 TKWF Source Generator 管线（SG1a/SG1b/SG2a/SG2b/SG3），理解全自动代码生成链路
 ---
 # 三层 SG 管线解剖
 
@@ -39,7 +39,7 @@ TKWF 的 SG 管线只有**三层**：SG1（领域层元数据提取）→ SG2（
 │ SG2a: ApiServiceGenerator                                │
 │   → 为 IAopContract 生成 GraphQL Resolver + REST 端点     │
 │                                                          │
-│ SG2b: ApiMetaGenerator                                   │
+│ SG2b: ApiServiceGenerator（类型收集部分）                 │
 │   → 从控制器实现类基类链递归收集类型                        │
 │   → 导出结构化 ApiMetadata（控制元数据 → 客户端类型映射）   │
 └──────────────────────┬──────────────────────────────────┘
@@ -48,7 +48,7 @@ TKWF 的 SG 管线只有**三层**：SG1（领域层元数据提取）→ SG2（
 ┌─────────────────────────────────────────────────────────┐
 │ SG3（客户端层）                                          │
 │                                                          │
-│ ClientMetadataGenerator                                  │
+│ SG3: ApiServiceClientGenerator                           │
 │   → 读取 SG2 的 ApiMetadata                               │
 │   → 生成客户端代理（GraphQL 请求构造 + 类型定义）          │
 │   → 生成 EntityFieldList（实体字段注册）                   │
@@ -92,15 +92,21 @@ public partial class ProjectMetaContext
 ### SG1b：ControllerGenerator
 
 ```csharp
-// 为 [GenerateController] 生成 Controller + Interface
-[GenerateController(typeof(ITodoService))]
-public class TodoServiceImpl : TodoDataService, ITodoService { }
+// B 路径：为标注 [GenerateController] 的 Service 生成 Controller + Interface + Decorator
+[GenerateController]
+public class TodoService : DomainServiceBase<DmpUserInfo>
+{
+    public TodoService(DomainUser<DmpUserInfo> user) : base(user) { }
+    // ...
+}
 
-// SG1b 生成：
-// TodoServiceController.cs（GraphQL Resolver + REST 端点）
-// IAopContract（AOP 拦截器契约）
-// GeneratedExtensionInitializers（扩展发现注册表）
+// SG1b 生成（Domain 项目编译期）：
+// ITodoServiceController.g.cs（契约接口）
+// TodoServiceControllerDecorator.g.cs（AOP 装饰器）
+// TodoServiceController.g.cs（B 路径控制器壳，A 路径手写 Controller 则只生成 I{Controller}.g.cs）
 ```
+
+> ⚠️ **生成物归属铁律**：**SG1b 不生成 GraphQL Resolver / REST 端点**——那些是 SG2a 在 WebApi 项目编译期生成的（见下节）。`[GenerateController]` 不带 `typeof(...)` 参数（属性仅含 IncludeMethods/ExcludeMethods/ControllerName/NamespaceSuffix/UserInfoType 等）；契约接口由 SG 生成，**禁止手写**。
 
 ### 元数据合约
 
@@ -126,31 +132,28 @@ SG2 读取 SG1 的 `ProjectMetaContext`，为每个 `IAopContract` 接口生成 
 ### SG2a：ApiServiceGenerator
 
 ```csharp
-// SG2 为 ITodoService 生成：
-// TodoServiceController.cs
+// SG2a 为 ITodoServiceController（SG1b 生成契约）产出：
+// TodoServiceResolver.g.cs（GraphQL Resolver）
+// TodoServiceEndpoints.g.cs（REST 端点，Minimal API）
 
-[Route("api/TodoService")]
-public class TodoServiceController : DomainControllerBase<DmpUserInfo>(User)
-{
-    // GraphQL Resolver
-    [GraphQLName("todoService")]
-    public async Task<TodoItemDto?> GetAsync(long id) { /* ... */ }
-
-    // REST 端点
-    [HttpGet("Get")]
-    public async Task<TodoItemDto?> Get(long id) { /* ... */ }
-}
+// 接入层唯一代码形状：
+// await _user.Use<ITodoServiceController>().GetAsync(id);
 ```
 
-### SG2b：ApiMetaGenerator
+> **提示**：生成端点内经 `user.Use<IContract>()` 走 AOP 装饰器；`DomainUser` 经 `Use<T>()` 帧传递，**不从 DI / 路由参数解析**。手写"控制器 + 路由特性 + [FromBody] 绑定"的 MVC 形态在 TKWF 中不存在——端点由 SG2a 统一生成。
+
+### SG2b：ApiServiceGenerator（类型收集部分）
 
 SG2b 从控制器实现类**基类链递归**收集类型，导出结构化 `ApiMetadata`：
 
 ```csharp
-// 控制器继承链：
-// TodoServiceImpl → TodoDataService → DomainDataServiceBase<DmpUserInfo, TodoItem, TodoItemDto>
+// 控制器继承链（B 路径实际是 Service → DomainServiceBase，无独立控制器实现类）：
+// TodoService → DomainServiceBase<DmpUserInfo>
+// 或 A 路径：TodoController → DomainControllerBase<DmpUserInfo>（手写）
+// B 路径 DataService 链：TodoService 内部经 User.Use<TodoDataService>()（SG1 生成）
+// → DomainDataServiceBase<TodoItem, TodoItemDto>
 
-// SG2b 递归收集：
+// SG2b 递归收集类型：
 // TodoItem（Entity）
 // TodoItemDto（DTO）
 // DmpUserInfo（User）

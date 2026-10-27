@@ -21,14 +21,21 @@ TKWF 的用户实体必须实现 `IUserInfo`，框架通过 `DomainUser<TUserInf
 ```csharp
 using TKW.Framework.Domain.Entities;
 using TKW.Framework.Domain.Authentication;
+using TKW.Framework.Enumerations;
 
 public class DmpUserInfo : IUserInfo
 {
-    public long Id { get; set; }
+    // IUserInfo 必含成员（见 _Framework/Core/IUserInfo.cs）
+    public string UserIdString { get; set; } = "";
     public string UserName { get; set; } = "";
+    public string DisplayName { get; set; } = "";
+    public EnumLoginFrom LoginFrom { get; set; }
+    public List<string>? Roles { get; set; }
+
+    // 认证附加字段（Challenge-Response 用）
+    public long Id { get; set; }
     public string? SaltHex { get; set; }        // 盐值（十六进制）
     public string? StoredBlob { get; set; }      // 加密凭据
-    public string[] Roles { get; set; } = [];    // 角色列表
 }
 ```
 
@@ -43,17 +50,14 @@ using TKW.Framework.Domain.Authentication;
 
 public class DmpUserHelper : DomainUserHelperBase<DmpUserInfo>
 {
-    private readonly IEntityDAC<DmpUserInfo> _userDac;
-
-    public DmpUserHelper(IEntityDAC<DmpUserInfo> userDac) 
-        => _userDac = userDac;
-
+    // 数据访问红线：禁裸 IEntityDAC 直用——必须经 SG1 DataService（user.Use<T>() 帧内）
+    // （DataService 名/读 API 以 xCodeGen 生成产物为准）
     // Challenge-Response 登录：查询盐值
     protected override async Task<byte[]?> GetSaltAsync(
         DomainUser<DmpUserInfo> user, string userName)
     {
-        var entity = await _userDac.FirstOrDefaultAsync(
-            _userDac.Query.Where(u => u.UserName == userName));
+        var entity = (await user.Use<DmpUserInfoDataService>()
+            .SelectAsync(u => u.UserName == userName)).FirstOrDefault();
         if (entity?.SaltHex is not { Length: > 0 }) return null;
         try { return Convert.FromHexString(entity.SaltHex); }
         catch (FormatException) { return null; }
@@ -63,22 +67,24 @@ public class DmpUserHelper : DomainUserHelperBase<DmpUserInfo>
     protected override async Task<string?> GetStoredBlobAsync(
         DomainUser<DmpUserInfo> user, string userName)
     {
-        var entity = await _userDac.FirstOrDefaultAsync(
-            _userDac.Query.Where(u => u.UserName == userName));
+        var entity = (await user.Use<DmpUserInfoDataService>()
+            .SelectAsync(u => u.UserName == userName)).FirstOrDefault();
         return entity?.StoredBlob;
     }
 
-    // 用户注册：存储加密凭据
+    // 用户注册：存储加密凭据（真实签名：user, userName, credentialHex, saltHex）
     protected override async Task OnUserRegisterAsync(
-        DomainUser<DmpUserInfo> user, string userName, 
-        string clientHash, string loginFrom)
+        DomainUser<DmpUserInfo> user, string userName,
+        string credentialHex, string saltHex)
     {
-        var entity = new DmpUserInfo
+        var dto = new DmpUserInfoDto
         {
             UserName = userName,
-            StoredBlob = user.ProtectClientHash(clientHash)
-        };
-        await _userDac.InsertAsync(entity);
+            SaltHex = saltHex,
+            // ProtectClientHash 是本 Helper 自身 protected 成员（非 DomainUser 成员）
+            StoredBlob = ProtectClientHash(Convert.FromHexString(credentialHex))
+        };  // （Dto 构造以生成的 DmpUserInfoDto.g.cs 为准）
+        await user.Use<DmpUserInfoDataService>().CreateAsync(dto);
     }
 }
 ```
@@ -99,9 +105,8 @@ var app = builder.ConfigWebAppDomain<DmpUserInfo, MyDomainInitializer, DomainWeb
         })
     .RegisterServices((services, cfg) =>
     {
-        // 注册 UserHelper
-        services.AddSingleton<DmpUserHelper>();
-        services.AddSingleton<IDomainUserHelper<DmpUserInfo>>(sp => sp.GetRequiredService<DmpUserHelper>());
+        // UserHelper 不在此注册——由初始化器 InitializeDiContainer(...) 的返回值注册
+        // （无 IDomainUserHelper 接口，勿手动 AddSingleton）
     })
     .Build(...);
 ```
@@ -113,13 +118,16 @@ var app = builder.ConfigWebAppDomain<DmpUserInfo, MyDomainInitializer, DomainWeb
 AuthorityFilter 是 AOP 权限过滤器，检查用户是否已认证、是否具备所需角色。
 
 ```csharp
-// 全局注册（对所有控制器生效）
-services.AddGlobalFilter<AuthorityFilterAttribute<DmpUserInfo>>();
+// 全局注册（对所有控制器生效）——在领域初始化器内调用
+// （AddGlobalFilter 是初始化器实例方法，非 IServiceCollection 扩展）
+AddGlobalFilter(new AuthorityFilterAttribute<DmpUserInfo>());
 
-// 或标注在控制器/方法上
-[AuthorityFilter]
-public class TodoController : DomainControllerBase<DmpUserInfo>(User)
+// 或标注在控制器/方法上（泛型标注 + 构造把 DomainUser 传给基类）
+[AuthorityFilter<DmpUserInfo>]
+public class TodoController : DomainControllerBase<DmpUserInfo>
 {
+    public TodoController(DomainUser<DmpUserInfo> user) : base(user) { }
+
     // 所有方法都需要认证
 
     [AllowAnonymousFlag]  // 跳过权限检查

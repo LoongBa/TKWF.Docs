@@ -473,7 +473,7 @@ private class CaptureHandler(List<OrderCreatedEvent> captured) : ILocalEventHand
 
 RPC 调用时，服务端事件通过 RPC 响应体自动携带回调用方（ADR33）。详见 [事件的表现层消费](./event-consumption.md)——该文覆盖 `X-TKWF-Events` 响应头、`extensions.tkwf.events` 扩展字段、4KB 截断与 SignalR 规划。
 
-> 提醒：RPC 侧信道仅携带非 `[DistributedEvent]` 的本地事件——分布式事件走 Outbox/broker，不走 RPC。
+> 提醒：RPC 侧信道（响应 `CollectedEvents`）同时携带本地事件与 `[DistributedEvent]` 事件（同步）——`[DistributedEvent]` 事件**额外**走 Outbox/broker（异步），同步 envelope 与分布式异步总线二者**双路独立**（v4.9.69 开发方案 + ADR33 实测口径，与 [事件的表现层消费](./event-consumption.md) 的「`[DistributedEvent]` 双路语义」一致）。
 
 ---
 

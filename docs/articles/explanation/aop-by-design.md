@@ -51,12 +51,13 @@ public async Task TransferFundsAsync(decimal amount) { /* ... */ }
 
 ### 编译期依赖校验
 
-SG1 在编译期检查依赖链：
-- `[Transactional]` → 需要 `ITransactionManager` 注册
-- `[AuthorityFilter]` → 需要 `DomainUser<TUserInfo>` 注册
-- `[ContentCacheFilter]` → 需要 `ICacheProvider` 注册
+编译期（SG 门控）能判定的：**结构/契约/接线形状**——双标注一致性（Gate001/ADR28）、RPC 事件可序列化（Gate002）、孤儿事件（Gate003）、DI 构造依赖（DI001-005）等，编译期 Error/Warning。
 
-未注册 → 编译期错误（不是运行时异常）。
+**接线类检查分两级**（不是"缺了就在编译期报错"）：
+- 级别 2 混合门控（启动期一次）：`[BackgroundJob]` 缺 Manager、`[DistributedEvent]` 缺 Bus、`OutboxSenderRegistered` 等——启动期 LogWarning / 抛 `DomainException`
+- 级别 3 运行时（每次调用）：`[Transactional]` 声明但 `ITransactionManager` 未注册 → 抛 `TKWF_TX_MANAGER_UNREGISTERED`（P7 硬失败，不存在"编译期检查到未注册"——注册是运行期信息）
+
+> 原则 "编译即验证" 的真实含义：**能在编译期判定的绝不留到运行时**；运行期才知道的（DI 注册等）由门控尽早拦截，而非恶化到静默降级。
 
 ---
 
@@ -66,12 +67,13 @@ SG1 在编译期检查依赖链：
 
 ```
 编译期：
-  SG1 扫描 [Transactional] 标记
-  → 生成 OrderServiceDecorator : IOrderService
+  SG1b 扫描 [Transactional] 标记（SG1a 出元数据 / SG1b 出代码）
+  → 生成 OrderServiceDecorator : IOrderServiceController
   → 编译到程序集（与手写代码等效）
 
 运行时：
-  DI 解析 IOrderService → 返回 OrderServiceDecorator（无反射）
+  接口经 DI 装饰器工厂解析 → 返回 decorator（无反射）
+  → 具体类经 Use<T>() ActivatorUtilities 现造（不进 DI）
   → 直接调用装饰器方法（无代理创建开销）
 ```
 

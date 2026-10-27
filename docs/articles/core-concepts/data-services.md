@@ -13,21 +13,26 @@ DataService 是 TKWF 中管理实体数据存取的核心抽象层，提供 CRUD
 
 | 基类 | 说明 |
 |:-----|:------|
-| `DomainDataServiceBase<TEntity>` | 可读写 DataService，含完整 CRUD |
-| `DomainReadOnlyDataServiceBase<TEntity>` | 只读 DataService，仅查询方法 |
+| `DomainDataServiceBase<TEntity,TDto>` | 可读写 DataService，含完整 CRUD（写操作 + `OnBefore/AfterCreate/Update/Delete` 钩子） |
+| `DomainReadOnlyDataServiceBase<TEntity,TDto>` | 只读 DataService，仅查询方法 |
 
-所有 DataService 的 CRUD 方法通过 `Repository` 属性访问实体数据存取层（EntityDAC），默认基于 FreeSql 实现。
+基类链：`DomainServiceBase` ← `DomainReadOnlyDataServiceBase<TEntity,TDto>` ← `DomainDataServiceBase<TEntity,TDto>`（v4.9.80 ADR42 非泛型主实现 + 泛型薄门面）。
+
+> **说明**：DataService 的数据存取经 **SG1 生成的 `{Entity}DataService.g.cs`**（骨架 `.cs` 手写扩展）与基类 `IEntityDAC<TEntity>` 访问——**不存在 `Repository` 构件**（四件套 = Entity / Dto / DataService / IEntityDAC）。
 
 ## 查询方法
 
-DataService 提供两类查询方法：
+DataService 继承 `DomainReadOnlyDataServiceBase<TEntity,TDto>` 提供的读 API（参数顺序以基类签名为准，**selector 在前**）：
 
 | 方法 | 返回 | 说明 |
 |:-----|:-----|:------|
-| `GetAsync<TResult>(predicate, selector)` | 单条 | 按条件查询单条 |
-| `SelectAsync<TResult>(predicate, selector, limit)` | 多条 | 条件查询列表 |
-| `SelectPageAsync<TResult>(predicate, selector, page)` | 分页 | 分页查询 |
-| `CountAsync<TResult>(predicate)` | 数量 | 计数 |
+| `GetByIdAsync(id)` | 单条 | 按主键查单条 |
+| `GetAsync<TResult>(selector)` | 单条 | 投影单条 |
+| `GetRequiredAsync(selector)` | 单条 | 投影单条，无结果抛异常 |
+| `SelectAsync<TResult>(selector, predicate?, skip?, limit?, orderBy?)` | 多条 | 条件 + 投影查询（selector 在前） |
+| `SelectPageAsync(predicate, pageNumber, pageSize, orderBy?, ct)` | 分页 | 分页查询 |
+| `CountAsync(predicate)` | 数量 | 计数 |
+| `QueryForUser()` | `IQueryable` | 带 `IGlobalQueryFilter` 的查询入口 |
 
 ### ⚠️ V4.9.28 方法暴露限制
 
@@ -50,9 +55,9 @@ public async Task<List<MerchantDto>> GetActiveMerchantsAsync(int limit = 20)
 
 | 机制 | 适用范围 | 说明 |
 |:-----|:---------|:------|
-| DataService 内置事务 | 单 DataService 方法内 | 每个方法自动开启/提交，无需额外配置 |
-| `[Transactional]` AOP 声明 | 跨 Service 调用 | 编译期生成事务环绕代码 |
-| `DomainUser.BeginTransaction` | 手动精细控制 | 手动管理事务生命周期 |
+| DataService 内置事务 | 单 DataService 方法内 | 每个 CRUD 公开方法自动开/提交（`BeginTxScopeAsync`，加入外层事务 Propagation.Required） |
+| `[Transactional]` AOP 声明 | 跨 Service 调用 | 拦截器统一管理事务（方法级 → 类级兜底） |
+| `ITransactionManager` | 手动精细控制 | 注入 `ITransactionManager` 手动管理（`DomainUser.BeginTransaction()` 已废弃） |
 
 ## 参考
 

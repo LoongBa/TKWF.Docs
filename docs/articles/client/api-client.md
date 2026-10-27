@@ -47,45 +47,64 @@ public class MyViewModel
 
 ## 配置
 
+真实入口为 `UseApiClient`（UseApiClientExtensions.cs）：直接传入 `IApiClient` 实例与 `DomainClientOptions`。协议选择器是 `ApiClientType`，**无 Transport/TransportType/BaseUrl/Timeout 选项**。
+
 ```csharp
-builder.Services.AddApiClient<AppUserInfo>(options =>
+var gql = new GraphQLClient("https://api.example.com");
+services.UseApiClient<AppUserInfo>(gql, new DomainClientOptions
 {
-    options.BaseUrl = "https://api.example.com";
-    options.Transport = TransportType.GraphQL;  // 或 Rest
-    options.Timeout = TimeSpan.FromSeconds(30);
-    options.TokenProvider = new TokenProvider();
+    IsDevelopment = true,
+    ApplicationName = "MyApp",
+    // DomainClientOptions 仅含 IsDevelopment / ApplicationName / WasmContextExtractorTypes
+    // （认证跳转类选项 AutoRedirectOnAuthRequired / LoginUrl / LogOnServiceError 位于 DomainClientUserOptions）
 });
+
+// WASM 宿主亦可使用链式形态（ConfigWasmClient → UseApiClient(ApiClientType.GraphQL)）：
+// services.ConfigWasmClient<AppUserInfo>("https://api.example.com", options => { })
+//     .UseApiClient(ApiClientType.GraphQL);
 ```
 
-## 自定义 Token 提供器
+## Token 设置与会话恢复
+
+不存在 `ITokenProvider`。Token 由传输客户端自持（`GraphQLClient.SetToken`），或经登录结果自动写入：
 
 ```csharp
-public class TokenProvider : ITokenProvider
-{
-    public async Task<string?> GetTokenAsync()
-    {
-        // 从 SecureStorage 或本地缓存获取 Token
-        return await SecureStorage.GetAsync("session_token");
-    }
-}
+// 方式一：手动设置 Token（兼容模式，GraphQLClient.cs）
+var gql = new GraphQLClient("https://api.example.com");
+gql.SetToken("session-token");
+
+// 方式二：会话恢复 —— DomainClientUser 构造时自动从 ISessionStore 恢复
+//（RestoreSession 将持久化的 SessionKey 同步到全部已注册传输客户端）
+var user = DomainClient<AppUserInfo>.Root!.NewGuestUser();
 ```
 
 ## 错误处理
 
+不存在 `ApiClientException`。错误链路为三层：领域 `DomainException` → 服务端 `DomainErrorFilter` / `WebExceptionMiddleware(ProblemDetails)` → 客户端事件订阅：
+
 ```csharp
-try
+var user = DomainClient<AppUserInfo>.Root!.NewGuestUser();
+
+user.OnAuthRequired += async () =>
 {
-    var result = await _client.SayHelloAsync("World");
-}
-catch (ApiClientException ex) when (ex.StatusCode == 401)
+    // 会话过期/未登录 —— 跳转登录页
+    navigation.NavigateTo(user.Options.LoginUrl);
+};
+
+user.OnAuthFailed += async () =>
 {
-    // 未授权，重新登录
-}
-catch (ApiClientException ex) when (ex.StatusCode == 422)
+    // 登录失败（用户名/密码错误）
+    await dialog.ShowMessageAsync("用户名或密码错误");
+};
+
+user.OnServiceError += async ex =>
 {
-    // 参数验证失败
-}
+    // 通用服务端错误（403 无权限 / 400 校验失败等）
+    // 事件触发后异常仍会抛出，组件层仍可 try-catch 做针对性处理
+};
 ```
+
+请求仍会以 `DomainException` 抛出：语义码经 `extensions.code` 映射后写入 `DomainException.ErrorCode`（如 `AUTH_REQUIRED`），由 `DomainClientUser.HandleErrorAsync` 分发到对应事件。
 
 ## 参考
 

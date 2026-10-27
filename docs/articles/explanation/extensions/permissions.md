@@ -1,6 +1,6 @@
 ---
 title: 权限扩展：TKWF.Ext.Permissions
-description: 权限扩展使用指南：权限定义/贡献者、[RequirePermission] 方法级权限门、IPermissionChecker/IPermissionStore（默认 FreeSqlPermissionStore）、fail-closed 语义、跨程序集 DI 通道
+description: 权限扩展使用指南：权限定义/贡献者、[RequirePermission] 方法级权限门、IPermissionChecker/IPermissionStore（默认 NoOp，需注册自定义 IPermissionStore 或启用 PermissionGrantEntityDataService）、fail-closed 语义、跨程序集 DI 通道
 ---
 # 权限扩展：TKWF.Ext.Permissions
 
@@ -94,20 +94,26 @@ description: 权限扩展使用指南：权限定义/贡献者、[RequirePermiss
 
 ### Step 1：启用权限扩展
 
-消费方引用 `TKWF.Ext.Permissions` 包。扩展经 `[TKWFExtension("Permissions")]` 被 SG1 自动发现，三钩子自动接线——**无需手动注册**：
+消费方引用 `TKWF.Ext.Permissions` 包。扩展经 `[TKWFExtension]` 被 SG1 编译期发现（生成能力清单）——**发现 ≠ 启用**：还须在消费方领域初始化器上声明白名单，三钩子才会接线（**ADR47 唯一启用通道**）：
 
 ```xml
 <!-- 消费方 .csproj -->
 <ProjectReference Include="..\Framework\Permissions\TKWF.Ext.Permissions.csproj" />
 ```
 
-扩展自动注册：`IPermissionChecker`（默认 `PermissionChecker<TUserInfo>`）+ `IPermissionStore`（V4.9.75 起为**条件工厂**：已注册 `IFreeSql` → `FreeSqlPermissionStore`，否则回退 NoOp）+ `IPermissionDefinitionRepository` + `PermissionFilterAttribute`（Tier-S）。
+```csharp
+// 消费方领域初始化器：白名单声明
+[TKWFEnabledExtension(typeof(PermissionExtensionInitializer<>))]
+public class XxxDomainInitializer : DomainHostInitializerBase<XxxUserInfo> { ... }
+```
 
-> ⚠️ **默认实现说明（V4.9.75）**：`IPermissionStore` 的默认值取决于宿主是否集成 FreeSql——
-> - **引用 `TKWF.Domain.FreeSql` 包**（框架默认 ORM 路径）→ 自动启用 `FreeSqlPermissionStore`，权限授予持久化到 `PermissionGrantEntity` 表（`SyncStructure` 自动建表），**权限扩展开箱可用**。
-> - **未注册 `IFreeSql`** → 回退 NoOp（读恒拒绝），并输出 `LogWarning` 提示"权限 store 回退 NoOp 将恒拒绝"。
+白名单声明后扩展自动注册：`IPermissionChecker`（默认 `PermissionChecker<TUserInfo>`）+ `IPermissionStore`（默认 `NoOpPermissionStore`）+ `IPermissionDefinitionRepository` + `PermissionFilterAttribute`（Tier-S）。
+
+> ⚠️ **默认 store 是 NoOp（读恒拒绝）**：`PermissionExtensionInitializer` 以 `TryAddScoped<IPermissionStore, NoOpPermissionStore>()` 注册默认值——未接真实持久化时，所有 `[RequirePermission]` 都会 fail-closed 拒绝。真实持久化有两条路：
+> - **注册自定义 `IPermissionStore`**（推荐）：实现为继承 `DomainServiceBase` 的领域服务，内部经 `User.Use<PermissionGrantEntityDataService>()` 组合 DataService，用 `services.AddConstructibleService<IPermissionStore, MyDbPermissionStore>()` 注册（`TryAdd` 语义 → 消费方实现优先）。
+> - **启用 `PermissionGrantEntityDataService`**：为 `PermissionGrantEntity` 提供自定义 `IEntityDAC<T>`（如 `UseFreeSqlEntityDAC()`），由 DataService 承接真实读写。
 >
-> `PermissionChecker<TUserInfo>` 已接通用户上下文 + store 链路，是逻辑层默认实现。V4.9.75 前（V4.9.72-74）默认恒为 NoOp，真实启用需消费方手写 `IPermissionStore`。
+> 历史说明：框架早期曾内置 FreeSql 版 store，该类已在 **v4.9.80 扩展迁出时删除**，扩展仓也不存在——不要按旧文档查找或手写它。
 
 ### Step 2：声明权限定义（贡献者）
 
@@ -154,55 +160,68 @@ public interface IOrderService
 
 无权限时抛 `DomainException`（`ErrorCode = FORBIDDEN`），客户端收到 `FORBIDDEN` 错误码。
 
-### Step 4：权限持久化（默认 FreeSqlPermissionStore）
+### Step 4：权限持久化（默认 NoOp，需自行接线）
 
-权限检查是否真正生效取决于 `IPermissionStore` 能否读到授予记录。V4.9.75 起框架提供官方 FreeSql 实现：
+权限检查是否真正生效取决于 `IPermissionStore` 能否读到授予记录。扩展默认注册 `NoOpPermissionStore`（读恒拒绝）——**没有"引用某个包即开箱持久化"的路径**：
 
 | 场景 | 生效的 store | 行为 |
 |:--|:--|:--|
-| 引用 `TKWF.Domain.FreeSql`（`cfg.UseFreeSqlEntityDAC(...)`） | `FreeSqlPermissionStore` | 读写 `PermissionGrantEntity` 表，`SyncStructure` 自动建表 |
-| 未注册 `IFreeSql` | NoOp | 恒拒绝 + `LogWarning` 可见化提示 |
+| 仅白名单启用（默认） | `NoOpPermissionStore` | 读恒拒绝 → 所有 `[RequirePermission]` 被拒 |
+| 消费方 `AddConstructibleService<IPermissionStore, MyStore>()` | 自定义 store | 按实现读写（推荐内部组合 `PermissionGrantEntityDataService`） |
+| 消费方为 `PermissionGrantEntity` 提供自定义 `IEntityDAC<T>` | 自定义 DAC + DataService | 由 `PermissionGrantEntityDataService` 承接真实读写 |
 
-`FreeSqlPermissionStore` 位于 **`TKWF.Domain.FreeSql` 包**（`_Domain.Infrastructure/FreeSql/`），不在 `TKWF.Ext.Permissions`——避免权限包强依赖 FreeSql 污染非 FreeSql 消费方。
-
-**持久化实体**（BCL 标准属性，ADR27 兼容，FreeSql / EF Core 均可识别）：
+推荐实现（**继承 `DomainServiceBase` 的领域服务**；store 内禁裸用 `IFreeSql`/`IEntityDAC`——数据访问红线）：
 
 ```csharp
-// TKWF.Domain.FreeSql 包内
-[Table("tkwf_permission_grant")]
-public class PermissionGrantEntity
+public sealed class MyDbPermissionStore : DomainServiceBase, IPermissionStore
 {
-    [Key]
-    [MaxLength(64)]
+    private PermissionGrantEntityDataService? _ds;
+    private PermissionGrantEntityDataService Ds => _ds ??= User.Use<PermissionGrantEntityDataService>();
+
+    public MyDbPermissionStore(IDomainUser user) : base(user) { }
+
+    // 实现 IPermissionStore 的查询/写入方法——全部委托 Ds
+    // （方法名与签名以扩展仓 IPermissionStore 为准）
+}
+
+// ConfigureServices 中（TryAdd 语义 → 消费方实现优先于默认 NoOp）：
+services.AddConstructibleService<IPermissionStore, MyDbPermissionStore>();
+```
+
+**持久化实体**（`TKWF.Ext.Permissions` 内，SG1 声明式；字段以扩展仓 `PermissionGrantEntity` 为准）：
+
+```csharp
+[Table("PermissionGrant")]              // 保留 [Table]：SyncTables 依赖它发现实体
+public partial class PermissionGrantEntity
+{
+    public long Id { get; set; }        // 自增主键
+
+    [MaxLength(200)]
     public string PermissionName { get; set; }
 
-    [MaxLength(32)]
+    [MaxLength(64)]
     public string ProviderName { get; set; }   // "User" / "Role"
 
-    [MaxLength(64)]
+    [MaxLength(128)]
     public string ProviderKey { get; set; }    // UserIdString / RoleName
 
     public bool IsGranted { get; set; }
 }
 ```
 
+> 表名是 **`PermissionGrant`**（Pascal 单数），建表由主框架 `SyncTables` 统一托管（ADR49）；生产部署建议执行包内迁移脚本 `scripts\PermissionGrant.sql`（DBA/CI）。
+
 **授予权限**（权限分配管理后台 / 种子数据）：
 
 ```csharp
-// 注入官方 store 直接写
+// 经 IPermissionStore 写入（只有真实实现才落库；默认 NoOp 写入不生效）
 public async Task GrantAsync(IPermissionStore store)
 {
     await store.SetAsync("Order.Create", "User", "u-1001", isGranted: true);
 }
 ```
 
-> 消费方需要自定义存储（如分库、缓存前置、角色继承）时，仍可注册自己的实现覆盖默认值：
->
-> ```csharp
-> services.AddSingleton<IPermissionStore, MyDbPermissionStore>();
-> ```
->
-> 官方注册用 `TryAddSingleton`，消费方显式注册优先。
+> 方法名/签名以扩展仓 `IPermissionStore` 当前定义为准。若要替换 store，**不要用 `AddSingleton`**——`IPermissionStore` 必须 Scoped（参与请求 UoW 事务），且应经 `AddConstructibleService` 注册以保留接口守卫工厂语义。
 
 ---
 
@@ -213,7 +232,7 @@ public async Task GrantAsync(IPermissionStore store)
 | 权限定义（PermissionDefinition） | 权限声明——`Name`（如 `"Order.Create"`）+ 显示名/分组/父权限 |
 | 权限贡献者（IPermissionDefinitionContributor） | 业务模块声明权限定义的类，实现接口即可（V4.10.31 起 SG1 接口判定，不再用 `[PermissionContributor]` 特性） |
 | 权限检查器（IPermissionChecker） | 运行时判断当前用户是否拥有权限 |
-| 权限存储（IPermissionStore） | 持久化权限授予值——V4.9.75 起默认 `FreeSqlPermissionStore`（已注册 `IFreeSql` 时），未注册时回退 NoOp |
+| 权限存储（IPermissionStore） | 持久化权限授予值——默认 `NoOpPermissionStore`（读恒拒绝）；真实持久化需消费方实现 `IPermissionStore`（继承 `DomainServiceBase`）或为 `PermissionGrantEntity` 提供自定义 `IEntityDAC<T>` |
 | 方法级权限门（[RequirePermission]） | 标记方法/接口，无权限时抛 `DomainException(FORBIDDEN)` |
 
 ### 与 AuthorityFilter 的分工
@@ -319,11 +338,11 @@ fail-closed 短路检查
   └─ 无 ambient 用户（DomainUserContext.CurrentAopUser 为 null）？→ 拒绝
   ↓ 通过短路
 IPermissionStore.GetAsync("Order.Create", "User", userId)
-  ├─ FreeSqlPermissionStore（默认，已注册 IFreeSql）→ 查 tkwf_permission_grant 表返回 Granted/Denied
-  └─ NoOp（未注册 IFreeSql 时回退）→ Denied
+  ├─ 默认 NoOpPermissionStore → 恒 Denied
+  └─ 消费方实现（AddConstructibleService<IPermissionStore, ...>）→ 查 PermissionGrant 表返回 Granted/Denied
 ```
 
-> **providers 约定**：用户权限 `("User", UserIdString)`、角色权限 `("Role", RoleName)`——`IPermissionStore` 实现按此键解析；官方 `FreeSqlPermissionStore` 已支持任意 providerName 组合，消费方扩展 store 可再叠加缓存/角色继承。
+> **providers 约定**：用户权限 `("User", UserIdString)`、角色权限 `("Role", RoleName)`——`IPermissionStore` 实现按此键解析（任意 providerName 组合由消费方 store 自行支持）；消费方 store 可再叠加缓存/角色继承。
 
 ---
 
@@ -333,21 +352,22 @@ IPermissionStore.GetAsync("Order.Create", "User", userId)
 
 菜单项 `RequiredPermissions` 经 `IMenuManager` 调用同一 `IPermissionChecker` 过滤（见 [导航扩展](./navigation.md)）。注意：菜单过滤是**展示层**，checker 缺失时**降级不过滤**（与权限过滤的 fail-closed 不冲突——不同安全层）。
 
-### 已知边界（V4.9.75）
+### 已知边界
 
 | 边界 | 说明 | 规划 |
 |:--|:--|:--|
 | 编译期权限名校验 | 未实现（ADR38 D7）——贡献者 `Define()` 是运行时方法，SG 看不到体内字符串 | 未来如需改用特性声明（已知 gap） |
-| 权限分配管理 UI | 未内置——`IPermissionStore.SetAsync` 可写，但无现成管理界面 | 消费方职责 |
-| 角色→权限映射 | 未内置继承语义（`FreeSqlPermissionStore` 仅按 provider 精确查表，不递归角色父子） | store 实现层 |
-| 未注册 `IFreeSql` | store 回退 NoOp 恒拒绝，仅输出 `LogWarning`（V4.9.75 M2 可见化） | 集成 FreeSql 或自定义 store |
+| 权限分配管理 UI | 未内置——`IPermissionStore` 可写，但无现成管理界面 | 消费方职责 |
+| 角色→权限映射 | 未内置继承语义（默认 store 仅按 provider 精确查表，不递归角色父子） | store 实现层 |
+| 真实持久化未接线 | 默认 `NoOpPermissionStore` 读恒拒绝（fail-closed）——需自定义 `IPermissionStore` 或为 `PermissionGrantEntity` 提供 `IEntityDAC<T>` | 注册自定义 store / DAC |
 | TS Client 权限元数据 | 未实现（扩展仓库弱增强） | 留后续迭代 |
 
 ### 常见反模式
 
 | 反模式 | 说明 | 正确做法 |
 |:--|:--|:--|
-| 启用 Permissions 但未集成 FreeSql | store 回退 NoOp，所有 `[RequirePermission]` 恒拒绝 | 引用 `TKWF.Domain.FreeSql`，或注册自定义 `IPermissionStore` |
+| 启用 Permissions 但未接线真实 store | 默认 NoOp，所有 `[RequirePermission]` 恒拒绝 | 注册自定义 `IPermissionStore`（继承 `DomainServiceBase`），或为 `PermissionGrantEntity` 提供自定义 `IEntityDAC<T>` |
+| 假设存在"内置 FreeSql store 开箱可用" | 旧版本内置的 FreeSql store 已随 v4.9.80 扩展迁出删除，扩展仓也不提供 | 自定义 `IPermissionStore` 或为 `PermissionGrantEntity` 提供 `IEntityDAC<T>` |
 | 用 `IPermissionChecker.IsGrantedAsync` 当安全门 | 软判断不抛异常，可被绕过 | 用 `[RequirePermission]`（fail-closed） |
 | 权限名用自由字符串散落各处 | 拼写错误运行时才发现（fail-closed 拒绝） | 定义常量/贡献者集中声明 |
 | 在贡献者 `Define()` 里做 IO/数据库查询 | 贡献者应纯声明式；ConfigureServices 阶段无 DI | 权限定义静态声明，动态数据放 store |
@@ -366,7 +386,7 @@ IPermissionStore.GetAsync("Order.Create", "User", userId)
 在消费方业务模块的 `IPermissionDefinitionContributor` 实现类里，经 `Define(context).Add(...)` 声明。SG 编译期发现（源码 + 引用程序集）。
 
 **Q: 默认权限检查器为何可能恒拒绝？**
-看 store 是否生效：引用 `TKWF.Domain.FreeSql` → 默认 `FreeSqlPermissionStore` 真实读写数据库；未注册 `IFreeSql` → 回退 NoOp 恒拒绝（并输出 `LogWarning`）。`PermissionChecker<TUserInfo>` 本身已接通用户上下文 + store 链路，逻辑层无需额外配置。
+看 store 是否生效：默认是 `NoOpPermissionStore`（读恒拒绝），因此**开箱即拒绝**；须注册自定义 `IPermissionStore`（继承 `DomainServiceBase`，`AddConstructibleService` 注册），或为 `PermissionGrantEntity` 提供自定义 `IEntityDAC<T>`，才会真实读写 `PermissionGrant` 表。`PermissionChecker<TUserInfo>` 本身已接通用户上下文 + store 链路，逻辑层无需额外配置。
 
 **Q: 为什么不像 ABP 那样运行时反射发现权限定义？**
 TKWF 核心理念是"编译期确定性"——SG1 编译期接口判定扫描 `IPermissionDefinitionContributor` 实现生成类型清单（零运行时反射）。权限定义本身在运行时由扩展初始化器收集（SG 不能执行用户代码），但贡献者类型发现是编译期的。这是 TKWF 与 ABP 的根本区别。

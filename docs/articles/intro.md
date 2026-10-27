@@ -6,7 +6,7 @@ description: TKWF.Domain — 为 Agentic Engineering 时代设计的 .NET 10 领
 
 > **TKWF.Domain** — 让 AI 写 Service，框架负责剩下的。
 
-一个 `[GenerateController]` 标注，编译期自动生成 Controller + AOP 装饰器 + GraphQL/REST 端点 + 强类型客户端代理。零运行时反射，零 DI 串号，代码行为对 AI 完全可预测。
+一个 `[GenerateController]` 标注，编译期自动生成 Controller + AOP 装饰器 + GraphQL/REST 端点 + 强类型客户端代理。热路径零运行时反射，零 DI 串号，代码行为对 AI 完全可预测。
 
 ---
 
@@ -35,7 +35,7 @@ V4 是最彻底的一步：恰逢 VibeCoding 流行，但选择了工程化约�
 
 | 维度 | 传统 DI 框架 | TKWF.Domain |
 |:-----|:------------|:------------|
-| AOP 实现 | 运行时动态代理（反射 + IL Emit） | 编译期 SG 生成装饰器，零运行时反射 |
+| AOP 实现 | 运行时动态代理（反射 + IL Emit） | 编译期 SG 生成装饰器，热路径零反射（结构/契约/接线编译期确定） |
 | DI 依赖 | Service 依赖容器注入 DomainUser，存在串号风险 | DomainUser 自持实例化，`Use<T>()` 显式传递，物理隔离 |
 | API 暴露 | 手写 Controller + 手动注册路由 | `[GenerateController]` 一标注，SG 自动生成 GraphQL + REST 端点 |
 | 客户端生成 | 手写或用 NSwag/Swagger 生成 | SG#3 编译期生成强类型客户端代理，与服务端同源 |
@@ -56,7 +56,8 @@ public class OrderService(DomainUser<AppUserInfo> user)
     public async Task<Order> CreateAsync(string title)
     {
         // User 就是当前请求的用户，确定性的
-        return await Repository.InsertAsync(new Order
+        var orderSvc = User.Use<OrderDataService>();   // 经 SG1 生成的 DataService（禁裸 ORM/Repository——框架无此构件）
+        return await orderSvc.CreateAsync(new OrderDto
         {
             Title = title,
             UserId = User.UserId  // ← 不依赖任何外部状态
@@ -76,11 +77,11 @@ public class OrderService(DomainUser<AppUserInfo> user)
 ```
 你的代码                    编译期自动生成
 ───────────               ─────────────────────────
-GreetingService.cs    →    IGreetingServiceController.g.cs   (契约接口)
-                       →    GreetingServiceControllerDecorator.g.cs  (AOP 装饰器)
-                       →    GreetingServiceResolver.g.cs     (GraphQL Resolver)
-                       →    GreetingServiceEndpoints.g.cs    (REST 端点)
-                       →    GreetingServiceClient.g.cs       (客户端代理)
+GreetingService.cs    →    IGreetingServiceController.g.cs   (契约接口, SG1b)
+                       →    GreetingServiceControllerDecorator.g.cs  (AOP 装饰器, SG1b)
+                       →    GreetingServiceResolver.g.cs     (GraphQL Resolver, SG2a)
+                       →    GreetingServiceEndpoints.g.cs    (REST 端点, SG2a)
+                       →    GreetingServiceClient.g.cs       (客户端代理, SG3)
 ```
 
 **你只写业务逻辑。** 权限拦截、事务管理、路由注册、序列化、客户端代理——全部编译期生成，零手写样板。
@@ -98,7 +99,10 @@ GreetingService.cs    →    IGreetingServiceController.g.cs   (契约接口)
 [GenerateController]
 public class TodoService(DomainUser<AppUserInfo> user) : DomainServiceBase<AppUserInfo>(user)
 {
-    public async Task<Todo> CreateAsync(string title) { ... }
+    public async Task<Todo> CreateAsync(string title)
+    {
+        return await User.Use<TodoDataService>().CreateAsync(new TodoDto { Title = title });
+    }
     public async Task<List<Todo>> GetMyTodosAsync() { ... }
 }
 ```
@@ -130,11 +134,11 @@ TKWF 在类型系统级实现读写分离——Entity 负责写，VEntity 专用
 public class Order : Entity { ... }
 
 // 读模型 — VEntity（专用于查询，框架阻止写操作）
-[DomainGenerateCode(IsView = true, AutoQuery = true)]
+[DomainGenerateCode(IsView = true)]
 public class OrderSummaryView : VEntity
 {
     // ViewSql 定义 SQL 视图 + 编译期列名校验
-    // AutoQuery 自动生成 QueryController（消除 80% 手写查询 Service）
+    // AutoQuery 查询自动化（消除 80% 手写查询 Service）
 }
 ```
 
@@ -142,7 +146,7 @@ public class OrderSummaryView : VEntity
 
 ### EQR 统一查询入口
 
-`User.Query<T>()` → EQR → `IEntityReadOnlyDAC` → `IQueryable`，3 跳零反射。V4.9.40 将原 8 跳路径重构为 3 跳，消除反射和死代码。
+`User.Query<T>()` 有两条路：**域内**（已在 AOP proceed 内）直连 `IEntityReadOnlyDAC.Query`（3 跳零反射）；**域外**（控制器外/客户端）走 `Use<IEntityQueryRoot>().Query<T>()`（完整 AOP → EQR 直连 DAC）。V4.9.40 将原 8 跳路径重构为 3 跳，消除反射和死代码。
 
 ### 三端统一查询 API
 
@@ -168,7 +172,7 @@ const list = await Tkwf.User.Query<Order>()
 
 ### AutoQuery + ViewSql + StatsDto
 
-- **AutoQuery**：`[DomainGenerateCode(AutoQuery=true)]` → SG 自动生成 QueryController（List + Count），消除 80% 手写查询 Service
+- **AutoQuery**：VEntity 查询自动化（`ExposeGraphqlQuery` 默认开启 + GraphQL Connection 零代码生成），消除 80% 手写查询 Service。遗留的 `AutoQuery`/`IsGraphQLQueryable` 属性已移除（V4.9.102），统一走 `ExposeRestQuery`/`ExposeGraphqlQuery`
 - **ViewSql**：SQL 视图定义 + **编译期列名校验**（SG1a warning + 运行时启动阻断）
 - **StatsDto**：xCodeGen自动从 ViewSql 的 `SUM/COUNT/AVG` 生成统计 DTO
 
@@ -193,7 +197,7 @@ public class ReportService(DomainUser<AppUserInfo> user) : DomainServiceBase<App
 - **Challenge-Response 登录** — 防重放、防密码泄露
 - **AuthorityFilter** — 声明式方法级权限，AOP 管线自动拦截
 - **SystemActor** — 系统角色体系，区分人/系统写入审计（`IEntityActorAuditable` + `ISystemActorService`）。后台 Job / OAuth 回调 / AI Agent 调用均有可审计的系统身份
-- **错误码全栈统一** — 16 码四端一致（GraphQL / REST / .NET / TS）
+- **错误码全栈统一** — 错误码四端一致（GraphQL / REST / .NET / TS），`DomainException` 错误码与传输层映射唯一事实源
 
 > → 深入了解：[认证与授权](security/authentication.md) · [异常处理](advanced/error-handling.md)
 
@@ -203,10 +207,10 @@ public class ReportService(DomainUser<AppUserInfo> user) : DomainServiceBase<App
 
 TKWF 的架构约束让 AI 生成代码**结构性可靠**：
 
-- **编译期约束** — SG 在编译时验证所有结构性契约（20+ 诊断），不合规直接报错
+- **编译期约束** — SG 在编译时验证所有结构性契约（诊断码体系 111 项属性，含 Error/Warning 分级），不合规直接报错
 - **两道防线** — 编译器拦截结构性错误（接口/返回类型/命名/架构边界）；运行时拦截行为错误（授权/验证/事务）
-- **粒度细分** — 元数据管线分三层（SG1→SG2→SG3），每层职责单一，Agent 无需理解全局架构
-- **7 个框架级 Skills** — 设计→实体→业务→测试→前端→Mock，Agent 按 skill 分步完成开发
+- **粒度细分** — 元数据管线分五生成器（SG1a/SG1b/SG2a/SG2b/SG3），每层职责单一，Agent 无需理解全局架构
+- **12 个框架级 Skills** — 设计→实体→业务→测试→前端→Mock + 扩展/分析/AI，Agent 按 skill 分步完成开发
 - **活文档替代源码** — Agent 读 `.TKWF/{Domain}/` 薄索引（DOMAIN_MAP / DataService_API / Business.md），不读 500+ 行生成代码
 
 ```

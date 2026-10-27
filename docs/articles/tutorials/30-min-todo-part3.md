@@ -22,22 +22,17 @@ TKWF 的三层 SG 管线会自动为服务接口生成 Controller / GraphQL Reso
 using TKW.Framework.Domain.DataServices;
 using TKW.Framework.Domain.DataServices.Base;
 
-// 声明契约接口（SG1 自动生成 Controller + IAopContract）
-public interface ITodoService : IDomainServiceContract<DmpUserInfo>
-{
-    Task<TodoItemDto?> GetAsync(long id, CancellationToken ct = default);
-    Task<List<TodoItemDto>> ListPendingAsync(CancellationToken ct = default);
-    Task<long> CreateAsync(string title, CancellationToken ct = default);
-    Task CompleteAsync(long id, CancellationToken ct = default);
-}
+// B 路径：无需手写契约接口——SG1b 自动生成 I{ServiceName}Controller.g.cs
+// （含 Service 全部公开方法；不存在 IDomainServiceContract 基接口，勿继承虚构类型）
 ```
 
 **SG 管线自动生成**：
 
 | SG 层 | 产出 | 说明 |
 |:--|:--|:--|
-| SG1 (领域层) | `GeneratedControllerRegistrations` | 提取接口元数据 |
-| SG2 (WebApi 层) | `TodoServiceController.cs` | GraphQL Resolver + REST 端点 |
+| SG1a (领域层) | `{Entity}Meta.g.cs` + `_ProjectMetaContext` | 扫描 `[DomainGenerateCode]` Entity/Service 元数据 |
+| SG1b (领域层) | `{ServiceName}Controller.g.cs` + `I{ServiceName}Controller.g.cs` | B 路径 Controller/接口/装饰器三件套 |
+| SG2a (WebApi 层) | Resolver（GraphQL）+ REST 端点 + RPC 事件 | 从 SG1 元数据读 IAopContract 生成 |
 | SG3 (客户端层) | 客户端代理（按需） | Blazor WASM / MAUI 客户端代理 |
 
 ---
@@ -79,7 +74,7 @@ POST /api/TodoService/Complete?id=1
 
 ```csharp
 // 服务端代码直接调用（无网络开销）
-var result = await user.Use<ITodoService>().GetAsync(1);
+var result = await user.Use<ITodoServiceController>().GetAsync(1);   // I{ServiceName}Controller 为 SG1b 生成的契约接口
 ```
 
 ---
@@ -97,7 +92,7 @@ public class TodoListPage
     public async Task LoadDataAsync()
     {
         // RPC 调用（自动翻译为 GraphQL/REST）
-        var todos = await _user.Use<ITodoService>().ListPendingAsync();
+        var todos = await _user.Use<ITodoServiceController>().ListPendingAsync();
 
         // 复杂查询（User.Query<T> 自动构建 GraphQL 表达式）
         var page = await _user.Query<TodoItemDto>()
@@ -110,6 +105,8 @@ public class TodoListPage
 ```
 
 ### 前端 TypeScript 客户端
+
+> ⚠️ **待核对**：以下 `DomainHostClient` / `client.use('ITodoService')` 形态**并非** `@tkwf/tsclient` 现行导出（基于虚构/过时 API，勿直接照抄）。现行门面形态为 `Tkwf.configure(...)` → `Tkwf.User.Use<TService>()` / `Tkwf.Query<TEntity>()`，具体导出以 `@tkwf/tsclient` 实际版本为准。
 
 ```typescript
 import { DomainHostClient } from '@tkwf/tsclient';
@@ -144,7 +141,7 @@ curl -X POST https://localhost:5001/graphql \
 curl https://localhost:5001/api/TodoService/ListPending
 
 # 4. 客户端调用（在 Blazor WASM 中）
-# _user.Use<ITodoService>().ListPendingAsync()
+# _user.Use<ITodoServiceController>().ListPendingAsync()
 ```
 
 ---

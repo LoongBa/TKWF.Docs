@@ -12,14 +12,14 @@ TKWF 框架的设计原则和推荐实践。
 
 ### 领域自治
 
-- **DomainUser 只通过构造函数注入** — 不要手动创建或从静态上下文获取
-- **域内调用传具体类** — `Use<T>()` 传具体类走直接构造，跳过 AOP 开销
-- **跨层调用传接口** — `Use<T>()` 传 `IAopContract` 接口走 AOP 装饰器，确保 AuthorityFilter 等安全拦截生效
+- **DomainUser 由 `Use<T>()` 帧经 AsyncLocal 提供（永不进 DI 容器）** — 服务经构造参数接收（装饰器工厂 `ActivatorUtilities.CreateInstance` 注入 domainUser）；不要手动 `new` 或从静态上下文获取
+- **域内调用传具体类** — `Use<T>()` 传具体类走 `ActivatorUtilities` 现造（不进 DI），跳过 AOP 开销
+- **跨层调用传接口** — `Use<T>()` 传 `IAopContract` 接口走 DI 装饰器，确保 AuthorityFilter 等安全拦截生效
 
 ### 服务设计
 
 ```csharp
-// ✅ 推荐：构造函数注入
+// ✅ 推荐：构造函数注入（DomainUser 由 Use<T>() 帧注入，不进 DI）
 public class OrderService(DomainUser<AppUserInfo> user)
     : DomainServiceBase<AppUserInfo>(user)
 {
@@ -75,7 +75,7 @@ public async Task<List<Todo>> GetAllTodosAsync() { ... }
 public async Task PlaceOrderAsync(OrderInput input)
 {
     await UpdateInventoryAsync(input.ProductId, -input.Quantity);
-    await Repository.InsertAsync(MapToOrder(input));
+    await User.Use<OrderDataService>().CreateAsync(input.ToDto());  // 经 SG1 DataService（框架无 Repository 构件）
 }
 
 // ❌ 避免：在 Controller 层管理事务
@@ -86,15 +86,12 @@ public async Task PlaceOrderAsync(OrderInput input)
 ### 单元测试
 
 ```csharp
+// 标准契约测试形态（DomainXunitTestBase + CreateSessionScopeAsync）
+// DomainUser 无接收 TUserInfo 的公开构造——不要手动 new
 [Test]
 public async Task CreateTodo_Should_Return_Todo()
 {
-    var user = new DomainUser<AppUserInfo>(new AppUserInfo
-    {
-        UserName = "test",
-        Roles = new() { "User" }
-    });
-
+    var user = host.CreateSessionScopeAsync().Result.User;   // Fixture 宿主会话作用域取 User
     var service = user.Use<TodoService>();
     var result = await service.CreateTodoAsync("Test", "Content");
 
@@ -107,8 +104,8 @@ public async Task CreateTodo_Should_Return_Todo()
 
 | 反模式 | 说明 | 正确做法 |
 |:-------|:-----|:---------|
-| 在 Service 中引用 HttpContext | 领域层耦合 Web | 使用 DomainUser 获取用户信息 |
-| 手动 new Service | 绕过 AOP 拦截 | 通过 `User.Use<T>()` 或 DI 获取 |
+| 在 Service 中引用 HttpContext | 领域层耦合 Web | 使用 DomainUser 获取用户信息（`Use<T>()` 帧内） |
+| 手动 new Service | 绕过 AOP 拦截 | 通过 `User.Use<T>()`（接口→DI 装饰器；具体类→帧内现造，均不进 DI 容器） |
 | 在 Service 中管理事务 | 业务逻辑与事务耦合 | 使用 `[Transactional]` 声明式事务 |
 | 暴露 DomainUser 给客户端 | 安全风险 | 只暴露必要的 DTO |
 

@@ -242,12 +242,14 @@ socket.on("OrderCreated", (data) => { /* UI 刷新 */ });
 ### Q: 如何让 handler 在事务回滚时不执行？
 **A**：使用 `PublishAsync`（模式 ①）。AOP 路径下，事件收集到 Bag，commit 失败 → `PostProceedOnException` 检测异常 → `ClearCollectedEvents()` → 事件丢弃。`PostAsync`（模式 ③）绕过 Bag，**不受事务保护**。
 
-### Q: `UseApi<T>()` vs `UseNoAop<T>()` vs `Query<T>()` 有什么区别？
+### Q: `Use<T>()` 传接口 vs 具体类 vs `Query<T>()` 有什么区别？
 | API | 适用场景 | 事务一致 |
 |:--|:--|:--|
-| `Use<T>()` | 进程内 AOP 调用 | ✅（AOP 管线） |
-| `UseNoAop<T>()` | 绕过 AOP 直连 | ❌ |
-| `Query<T>()` | 只读查询（EQR） | ❌ 只读无事务 |
+| `Use<T>()`（T=接口 `IAopContract`） | 进程内 AOP 调用（DI 装饰器） | ✅（AOP 管线） |
+| `Use<T>()`（T=具体 `IDomainService` 类） | 域内服务组合（`ActivatorUtilities` 直建，不走 AOP） | ⚠️ 不经 AOP 拦截（`[Transactional]` 等特性不生效） |
+| `Query<T>()` | 只读查询（域内直连 DAC / 域外 EQR） | ❌ 只读无事务 |
+
+> **旧术语说明**：早期文档中的 `UseApi<T>()` / `UseNoAop<T>()` 已并入 `Use<T>()`——接口自动走 AOP 管线，具体类自动直连（NoAop 语义），不再有独立 API。
 
 ### Q: 如何让 handler 在事务回滚时不执行？
 **A**：使用 `PublishAsync`（模式 ①）。AOP 路径下，事件收集到 Bag，commit 失败 → `PostProceedOnException` 检测异常 → `ClearCollectedEvents()` → 事件丢弃。`PostAsync`（模式 ③）绕过 Bag，**不受事务保护**。

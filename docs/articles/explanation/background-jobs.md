@@ -229,7 +229,7 @@ public class SyncInventoryJob : IBackgroundJob
 |:--|:--|:--|:--|:--|:--|:--|
 | **内置轻量**（默认） | `TKWF.BackgroundJobs`（随框架） | 进程内 DB 队列 + worker（`BackgroundJobWorker` 常驻轮询） | JobRecord 表（FreeSql/EF Core 自动建） | ✅ `MaxRetryCount` + 指数退避 | `IDistributedLock` | **默认首选**——零第三方依赖，SB 场景（定时报表/邮件队列/指标重算）足够 |
 | **Hangfire** | `TKWF.BackgroundJobs.Hangfire` | 作业平台（storage/worker/dashboard） | SQL Server/Redis/InMemory | ✅ AutomaticRetry | storage 分布式锁 | **重运维需求**——集群/仪表盘/复杂调度管理 |
-| **Quartz** | `TKWF.BackgroundJobs.Quartz` | 调度器（trigger 驱动） | AdoJobStore 12 表 / RAMJobStore | ❌（无内置，RetryPolicy trigger 级） | AdoJobStore + clustering | **调度/触发需求**——cron 周期任务（消费方直接 Quartz API） |
+| **Quartz** | `TKWF.BackgroundJobs.Quartz` | 调度器（trigger 驱动） | AdoJobStore 12 表 / RAMJobStore | ❌（无内置，RetryPolicy trigger 级） | AdoJobStore + clustering | **调度/触发需求**——cron 周期任务经 `IRecurringBackgroundJobManager`（ADR91）统一注册（`EnqueueRecurringAsync(cron, ...)`/`RemoveRecurringAsync`），消费方无需直触 Quartz API；仅配内置 Default Provider 解析周期作业即失败 |
 
 > **设计原则**（用户 2026-09-06 裁定）：框架先提供轻量内置，Provider 对接增强。**默认零依赖**；重需求才引第三方（Hangfire/Quartz 的运维/许可负担见各自对接指南）。
 >
@@ -314,6 +314,7 @@ public class JobMonitor(IAdvancedBackgroundJobManager jobs)
 | Hangfire Provider | ✅ V4.9.104 | `TKWF.BackgroundJobs.Hangfire`（storage/worker/dashboard） |
 | Quartz Provider | ✅ V4.9.105 | `TKWF.BackgroundJobs.Quartz`（AdoJobStore 封装 + clustering） |
 | 状态查询/取消 | ✅ V4.9.103 | `IAdvancedBackgroundJobManager.GetJobStatusAsync/CancelAsync` |
+| 周期调度 | ✅ V4.10.54（ADR91） | `IRecurringBackgroundJobManager`——跨实现统一的 cron（Unix 5-field）公共契约 + `EnqueueRecurringAsync`/`RemoveRecurringAsync`；需配 Quartz/Hangfire Provider，仅配 Default（进程内宿主）解析即失败 |
 
 > ⚠️ **边界提示**：内置实现为**进程内 DB 队列**（单实例 worker，多实例需配 `IDistributedLock`），重启不丢（JobRecord 持久化）。生产环境高并发/集群调度建议切 Hangfire/Quartz Provider。
 
@@ -335,6 +336,7 @@ public class JobMonitor(IAdvancedBackgroundJobManager jobs)
 |:--|:--|
 | v1.0 | 初版（基于 ADR23 + v4.9.64/66 实施） |
 | v1.1 | 同步 V4.9.103-105：内置轻量调度（JobRecord 持久化 + worker + 重试/分布式锁/优雅停机）+ Hangfire Provider + Quartz Provider 三实现落地；新增 `IAdvancedBackgroundJobManager` 状态查询/取消 |
+| v1.2 | 同步 V4.10.54（ADR91）：新增周期调度 `IRecurringBackgroundJobManager`（cron 公共契约，Quartz/Hangfire Provider），修正 Quartz 行"消费方直接 Quartz API"旧表述 |
 
 ---
 

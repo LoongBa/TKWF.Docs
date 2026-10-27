@@ -157,23 +157,21 @@ protected override void ConfigureGlobalFilters(FilterBuilder filters)
 
 `TenantGlobalQueryFilter` 自动追加 `WHERE TenantId = <当前租户>`，三调用点全覆盖（EQR / `DomainUser.Query<T>` / `QueryForUser`）。未确定租户时 fail-closed（非 SystemActor 抛异常）。
 
-### 更新路径租户校验
+### 更新路径租户隔离
 
-所有更新路径（单条/批量）在写入前**重读 + 断言 `TenantId`**，防止跨租户更新 IDOR。
+**当前机制（ADR89，v4.10.52）**：写侧租户隔离**不是**靠查询过滤器，而是 `IEntityDAC.UpdateWhereAsync` 自动注入 `TenantId` 谓词——每次条件更新自动追加 `TenantId = <当前租户>`，单语句原子执行，从根上杜绝跨租户更新命中。支持时引擎级单语句；不支持时**抛诊断不降级**。
 
-**V4.9.68 租户钳制（安全修复）**：更新校验后**覆写入参 `TenantId` 为当前已验证租户**。
+**历史补充（V4.9.68 租户钳制，仍有效的安全层）**：更新校验后覆写入参 `TenantId` 为当前已验证租户——更新载荷中的 `TenantId` 字段**无效、不再透传**（防止"把订单改挂别的租户"的跨租户转移伪造）。此层防**字段伪造**，ADR89 谓词注入防**越权命中**，两者叠加。
 
-> **行为变化**：更新载荷中的 `TenantId` 字段从此**无效、不再透传**。
->
-> **为什么这样设计**：之前用户可以在更新载荷中携带任意 `TenantId`——比如"租户 42 的用户把自己订单改挂租户 99"——这是跨租户转移漏洞。钳制后，写入的 `TenantId` 由框架强制覆盖为当前已验证租户，消除伪造可能。
+> **为什么这样设计**：之前用户可以在更新载荷中携带任意 `TenantId`——比如"租户 42 的用户把自己订单改挂租户 99"——这是跨租户转移漏洞。钳制 + 谓词注入后，写入的 `TenantId` 由框架强制，消除伪造与越权可能。
 
-**三态作用域（V4.9.68）**：`TenantScope{Kind: None/Specific/Suppress}` 提供显式三态控制：
+**三态作用域（ADR36）**：`TenantScope{Kind: None/Specific/Suppress}` 提供显式三态控制——**无覆盖 / 显式指定 / 显式抑制**三者必须可区分，**不得用 null 双义表达**：
 
 | 状态 | 语义 | 用途 |
 |:--|:--|:--|
-| `None` | 无租户 | `ExecuteWithoutTenantAsync`（仅访问平台表） |
-| `Specific` | 指定租户 | `ExecuteInTenantAsync(tenantId, ...)`（以某租户身份执行） |
-| `Suppress` | 抑制租户 | 修复 `ExecuteWithoutTenantAsync` 在 ambient 含租户时穿透的契约失真 |
+| `None` | 无覆盖（不声明租户，随环境/缺省解析） | 默认态；未显式指定/抑制时的缺省行为 |
+| `Specific` | 显式指定租户 | `ExecuteInTenantAsync(tenantId, ...)`（仅 System 作用域，以某租户身份执行） |
+| `Suppress` | 显式抑制租户 | `ExecuteWithoutTenantAsync(...)`（仅 System 作用域，无租户执行——非"None 缺省"，是显式声明"不要租户"） |
 
 `TenantScopeManager.BeginTenantScope(long?)` 是底层入口，`ITenantScopeRestorer` 收敛为薄封装（供 Outbox/Inbox 跨租户事件恢复上下文使用）。
 

@@ -83,7 +83,12 @@ description: 导航扩展使用指南：菜单项定义/贡献者、IMenuManager
 
 ### Step 1：启用导航扩展
 
-消费方引用 `TKWF.Ext.Navigation` 包（传递引用带入 Permissions）。扩展经 `[TKWFExtension("Navigation")]` 被 SG1 自动发现，三钩子自动接线——**无需手动注册**：
+消费方引用 `TKWF.Ext.Navigation` 包（传递引用带入 Permissions）。扩展经 `[TKWFExtension("Navigation")]` 被 SG1 自动发现，三钩子自动接线——**无需手动 DI 注册**；但**启用必须白名单声明**（发现 ≠ 启用）：
+
+```csharp
+// 消费方 AssemblyInfo / 初始化器所在程序集
+[assembly: TKWFEnabledExtension(typeof(NavigationExtensionInitializer<>))]
+```
 
 ```xml
 <!-- 消费方 .csproj -->
@@ -94,7 +99,7 @@ description: 导航扩展使用指南：菜单项定义/贡献者、IMenuManager
 
 ### Step 2：贡献菜单项
 
-业务模块实现 `IMenuContributor` 接口（V4.10.29 起 SG1 接口判定收集，无需特性标记）：
+业务模块实现 `IMenuContributor` 接口（V4.10.30 起——贡献者机制 A+ 阶段 2——SG1 接口判定收集，无需特性标记；`[MenuContributor]` 特性已删除）：
 
 ```csharp
 public class MainMenuContributor : IMenuContributor
@@ -161,7 +166,7 @@ public class MenuService
 | 概念 | 说明 |
 |:--|:--|
 | 菜单项（MenuItemDefinition） | 菜单数据——Name/DisplayName/Url/Icon/Order/Parent/RequiredPermissions |
-| 菜单贡献者（IMenuContributor） | 业务模块贡献菜单项的类，实现接口即可（V4.10.29 起 SG1 接口判定，不再用 `[MenuContributor]` 特性） |
+| 菜单贡献者（IMenuContributor） | 业务模块贡献菜单项的类，实现接口即可（V4.10.30 起 SG1 接口判定，不再用 `[MenuContributor]` 特性） |
 | 菜单管理器（IMenuManager） | 组装树形菜单 + 权限过滤 |
 | 菜单定义仓库（IMenuDefinitionRepository） | 收集的菜单项存储（ConfigureServices 阶段填充） |
 

@@ -27,10 +27,11 @@ dotnet add package TKWF.Domain.Web                      # Web 集成
 // Domain/AppUserInfo.cs
 public class AppUserInfo : IUserInfo
 {
+    public string UserIdString { get; set; } = "";   // 必含
     public string UserName { get; set; } = "";
-    public string DisplayName { get; set; } = "";
-    public string? Email { get; set; }
-    public List<string> Roles { get; set; } = new();
+    public string DisplayName { get; set; } = "";    // 必含
+    public EnumLoginFrom LoginFrom { get; set; }      // 必含
+    public List<string>? Roles { get; set; }
 }
 ```
 
@@ -38,7 +39,7 @@ public class AppUserInfo : IUserInfo
 
 ```csharp
 // Domain/Services/GreetingService.cs
-[GenerateController]                     // ← 触发 SG#4 代码生成
+[GenerateController]                     // ← 触发 SG1b 生成控制器/接口/装饰器
 public class GreetingService(
     DomainUser<AppUserInfo> user)        // ← DomainUser 自持实例化
     : DomainServiceBase<AppUserInfo>(user)
@@ -56,13 +57,29 @@ public class GreetingService(
 ## 第四步：配置主机
 
 ```csharp
-// Program.cs
-builder.ConfigWebAppDomain<AppUserInfo, AppDomainInitializer>()
-    .UseWebSession()
-    .UseGraphQLApiService<AppUserInfo>()
-    .Build();
+// Program.cs —— TKWF.Domain V2 四阶段管道初始化（脚手架 webapi/Program.cs 实况）
+var builder = WebApplication.CreateBuilder(args);
 
-app.Run();
+var app = builder.ConfigWebAppDomain<AppUserInfo, AppDomainInitializer, DomainWebOptions>(
+        "DomainOptions", cfg =>
+        {
+            cfg.UseWebExceptionMiddleware = true;
+            cfg.UseFreeSqlEntityDAC(); // 从配置绑定读取 ConnectionString
+        })
+    .RegisterServices((services, cfg) => { })
+    .UseWebSession(o =>
+    {
+        o.SessionKeyName = "AppApiSession";
+        o.ExpiredTimeSpan = TimeSpan.FromMinutes(15);
+    })
+    .UseApiService(opt =>
+    {
+        opt.UseGraphQL("/graphql");
+        opt.UseRest("/api");
+    })
+    .Build(app => { });
+
+await app.RunWithGraphQLCommandsAsync(args);
 ```
 
 ## 第五步：查询

@@ -21,32 +21,32 @@ TKWF.ApiClient 提供强类型的 RPC 客户端，远程调用领域服务如同
 ## 安装客户端包
 
 ```shell
-# 基础客户端
-dotnet add package TKWF.Domain.ApiClient
+# 客户端核心（含 GraphQL 传输，基座包）
+dotnet add package TKWF.Domain.Api
 
-# 按传输协议选择
-dotnet add package TKWF.Domain.ApiClient.GraphQL   # GraphQL 传输
-dotnet add package TKWF.Domain.ApiClient.Rest       # REST 传输
+# REST 传输（可选，按需）
+dotnet add package TKWF.Domain.Api.Rest
 ```
+
+> **注**：不存在 `TKWF.Domain.ApiClient.GraphQL` 包——GraphQL 能力含于基座包 `TKWF.Domain.Api`（csproj 项目名 `ApiClient`，发布包名 `TKWF.Domain.Api`）。
 
 ## 配置客户端
 
 ```csharp
-// 客户端 Program.cs
-builder.Services.AddApiClient<AppUserInfo>(options =>
+// 客户端 Program.cs —— 真实入口 UseApiClient（签名以源码为准）
+var gql = new GraphQLClient("https://api.example.com");   // 或 RestClient
+builder.Services.UseApiClient<AppUserInfo>(gql, options =>
 {
-    options.BaseUrl = "https://api.example.com";
-    options.Transport = TransportType.GraphQL;
-    options.TokenProvider = new TokenProvider();  // 提供认证 Token
+    // DomainClientOptions：IsDevelopment / ApplicationName / AutoRedirectOnAuthRequired / LoginUrl 等
+    // 协议选择器是 ApiClientType，无 Transport/TransportType/BaseUrl/Timeout 选项
 });
 ```
 
 ## 使用客户端
 
-SG#3 自动生成强类型客户端代理：
+SG3 自动生成强类型客户端代理，经 `AddApiServices` 注册进 DI：
 
 ```csharp
-// 自动生成 — 通过 DI 注入
 public class MyAppService
 {
     private readonly TodoServiceClient _todoClient;
@@ -65,12 +65,14 @@ public class MyAppService
 }
 ```
 
+> **提示**：`ApiMetadata` 是客户端契约唯一事实源（SG3 纯消费，ADR81/93）——服务端契约字段变化后客户端不重新生成会静默 400。错误处理走三层事件模型（`DomainClientUser.OnAuthRequired/OnAuthFailed/OnServiceError`）。
+
 ## 传输协议选择
 
-| 协议 | 包 | 特点 |
-|:-----|:---|:-----|
-| GraphQL | `ApiClient.GraphQL` | 灵活查询、按需取字段 |
-| REST | `ApiClient.Rest` | 简单直接、HTTP 标准 |
+| 协议 | 包 | 选择器 | 特点 |
+|:-----|:---|:-----|:-----|
+| GraphQL | 基座包 `TKWF.Domain.Api` | `ApiClientType.GraphQL` | 灵活查询、按需取字段 |
+| REST | `TKWF.Domain.Api.Rest` | `ApiClientType.Rest` | 简单直接、HTTP 标准 |
 
 ## 参考
 

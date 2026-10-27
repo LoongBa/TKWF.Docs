@@ -49,7 +49,7 @@ public class OrderService : DomainServiceBase<DmpUserInfo>
     {
         // 正确：通过 User.Use<T>() 获取服务（AOP 生效）
         var memberSvc = User.Use<MemberService>();
-        var member = await memberSvc.EntityGetAsync(dto.MemberId);
+        var member = await memberSvc.GetMemberAsync(dto.MemberId);
 
         // 错误：直接 new 或从 DI 解析（AOP 不生效）
         // var wrong = new MemberService(...);
@@ -65,9 +65,9 @@ DomainUser 通过 `AsyncLocal` 自动在异步调用链中传播：
 public async Task ProcessOrderAsync(long orderId)
 {
     // DomainUser 自动传播到下游调用
-    var order = await orderService.EntityGetAsync(orderId);
-    await inventoryService.ReserveStockAsync(order.Items);  // 自动继承用户上下文
-    await paymentService.ChargeAsync(order.TotalAmount);    // 自动继承用户上下文
+    var order = await User.Use<OrderDataService>().GetByIdAsync(orderId);
+    await User.Use<InventoryService>().ReserveStockAsync(order.Items);  // 自动继承用户上下文
+    await User.Use<PaymentService>().ChargeAsync(order.TotalAmount);    // 自动继承用户上下文
 }
 ```
 
@@ -77,12 +77,11 @@ public async Task ProcessOrderAsync(long orderId)
 
 ```csharp
 // 后台 Job 中
-await domainHost.BeginSystemScopeAsync(async scope =>
-{
-    // scope.System 表示系统身份
-    // 领域服务可用，审计写 ActorType=System
-    await orderService.ReconcileOrdersAsync();
-});
+// 无回调重载：await using 接收 DomainSessionScope<TUserInfo>，出作用域自动恢复上下文
+await using var sysScope = await domainHost.BeginSystemScopeAsync(sp);
+// sysScope.System 表示系统身份（仅系统作用域内可用）
+// 领域服务可用，审计写 ActorType=System
+await sysScope.System.Use<OrderService>().ReconcileOrdersAsync();
 ```
 
 > 详细设计见 [SystemActor 系统角色解析](../explanation/system-actor-explained.md)
@@ -93,15 +92,15 @@ await domainHost.BeginSystemScopeAsync(async scope =>
 
 ### 2.1 编译期 AOP 原理
 
-TKWF 使用 **Source Generator（SG）在编译期生成 AOP 代码**——不是运行时动态代理。SG1 扫描 `[Transactional]` / `[AuthorityFilter]` 等标记，生成装饰器类（Decorator），在运行时拦截方法调用。
+TKWF 使用 **Source Generator（SG）在编译期生成 AOP 代码**——不是运行时动态代理。SG1b 生成装饰器壳（Decorator）；事务/权限拦截由 `StaticDomainInterceptor` 在**运行期**按特性判定（方法级/类级特性 + 反射结果缓存），并不逐方法生成拦截代码。
 
 ```
 编译期：
-  SG1 扫描标记 → 生成 Decorator 类（事务/权限/日志拦截）
+  SG1b 扫描标记 → 生成 Decorator 壳（方法转发 + 拦截器接入）
   → 注册到 DI 容器
 
 运行时：
-  请求进入 → DI 解析 Decorator → 执行拦截逻辑 → 调用真实方法
+  请求进入 → DI 解析 Decorator → StaticDomainInterceptor 运行期判定事务/权限 → 调用真实方法
 ```
 
 ### 2.2 三层事务体系
@@ -128,13 +127,15 @@ public async Task TransferFundsAsync(long fromId, long toId, decimal amount)
 ### 2.3 AuthorityFilter 权限拦截
 
 ```csharp
-// 全局注册
-services.AddGlobalFilter<AuthorityFilterAttribute<DmpUserInfo>>();
+// 全局注册（初始化器 InitializeDiContainer 内，实例形态）
+AddGlobalFilter(new AuthorityFilterAttribute<DmpUserInfo>());
 
 // 控制器级
 [AuthorityFilter]
-public class OrderController : DomainControllerBase<DmpUserInfo>(User)
+public class OrderController : DomainControllerBase<DmpUserInfo>
 {
+    public OrderController(DomainUser<DmpUserInfo> user) : base(user) { }
+
     [RequireRoleFlag("Admin", "Finance", Match = MultiRoleMatch.Any)]
     public async Task RefundAsync(long orderId) { /* ... */ }
 }
@@ -146,46 +147,32 @@ public class OrderController : DomainControllerBase<DmpUserInfo>(User)
 
 ### 3.1 Service 依赖注入模式
 
-TKWF 中 Service 之间通过构造函数注入协作：
+TKWF 中 Service 之间**禁止构造函数注入协作**（DI004 红线，默认 Error 零豁免）——统一经 `User.Use<T>()` 懒解析：
 
 ```csharp
 public class OrderService : DomainServiceBase<DmpUserInfo>
 {
-    private readonly MemberService _memberSvc;
-    private readonly InventoryService _inventorySvc;
-
-    public OrderService(
-        DomainUser<DmpUserInfo> user,
-        MemberService memberSvc,
-        InventoryService inventorySvc)
-        : base(user)
-    {
-        _memberSvc = memberSvc;
-        _inventorySvc = inventorySvc;
-    }
+    public OrderService(DomainUser<DmpUserInfo> user) : base(user) { }
 
     public async Task CreateOrderAsync(CreateOrderDto dto)
     {
+        // 域服务间协作经 User.Use<T>() 懒解析（DI004：禁止构造注入域服务）
+        var memberSvc = User.Use<MemberService>();
+        var inventorySvc = User.Use<InventoryService>();
+
         // 1. 验证会员
-        var member = await _memberSvc.EntityGetAsync(dto.MemberId)
+        var member = await memberSvc.GetMemberAsync(dto.MemberId)
             ?? throw new DomainException("会员不存在");
 
         // 2. 检查库存
-        var available = await _inventorySvc.CheckStockAsync(dto.ProductId, dto.Quantity);
+        var available = await inventorySvc.CheckStockAsync(dto.ProductId, dto.Quantity);
         if (!available) throw new DomainException("库存不足");
 
-        // 3. 创建订单
-        var order = new Order
-        {
-            MemberId = dto.MemberId,
-            ProductId = dto.ProductId,
-            Quantity = dto.Quantity,
-            TotalAmount = dto.Quantity * dto.UnitPrice
-        };
-        await EntityAddAsync(order);
+        // 3. 创建订单（数据写读经 DataService，EntityAddAsync 不在 DomainServiceBase 公开面）
+        await User.Use<OrderDataService>().CreateAsync(dto);
 
         // 4. 扣减库存
-        await _inventorySvc.ReserveStockAsync(dto.ProductId, dto.Quantity);
+        await inventorySvc.ReserveStockAsync(dto.ProductId, dto.Quantity);
     }
 }
 ```
@@ -196,16 +183,16 @@ public class OrderService : DomainServiceBase<DmpUserInfo>
 [Transactional]  // 所有 Service 调用在同一个事务内
 public async Task CompleteOrderAsync(long orderId)
 {
-    var order = await EntityGetAsync(orderId);
+    var order = await User.Use<OrderDataService>().GetByIdAsync(orderId);
 
-    // 跨 Service 调用——事务自动加入
-    await paymentService.ChargeAsync(order.MemberId, order.TotalAmount);
-    await inventoryService.ConfirmStockAsync(order.ProductId, order.Quantity);
-    await notificationService.SendOrderCompleteAsync(order.MemberId, orderId);
+    // 跨 Service 调用——事务自动加入（经 User.Use<T>() 懒解析）
+    await User.Use<PaymentService>().ChargeAsync(order.MemberId, order.TotalAmount);
+    await User.Use<InventoryService>().ConfirmStockAsync(order.ProductId, order.Quantity);
+    await User.Use<NotificationService>().SendOrderCompleteAsync(order.MemberId, orderId);
 
-    // 更新订单状态
+    // 更新订单状态（写操作经 DataService）
     order.Status = OrderStatus.Completed;
-    await EntityUpdateAsync(order);
+    await User.Use<OrderDataService>().UpdateAsync(order);
 }
 ```
 

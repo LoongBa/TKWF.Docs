@@ -7,7 +7,7 @@ description: 深度理解 TKWF 数据层架构与 ORM 无关性设计，IEntityD
 
 > 领域业务不必关心数据怎么存。换数据库、换 ORM、换表结构同步策略——业务代码一行不改。
 
-TKWF 的数据层围绕一条核心原则设计：**领域层不依赖任何具体 ORM**。不管底层跑的是 FreeSql、EF Core 还是 Mock 数据库，DataService 写的 CRUD 代码完全一样。这不是约定，是架构强制——核心层（`TKW.Framework.Domain`）零 ORM 引用，连 NuGet 依赖都没有。
+TKWF 的数据层围绕一条核心原则设计：**领域层不依赖任何具体 ORM**。不管底层跑的是 FreeSql、EF Core 还是 Mock 数据库，DataService 写的 CRUD 代码完全一样。这不是约定，是架构强制——核心层（`TKW.Framework.Domain`）**零 ORM 引用**（不含 `IFreeSql`/`DbContext`/任何 ORM 包；注意它仍携带少量非 ORM 的传递依赖，如 `Microsoft.AspNetCore.DataProtection`/`Microsoft.Extensions.Hosting`——这层曾导致 SG 门控误判，v4.10.84 改为精确名单，见架构笔记 01 §二）。
 
 ---
 
@@ -336,9 +336,9 @@ services.AddScoped(typeof(IEntityDAC<>), typeof(MockDbEntityDAC<>));
 
 MockDbEntityDAC 支持完整的 CRUD 语义：Insert 后实体自动获得 Id，Delete 从集合移除，Update 按主键匹配替换。查询通过 `IQueryable` 走 LINQ to Objects，与真实 DAC 行为一致。
 
-### 6.2 TestingEntityDAC
+### 6.2 TestingEntityDAC（已退役）
 
-`TestingEntityDAC` 是更轻量的测试实现，专注于 Contract 测试场景。它不依赖 Mock 框架，纯内存操作，验证 DataService 的 CRUD 行为是否符合预期。
+`TestingEntityDAC` 是早期的轻量测试实现（纯内存 Contract 测试）。**已退役，不得复活**——自 v4.9.44 起唯一内存 DAC 是 `MockDbEntityDAC`（见上节 §6.1）；测试走标准契约测试形态（`DomainXunitTestBase` + `ConfigTestDomainAsync` + `MockDbEntityDAC`）。
 
 ---
 
@@ -385,7 +385,7 @@ public interface ITransactionManager
 |:--|:--|:--|
 | 开发环境快速迭代 | FreeSql | `SyncStructure` 运行时自动建表改表，零迁移文件 |
 | 生产环境严格的 Schema 管理 | EF Core | Migrations 文件版本化，支持 ALTER 回滚 |
-| 单元测试 | Mock（MockDbEntityDAC / TestingEntityDAC） | 零数据库依赖，纯内存 CRUD |
+| 单元测试 | Mock（`MockDbEntityDAC`——唯一内存 DAC；`TestingEntityDAC` 已退役不得复用） | 零数据库依赖，纯内存 CRUD |
 | 多租户分库 | FreeSql | `IFreeSqlCache` 按连接串缓存，工厂模式成熟 |
 | 已有 EF Core 生态的项目 | EF Core | 适配包 7 组件，一行切换，`EFCoreModelConfigurator` 自动补偿 |
 | 同时需要开发效率和生产严谨 | FreeSql（开发）+ EF Core（生产） | 同一 Entity 类，双 ORM 零冲突（BCL 标准属性） |
