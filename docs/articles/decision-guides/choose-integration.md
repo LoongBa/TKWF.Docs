@@ -194,6 +194,7 @@ public sealed class OrderServiceTests : DomainXunitTestBase<DmpUserInfo, OrderSe
 
 - **FreeSql / EFCore**：Web / Blazor / Testing 宿主通过配置选项接入 ORM，如 `cfg.UseFreeSqlEntityDAC()`（FreeSql）；EFCore 有对应接入形态（以源码为准）。ORM 选择不影响领域层——数据访问统一收敛在 SG1 生成的 DataService 层，见架构笔记 06「数据访问与测试分层」。
 - **三种引用模式**：消费方项目引用 TKWF 框架有三种方式——**Project**（`ProjectReference`，默认，可断点调试 / 与框架同构开发）、**Dll**（`<Reference HintPath>`，由 `build/TKWF.Domain.targets` 按 `TKWFRole` 注入，离线 / 验证发布一致性）、**NuGet**（`PackageReference`，标准分发）。详见架构笔记 01 §五「双仓 + 三引用模式」。
+  - 注意：`TKWFRole` 只决定 **Dll 模式的引用注入**（Domain / ApiService / ApiClient 三链），不参与任何门控判定；`TKWFSourceRoot`（源码树）与 `TKWFDeployPath`（部署包）是两个不同的根，**不得混用**。
 
 > 接线事实来源：`_xCodeGen/xCodeGen.Cli/scaffolding/` 下各宿主（webapi / blazorweb / blazorwasm）的 `Program.cs` 与 `.csproj` 模板。
 

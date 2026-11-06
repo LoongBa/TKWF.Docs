@@ -55,6 +55,17 @@ User.Use<IService>()       → AOP 管线激活 → 装饰器执行（接口路�
 User.Use<MyService>()     → 直接调用 → 无拦截（类路径，域内调用）
 ```
 
+> **守卫**：`Use<T>()` 传入的是**具体类**且该类实现了 `IAopContract`（即接口契约形状）→ 抛"请改用接口"——避免绕开 AOP 的隐形通道。
+
+### 容易想错的四件事（关键不对称）
+
+| 你以为 | 实际 |
+|:-------|:-----|
+| 一次请求一个 DI scope，所有服务共享 | **每次 AOP 调用**新建一个 scope（拦截器内 `CreateScope`）；HTTP scope 是另一回事。过滤器/Bag 状态不要跨调用保存 |
+| `Use<T>()` 从 DI 取实例 | **接口** → DI 解析（装饰器工厂）；**具体类** → `ActivatorUtilities` 现造，**不进 DI** |
+| 类级 `[Transactional]` 一定生效 | 反射缓存键是 `(MethodInfo, Target.GetType())`——类级特性必须落在**具体实现类**上（继承方法 + 派生类声明的类级特性，旧版会漏搜，v4.9.89 修复） |
+| 事务提交后再发事件 | **Outbox 导出在 `CommitAsync()` 之前**（同一事务）→ 业务 + 事件**原子**；回滚不会发事件 |
+
 ## 内置 Filter
 
 ### [AuthorityFilter]

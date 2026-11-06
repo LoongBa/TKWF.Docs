@@ -95,6 +95,8 @@
       href: articles/advanced/configuration.md
     - name: 异常处理
       href: articles/advanced/error-handling.md
+    - name: 排障速查
+      href: articles/advanced/troubleshooting.md
     - name: 增强查询 QueryBuilder
       href: articles/advanced/query-guide.md
     - name: 条件表达式构建器

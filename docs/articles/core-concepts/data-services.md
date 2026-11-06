@@ -59,6 +59,29 @@ public async Task<List<MerchantDto>> GetActiveMerchantsAsync(int limit = 20)
 | `[Transactional]` AOP 声明 | 跨 Service 调用 | 拦截器统一管理事务（方法级 → 类级兜底） |
 | `ITransactionManager` | 手动精细控制 | 注入 `ITransactionManager` 手动管理（`DomainUser.BeginTransaction()` 已废弃） |
 
+### 写 API 的事务契约（内部形态）
+
+从基类视角看，每个写方法的形状是固定的：
+
+```csharp
+public async Task<TDto> CreateAsync(TDto dto, CancellationToken ct = default)
+{
+    using var tx = await BeginTxScopeAsync(ct);      // 已有外层事务则加入，否则新建（默认 Serializable）
+    dto.ValidateData(EnumSceneFlags.Create);          // 场景校验
+    var entity = dto.ToEntity(EnumSceneFlags.Create);
+    var result = await InternalCreateAsync(entity, ct); // 审计 → 钩子 → Validate → DAC
+    if (tx != null && tx.IsActive) await tx.CommitAsync(ct);
+    return MapToDto(result);
+}
+```
+
+要点：
+
+- **`InternalXxxAsync` 永不控事务**（纯粹执行）；事务只在整个公开方法一层。
+- 批量写入上限 **`MaxBatchSize = 500`**（超限抛 `ArgumentOutOfRangeException`）。
+- `DeleteAsync` 按 `HasSoftDelete` 分派软删/硬删。
+- **未注册 `ITransactionManager`**（InMemory/测试 DAC 等场景）→ `tx == null`，调用方必须判空并继续（设计内兼容路径；生产 FreeSql/EFCore 适配器恒有实现）。
+
 ## 参考
 
 - [G06 — 领域数据服务与数据存取使用指南（源文档）](https://github.com/LoongBa/TKW.Framework/blob/master/docs/G06-%E9%A2%86%E5%9F%9F%E6%95%B0%E6%8D%AE%E6%9C%8D%E5%8A%A1%E4%B8%8E%E6%95%B0%E6%8D%AE%E5%AD%98%E5%8F%96%E4%BD%BF%E7%94%A8%E6%8C%87%E5%8D%97.md)

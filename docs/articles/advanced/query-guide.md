@@ -174,6 +174,27 @@ query {
 | 客户端 | `QueryableBuilder` 将表达式树编译为 GraphQL 请求发送到服务端 |
 | 服务端 | 经 EQR 直连 `IEntityReadOnlyDAC<T>` + `IGlobalQueryFilter` 策略（V4.9.40 起） |
 
+### 服务端进程内：域内 vs 域外（两条路）
+
+服务端的 `Query<T>()` 按调用位置分流，**路径不同、行为不同**：
+
+```
+DomainUser.Query<TEntity>()
+  ├─ 域内（DomainLayerContext.IsInsideDomain == true，即已在 AOP proceed 内，如 Service 方法里）
+  │    IEntityReadOnlyDAC<TEntity>.Query
+  │      → 逐个 IGlobalQueryFilter.Apply(query, QueryContext(...))   ← 3 跳，不过 AOP
+  │      → 返回 IQueryable<TEntity>
+  └─ 域外（控制器外 / 客户端 / 无 AOP 帧处）
+       Use<IEntityQueryRoot>().Query<TEntity>()                        ← 走完整 AOP（AuthorityFilter 等）
+         → EQR 实现内部同样直连 DAC + 策略
+```
+
+关键事实：
+
+- **`IGlobalQueryFilter` 是读侧唯一横切点**：软删除、多租户、数据权限都挂在这里；多实例按注册序链式 `Apply`。查询少行/多行先查它。
+- **写侧租户隔离不靠过滤器**：`IEntityDAC.UpdateWhereAsync` 自动注入 `TenantId` 谓词（ADR89）。
+- 域内路径**不过 AOP**——因此域内组合调用不会重复触发 `AuthorityFilter`；但要小心：域内调用没有全局过滤器的"自动加成"以外的横切，数据权限仍依赖 `IGlobalQueryFilter` 本身。
+
 ---
 
 ## 源文档参考

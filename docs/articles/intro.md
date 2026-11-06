@@ -207,7 +207,7 @@ public class ReportService(DomainUser<AppUserInfo> user) : DomainServiceBase<App
 
 TKWF 的架构约束让 AI 生成代码**结构性可靠**：
 
-- **编译期约束** — SG 在编译时验证所有结构性契约（诊断码体系 111 项属性，含 Error/Warning 分级），不合规直接报错
+- **编译期约束** — SG 在编译时验证所有结构性契约（诊断码体系 123 项属性，含 Error/Warning 分级），不合规直接报错
 - **两道防线** — 编译器拦截结构性错误（接口/返回类型/命名/架构边界）；运行时拦截行为错误（授权/验证/事务）
 - **粒度细分** — 元数据管线分五生成器（SG1a/SG1b/SG2a/SG2b/SG3），每层职责单一，Agent 无需理解全局架构
 - **12 个框架级 Skills** — 设计→实体→业务→测试→前端→Mock + 扩展/分析/AI，Agent 按 skill 分步完成开发
@@ -260,6 +260,56 @@ TKWF 的架构约束让 AI 生成代码**结构性可靠**：
 ```
 
 **领域层是业务的唯一载体。** 接入层和表现层代码全部由 SG 自动生成，不包含任何业务判断。
+
+---
+
+## 🧱 关键构件一览
+
+业务开发中 90% 的时间只与下面这些构件打交道（**粗体**为消费方最常接触的）：
+
+| 构件 | 一句话职责 | 你最常做的操作 |
+|:-----|:-----------|:---------------|
+| **`DomainUser<TUserInfo>`** | 用户上下文 + **唯一服务解析入口** `Use<T>()` / `Query<T>()` | 领域代码里 90% 的调用从这里出发 |
+| **`DomainServiceBase<TUserInfo>`** | 领域服务基类；`User` 属性 + `Use<T>()` | 所有业务 Service 继承它 |
+| **`DomainDataServiceBase<TEntity,TDto>`** | CRUDQ 实现 + 事务作用域 + 审计/校验钩子 | 由 xCodeGen 生成骨架 |
+| **`DomainHostInitializerBase<TUserInfo>`** | 初始化模板方法：DI 注册、过滤器、门控、建表建视图 | 消费方 override 那些 `OnXxx` |
+| `DomainControllerBase` | 服务 + `IAopContract` 标记 = AOP 入口 | A 路径手写 Controller 继承它 |
+| `DomainUserHelperBase<TUserInfo>` | 用户生命周期 + 登录钩子家族（密码/短信/扫码/OAuth/联邦） | 消费方子类 override 登录钩子 |
+| `DomainHost<TUserInfo>` | 进程单例宿主：持 DI 根、会话管理器、全局过滤器、元数据 | 只在启动期接触；业务代码不要碰 |
+| `StaticDomainInterceptor` | AOP 三阶段管线 + `[Transactional]` + Outbox 导出 | 新增过滤器时读它 |
+| `ProjectMetaContext`（生成） | **唯一元数据源**：Entity/Service/DataService/Enum/Controller + GateRules | 需要元数据时读它，**不要反射** |
+| `IEntityQueryRoot`（生成） | 域外查询的统一 AOP 聚合根 | 查询链路排障 |
+| `FilterBuilder<TUserInfo>` | 全局过滤器声明式构建（S→F→O 三级排序） | 加/改/删全局横切 |
+
+---
+
+## 📖 术语表（跨文档口径统一）
+
+| 术语 | 含义 | 注意 |
+|:-----|:-----|:-----|
+| `TUserInfo` | 消费方用户信息类型（`class, IUserInfo, new()`） | 泛型贯穿全框架；非泛型门面优先 |
+| `IAopContract` | AOP 契约标记接口 | **只有实现它的接口才走 AOP**；具体类直接 `Use<T>` 会被守卫拒绝 |
+| `EQR` | Entity Query Root（`IEntityQueryRoot` 聚合根） | 域外 `Query<T>()` 走它；域内直连 DAC |
+| `VEntity` | 只读视图实体（ViewSql → 视图 → 查询） | 只走 GraphQL/EQR；**REST 明确不支持** |
+| `Dto` | 数据传输对象（`{Entity}Dto`） | 字段裁剪/Dto 最小化有专门纪律 |
+| `Eto` | 事件传输对象（`[DistributedEvent]`） | 必须可 JSON 序列化（门控 Gate002） |
+| `UoW` | Unit of Work（`ITransactionManager`） | 请求级上下文令牌 |
+| 扩展 / `TKWF.Ext.*` | 独立仓库的业务扩展包 | **发现 ≠ 启用**，必须白名单声明 |
+| `Contributor` | 贡献者接口（`IMenuContributor`/`IPageContributor`…） | 接口即意图，编译期 `new` |
+| 生成物 | `*.g.cs` / `*.biz.cs` / `DataServices/*.cs` | **禁止手改、禁止阅读作为契约**；读活态文档 `.TKWF/{域}/` |
+
+---
+
+## 🚫 框架刻意不做的事（边界，越界即设计错误）
+
+| 不做 | 原因 | 正确形态 |
+|:-----|:-----|:---------|
+| 运行时扫描/发现（`Assembly.GetTypes` 找类型） | 破坏编译期确定性 | SG 生成 `new`/`typeof` 编译期解析 |
+| 可空 `DomainUser` | 消灭整类 NRE；"构造即合法" | SystemActor + `BeginSystemScopeAsync` |
+| 动态插件热加载 | 违背编译期确定性 + 合规风险 | 编译期扩展（白名单） |
+| 自动启用扩展 | 隐式魔法 | `[TKWFEnabledExtension]` 白名单显式启用 |
+| 静默降级 / 静默 return | 静默失效比报错危险 | 守卫硬失败 + 诊断码 |
+| 运行时反射驱动多态反序列化 | AOT + 性能 | 会话 JSON 编译期闭集注册表 |
 
 ---
 

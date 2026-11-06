@@ -14,6 +14,27 @@ Conditions Builder 提供**链式 API** 构建动态查询条件，支持精确�
 
 ---
 
+## 四层条件体系（全景）
+
+条件能力不是单一 API，而是**四层递进**（从底层到业务层）：
+
+| 层 | 形态 | 说明 |
+|:--:|:-----|:-----|
+| 1 | `PredicateBuilderBase` | 两阶段构建（并发隔离）的框架底层（`TKWF.Utility`）；一般不直接碰 |
+| 2 | `Entity.Conditions` 静态类 | **原子谓词工厂**（xCodeGen + SG1 双重生成）——`ByXxx(value)` / `LikeXxx(kw)` / `ByXxxRange(begin,end)` |
+| 2' | `Entity.Where` / `PredicateBuilder` 链式入口 | `Conditions` 之上的链式 AND/OR/`If()` 组合层（日常最常用） |
+| 3 | `Entity.Predicates` 命名预设 | 常用过滤组合固化为具名属性（D06D 第四层） |
+| 4 | `ParseSearchValue(string)` | `*` 前缀模糊、`**` 转义为精确 |
+
+**两条纪律（易踩坑）**：
+
+- **时间相关判断必须用静态方法**（如 `ByCreatedAtRange(begin, end)`），不要写 `o => o.CreatedAt >= DateTime.Today` 之类——字段值在实例创建时冻结，可能产生"今天"语义 bug。
+- **VEntity 默认不生成 `Conditions`**（ADR14 D7，V4.9.40 起）；需要时在实体标注 `[DomainGenerateCode(GenerateConditions = true)]` 显式恢复。**不要假设 VEntity 恒有谓词工厂**。
+
+> `Conditions`/`Predicates` 属生成物（`*.g.cs`），**不要手改**；要新增原子条件 → 改 Entity 字段/标注 → 重新生成。
+
+---
+
 ## 快速速查
 
 ```

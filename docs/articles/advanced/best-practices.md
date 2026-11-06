@@ -106,7 +106,10 @@ public async Task CreateTodo_Should_Return_Todo()
 |:-------|:-----|:---------|
 | 在 Service 中引用 HttpContext | 领域层耦合 Web | 使用 DomainUser 获取用户信息（`Use<T>()` 帧内） |
 | 手动 new Service | 绕过 AOP 拦截 | 通过 `User.Use<T>()`（接口→DI 装饰器；具体类→帧内现造，均不进 DI 容器） |
+| 手写/修改生成物（`*.g.cs` / `*.biz.cs` / `DataServices/*.cs`） | 生成物是编译期产物，手改必被覆盖且绕过门控 | 改 Entity 字段/标注后重新生成；**不要读生成源码作为契约**——读活态文档（`.TKWF/{域}/DOMAIN_MAP.md` 等） |
+| 把生成物/中间产物提交进 git | `schema.graphql`、`src/gql/`、`.TKWF/{域}/` 是构建产物 | 生成物不进 git；规则/配置进 git |
 | 在 Service 中管理事务 | 业务逻辑与事务耦合 | 使用 `[Transactional]` 声明式事务 |
+| 手动 `new Entity.PredicateBuilder()` | 错误入口，绕过链式约定 | 用 `Entity.Where` 链式入口 |
 | 暴露 DomainUser 给客户端 | 安全风险 | 只暴露必要的 DTO |
 
 ## 性能建议
