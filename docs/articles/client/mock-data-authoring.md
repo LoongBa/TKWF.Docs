@@ -248,7 +248,7 @@ await migrator.JsonToDatabaseAsync("./seed.json");
 ## 常见问题
 
 ### Q: MockDataSpec 和 data.ts 同时存在用哪个？
-两者共存不冲突。`data.ts` 的 `initialData` 是手填数据（精确控制），`MockDataSpec` 是规则生成（批量/场景化）。推荐先用 `data.ts` 快速起步，数据量增大后迁移到 MockDataSpec。
+两者共存不冲突。`data.ts` 的 `initialData` 是手填数据（精确控制），`MockDataSpec` 是规则生成（批量/场景化）。推荐先用 `data.ts` 快速起步，数据量增大后改用 MockDataSpec。
 
 ### Q: generated 数据每次不一样怎么办？
 指定 `seed` 字段（如 `"seed": 42`）——LCG 确定性序列保证同 seed 生成相同数据。

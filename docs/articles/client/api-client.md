@@ -1,4 +1,4 @@
-﻿---
+---
 title: ApiClient 核心
 description: ApiClient 核心：RPC 客户端核心机制与使用
 ---
@@ -45,7 +45,7 @@ public class MyViewModel
 }
 ```
 
-> **代理生成范围（v4.10.87 ADR113）**：SG3 只为**已暴露**方法生成代理，暴露判定与 SG2 端点发射条件逐项对齐（服务级 `ExposeToGraphQL`/`ExposeToRest` + 方法级 `[ApiExpose]` + 宿主是否具备 ASP.NET Core）。服务端显式关闭两条通道的方法（如 `[ApiExpose(ExposeGraphQL = false, ExposeRest = false)]`）**不会**出现在客户端代理里——升级后代理方法可能减少，**编译期即可发现**，按需调整调用点即可。
+> **代理生成范围（ADR113）**：SG3 只为**已暴露**方法生成代理，暴露判定与 SG2 端点发射条件逐项对齐（服务级 `ExposeToGraphQL`/`ExposeToRest` + 方法级 `[ApiExpose]` + 宿主是否具备 ASP.NET Core）。服务端显式关闭两条通道的方法（如 `[ApiExpose(ExposeGraphQL = false, ExposeRest = false)]`）**不会**出现在客户端代理里——代理只含可调用方法，**编译期即可确认**。
 
 ## 配置
 

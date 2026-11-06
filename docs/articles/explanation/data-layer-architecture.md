@@ -336,9 +336,9 @@ services.AddScoped(typeof(IEntityDAC<>), typeof(MockDbEntityDAC<>));
 
 MockDbEntityDAC 支持完整的 CRUD 语义：Insert 后实体自动获得 Id，Delete 从集合移除，Update 按主键匹配替换。查询通过 `IQueryable` 走 LINQ to Objects，与真实 DAC 行为一致。
 
-### 6.2 TestingEntityDAC（已退役）
+### 6.2 TestingEntityDAC
 
-`TestingEntityDAC` 是早期的轻量测试实现（纯内存 Contract 测试）。**已退役，不得复活**——自 v4.9.44 起唯一内存 DAC 是 `MockDbEntityDAC`（见上节 §6.1）；测试走标准契约测试形态（`DomainXunitTestBase` + `ConfigTestDomainAsync` + `MockDbEntityDAC`）。
+`TestingEntityDAC` 不存在（早期轻量测试实现，已从框架移除）。唯一内存 DAC 是 `MockDbEntityDAC`（见上节 §6.1）；测试走标准契约测试形态（`DomainXunitTestBase` + `ConfigTestDomainAsync` + `MockDbEntityDAC`）。
 
 ---
 
@@ -346,7 +346,7 @@ MockDbEntityDAC 支持完整的 CRUD 语义：Insert 后实体自动获得 Id，
 
 ### 7.1 ITransactionManager 抽象
 
-V4.9.52（ADR26）将事务机制从 `System.Transactions.TransactionScope` 迁移到 `ITransactionManager` 抽象。原因：FreeSql 不参与 `TransactionScope`，Linux 上多连接触发 MSDTC 崩溃（源码级验证）。
+事务统一经 `ITransactionManager` 抽象（ADR26）。设计动机：FreeSql 不参与 `System.Transactions.TransactionScope`，多连接场景在 Linux 上触发 MSDTC 崩溃（源码级验证）——因此事务抽象不依赖 `TransactionScope`，由 ORM 适配器各自实现。
 
 ```csharp
 public interface ITransactionManager
@@ -385,7 +385,7 @@ public interface ITransactionManager
 |:--|:--|:--|
 | 开发环境快速迭代 | FreeSql | `SyncStructure` 运行时自动建表改表，零迁移文件 |
 | 生产环境严格的 Schema 管理 | EF Core | Migrations 文件版本化，支持 ALTER 回滚 |
-| 单元测试 | Mock（`MockDbEntityDAC`——唯一内存 DAC；`TestingEntityDAC` 已退役不得复用） | 零数据库依赖，纯内存 CRUD |
+| 单元测试 | Mock（`MockDbEntityDAC`——唯一内存 DAC） | 零数据库依赖，纯内存 CRUD |
 | 多租户分库 | FreeSql | `IFreeSqlCache` 按连接串缓存，工厂模式成熟 |
 | 已有 EF Core 生态的项目 | EF Core | 适配包 7 组件，一行切换，`EFCoreModelConfigurator` 自动补偿 |
 | 同时需要开发效率和生产严谨 | FreeSql（开发）+ EF Core（生产） | 同一 Entity 类，双 ORM 零冲突（BCL 标准属性） |

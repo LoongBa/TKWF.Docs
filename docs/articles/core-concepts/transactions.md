@@ -39,26 +39,17 @@ TKWF 在三个层面提供事务支持，它们可以**嵌套协作**：
 
 ### 旧方案的问题
 
-TKWF 早期使用 .NET 内置的 `System.Transactions.TransactionScope` 管理事务边界。这在 Windows 上工作正常，但在 Linux/Docker 环境下存在致命问题：
-
-**根因**：FreeSql 不参与 `System.Transactions` 体系。经源码级验证，FreeSql 使用自有 `ConcurrentDictionary<int, Transaction2>` 管理线程局部事务，**从不调用** `Transaction.Current`、`EnlistTransaction` 或不实现 `IPromotableSinglePhaseNotification`。
-
-**触发场景**：
-1. `[Transactional]` 标记的方法执行多个 FreeSql 操作（如 `InsertAsync` + `UpdateAsync`）
-2. 连接池返回**不同物理连接**（取决于池大小、时序）
-3. `Microsoft.Data.SqlClient` 的 `EnlistNonNull` 自动将第二个连接登记到 ambient TransactionScope
-4. 第二个 `IPromotableSinglePhaseNotification` 枚举触发**分布式事务升级（MSDTC）**
-5. Linux 上没有 MSDTC 协调器 → **`PlatformNotSupportedException` 崩溃**
+**设计动机（ADR26）**：事务抽象**不依赖** `System.Transactions.TransactionScope`——FreeSql 不参与 `System.Transactions` 体系（经源码级验证，FreeSql 使用自有 `ConcurrentDictionary<int, Transaction2>` 管理线程局部事务，**从不调用** `Transaction.Current`、`EnlistTransaction` 或不实现 `IPromotableSinglePhaseNotification`）。若依赖 `TransactionScope`，多连接场景会触发**分布式事务升级（MSDTC）**，在 Linux/Docker 无协调器环境下崩溃：
 
 ```csharp
-// 旧方案——看似正常，实则 Linux 崩溃
+// 错误示范——依赖 TransactionScope 的多连接操作
 using var ts = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
 await fsql.Insert(entity).ExecuteAffrowsAsync();  // 连接 A
 await fsql.Update(other).ExecuteAffrowsAsync();    // 连接 B → MSDTC 升级 → Linux 崩溃！
 ts.Complete();
 ```
 
-**V4.9.52 迁移方案**：将 `TransactionScope` 替换为 FreeSql 原生 `UnitOfWorkManager`，经 `ITransactionManager` 抽象暴露给核心层，消费层 `[Transactional]` 用法不变。
+**现行形态**：事务经 FreeSql 原生 `UnitOfWorkManager`，由 `ITransactionManager` 抽象暴露给核心层；消费层 `[Transactional]` 声明式用法不变。
 
 ---
 
@@ -98,7 +89,7 @@ public async Task<Order> ReadCommittedExampleAsync() { ... }
 public async Task<Order> RepeatableReadExampleAsync() { ... }
 ```
 
-> **为什么默认 Serializable？** FreeSql 的 `UnitOfWork` 默认隔离级别为 `IsolationLevel.Unspecified`，在 SQL Server 上会降级为 `ReadCommitted`——与原 `TransactionScope` 的 `Serializable` 默认行为不一致。框架显式指定 `Serializable` 保留了旧行为的语义，防止静默回归。
+> **为什么默认 Serializable？** FreeSql 的 `UnitOfWork` 默认隔离级别为 `IsolationLevel.Unspecified`，在 SQL Server 上会降级为 `ReadCommitted`。框架显式指定 `Serializable` 保证跨 ORM 一致的默认语义。
 
 ### 嵌套事务
 
@@ -310,51 +301,30 @@ public class BatchJob(ITransactionManager txManager)
 }
 ```
 
-### 旧方式：DomainUser.BeginTransaction()（已废弃）
+### 事务入口
 
-`DomainUser.BeginTransaction()` 已标记 `[Obsolete]`，委托给 `ITransactionManager`：
+事务统一经 `ITransactionManager` 管理：
 
 ```csharp
-// 旧方式——仍然可用，但 IDE 会提示警告
-using var tx = User.BeginTransaction();
-
 // 推荐方式——注入 ITransactionManager
 using var tx = _txManager.Begin();
 ```
 
 ---
 
-## 兼容性说明
+## 现行机制特征
 
-### 消费层零改动
+`ITransactionManager` + `UnitOfWorkManager` 方案**不依赖 `System.Transactions`**，在 Linux/Docker 容器中运行稳定（不触发 MSDTC 升级），消费层 `[Transactional]` 声明式用法不变：
 
-`[Transactional]` 的使用方式**完全不变**——无参调用 `[Transactional]` 默认 `Serializable`，与旧 `TransactionScope` 行为一致：
-
-```csharp
-// V4.9.52 之前——使用 TransactionScope
-[Transactional]
-public async Task FooAsync() { ... }
-
-// V4.9.52 之后——使用 ITransactionManager（代码不变）
-[Transactional]
-public async Task FooAsync() { ... }
-```
-
-### Linux 兼容
-
-`ITransactionManager` + `UnitOfWorkManager` 方案不依赖 `System.Transactions`，**不再触发 MSDTC 升级**，在 Linux/Docker 容器中运行稳定。
-
-### 迁移收益
-
-| 维度 | 旧方案 | 新方案 |
-|:-----|:-------|:-------|
-| 底层机制 | `TransactionScope` + SqlClient 自动登记 | `UnitOfWorkManager` 委托解析 |
-| Linux 兼容 | ❌ 多连接 MSDTC 崩溃 | ✅ 原生支持 |
-| async 安全 | `AsyncLocal` 传播 | 实例字段 + 委托闭包 |
-| 消费层 API | `[Transactional]` | `[Transactional]`（不变） |
-| 默认隔离级别 | `Serializable` | `Serializable`（显式指定） |
-| ORM 耦合 | 核心层引用 `System.Transactions` | 核心层纯抽象，ORM 实现解耦 |
-| 测试友好 | 需 Mock TransactionScope | 未注册 `ITransactionManager` 时自动跳过 |
+| 维度 | 现行形态 |
+|:-----|:---------|
+| 底层机制 | `UnitOfWorkManager` 委托解析 |
+| Linux 兼容 | ✅ 原生支持（无 `System.Transactions` 依赖） |
+| async 安全 | 实例字段 + 委托闭包 |
+| 消费层 API | `[Transactional]` |
+| 默认隔离级别 | `Serializable`（显式指定） |
+| ORM 耦合 | 核心层纯抽象，ORM 实现解耦 |
+| 测试友好 | 未注册 `ITransactionManager` 时自动跳过 |
 
 ---
 

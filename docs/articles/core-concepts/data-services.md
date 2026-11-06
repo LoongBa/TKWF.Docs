@@ -57,7 +57,7 @@ public async Task<List<MerchantDto>> GetActiveMerchantsAsync(int limit = 20)
 |:-----|:---------|:------|
 | DataService 内置事务 | 单 DataService 方法内 | 每个 CRUD 公开方法自动开/提交（`BeginTxScopeAsync`，加入外层事务 Propagation.Required） |
 | `[Transactional]` AOP 声明 | 跨 Service 调用 | 拦截器统一管理事务（方法级 → 类级兜底） |
-| `ITransactionManager` | 手动精细控制 | 注入 `ITransactionManager` 手动管理（`DomainUser.BeginTransaction()` 已废弃） |
+| `ITransactionManager` | 手动精细控制 | 注入 `ITransactionManager` 手动管理（统一事务入口） |
 
 ### 写 API 的事务契约（内部形态）
 

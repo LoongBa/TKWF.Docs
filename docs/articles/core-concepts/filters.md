@@ -5,7 +5,7 @@ description: TKWF 全局过滤器体系详解：6 个声明式 AOP 过滤器、F
 
 # 全局过滤器体系
 
-> 从 V4.9.46 起，TKWF 在既有 AOP 拦截器（`AuthorityFilter`、`ValidateParametersFilter`、`ContentCacheFilter` 等）之上，补齐了一套完整的**全局过滤器体系**——用声明式标注表达"要什么"，由全局注册的过滤器统一执行。本质是**横切关注点的声明式治理**。
+> TKWF 在既有 AOP 拦截器（`AuthorityFilter`、`ValidateParametersFilter`、`ContentCacheFilter` 等）之上，提供了一套完整的**全局过滤器体系**——用声明式标注表达"要什么"，由全局注册的过滤器统一执行。本质是**横切关注点的声明式治理**。
 
 ---
 

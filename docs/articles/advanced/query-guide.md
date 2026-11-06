@@ -4,7 +4,7 @@ description: 增强查询 QueryBuilder 的使用指南，链式查询构造、�
 ---
 # 增强查询 QueryBuilder
 
-> `User.Query<T>()` 是 TKWF 唯一统一的查询入口（V4.9.28 起 `QueryApi`/`QueryGraphQL` 合并至此），返回 `QueryableBuilder<TEntity>`，支持链式查询构造。本文覆盖基础查询、V4.9.42 增强（CountAsync/Clone/OrderByField）与 V4.9.53 聚合查询（Aggregate/ToAggregateAsync）。
+> `User.Query<T>()` 是 TKWF 唯一统一的查询入口，返回 `QueryableBuilder<TEntity>`，支持链式查询构造。本文覆盖基础查询、V4.9.42 增强（CountAsync/Clone/OrderByField）与 V4.9.53 聚合查询（Aggregate/ToAggregateAsync）。
 
 ---
 

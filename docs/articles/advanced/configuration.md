@@ -1,4 +1,4 @@
-﻿---
+---
 title: 配置参考
 description: 配置参考：ConfigWebAppDomain 配置项完整说明，cfg 强契约、上下文提取、多租户连接串
 ---
@@ -87,17 +87,16 @@ builder.ConfigWebAppDomain<AppUserInfo, AppDomainInitializer>(cfg =>
 });
 ```
 
-## cfg 强契约（V4.9.21+）
+## cfg 强契约
 
-从 V4.9.21 起，所有 Entity DAC 配置统一为 `Use*` 前缀的强契约方法，
-替代旧版 `Set*` 扩展方法：
+Entity DAC 配置统一为 `Use*` 前缀的强契约方法：
 
-| 旧版（废弃） | 新版（V4.9.21+） | 说明 |
-|:-----------|:-----------------|:-----|
-| `SetEntityDAC` | `UseEntityDAC` | 通用 Entity DAC 注册 |
-| `SetNoEntityDAC` | `UseNoEntityDAC` | 无 Entity DAC（纯逻辑项目） |
-| `SetFreeSqlEntityDAC` | `UseFreeSqlEntityDAC` | FreeSql + 连接串模板 |
-| `SetTestingEntityDAC` | `UseMockDbEntityDAC` | 测试环境内存 Entity DAC（`TestingEntityDAC` 已退役，唯一内存 DAC 为 `MockDbEntityDAC`） |
+| 方法 | 说明 |
+|:-----|:-----|
+| `UseEntityDAC` | 通用 Entity DAC 注册 |
+| `UseNoEntityDAC` | 无 Entity DAC（纯逻辑项目） |
+| `UseFreeSqlEntityDAC` | FreeSql + 连接串模板 |
+| `UseMockDbEntityDAC` | 测试环境内存 Entity DAC（唯一内存 DAC） |
 
 ### UseFreeSqlEntityDAC
 
@@ -144,8 +143,8 @@ cfg.SetExcludedPathPrefixes("/scalar", "/public");
 
 | 配置节点 | 选项 | 说明 |
 |:---------|:-----|:-----|
-| **Host** | `SetExcludedPathPrefixes` | 排除路径前缀（V4.9.21+） |
-| | `UseHostContextExtraction` | 上下文提取中间件（V4.9.21+） |
+| **Host** | `SetExcludedPathPrefixes` | 排除路径前缀 |
+| | `UseHostContextExtraction` | 上下文提取中间件 |
 | **Session** | `Expiration` | Session 有效期，默认 8h |
 | | `RefreshOnActivity` | 活跃时自动续期，默认 true |
 | | `SlidingExpiration` | 滑动过期窗口，默认 1h |
@@ -159,8 +158,8 @@ cfg.SetExcludedPathPrefixes("/scalar", "/public");
 | **REST** | `RoutePrefix` | 路由前缀 |
 | | `EnableOpenApi` | 自动生成 OpenAPI |
 | **Web** | `CorsOrigins` | 允许的 CORS 来源 |
-| **Data** | `UseFreeSqlEntityDAC` | FreeSql + 连接串模板（V4.9.21+） |
-| | `AutoMigrateDatabase` | 表结构同步门控（V4.9.61+）：生产放行开关，默认 `false`（表结构由 DBA/CI 管理）；`true` 时仅 ORM 适配包声明生产安全的策略（如 EF Core Migrations）才执行 |
+| **Data** | `UseFreeSqlEntityDAC` | FreeSql + 连接串模板 |
+| | `AutoMigrateDatabase` | 表结构同步门控：生产放行开关，默认 `false`（表结构由 DBA/CI 管理）；`true` 时仅 ORM 适配包声明生产安全的策略（如 EF Core Migrations）才执行 |
 | | `ConnectionStringTemplate` | 连接串模板（含 `{0}` 占位，分库模式租户替换） |
 
 ## 环境配置
