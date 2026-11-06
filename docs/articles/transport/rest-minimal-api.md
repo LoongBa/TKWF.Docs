@@ -73,7 +73,7 @@ public class TodoController : DomainControllerBase<AppUserInfo>, ITodoController
 | `UpdateTodoAsync(id, input)` | PUT | `/api/{controller}/updateTodo` |
 | `DeleteTodoAsync(id)` | DELETE | `/api/{controller}/deleteTodo` |
 
-### 两级路由前缀（v4.10.85 用户裁定）
+### 两级路由前缀（用户裁定）
 
 REST 路由前缀分**两级**，各级**显式空串**有独立语义：
 
@@ -82,9 +82,9 @@ REST 路由前缀分**两级**，各级**显式空串**有独立语义：
 | **第一级 base** | `TKWF:Api:RestBasePath`（默认 `/api`）；`ApiServiceOptions.UseRestWithoutBasePath()` 入口 | **显式 `""` → 跳过第一级**（而非回退 `/api`） |
 | **第二级 模块** | 扩展 `[ExtensionModule("key", "default-prefix")]` 的 `DefaultPrefix`，可经 `TKWF:Api:Modules:{Key}:Prefix` 覆盖 | **显式 `""` → 清除模块前缀** |
 
-> **注意**：`UseApiService`（默认路径）与 `UseRestWithoutBasePath`（无 base 路径）两条路径需**独立对齐两步**——改动前缀语义时两条路径都要验证（v4.10.85 skill 新增自查项）。
+> **注意**：`UseApiService`（默认路径）与 `UseRestWithoutBasePath`（无 base 路径）两条路径需**独立对齐两步**——改动前缀语义时两条路径都要验证。
 
-> **声明式端点（v4.10.82 F13）**：扩展 REST 端点经 `IWebExtension.DeclareEndpoints(registry)` + `registry.MapGenerated<TFacade>()` 生成化声明（DTO 首参 body 绑定 + 类型化异常 ErrorCode 映射），不再手写 minimal API；注册表是全仓唯一端点登记通道（详见 [扩展机制使用](../explanation/extensions/usage.md) §Web 扩展装配）。
+> **声明式端点（F13）**：扩展 REST 端点经 `IWebExtension.DeclareEndpoints(registry)` + `registry.MapGenerated<TFacade>()` 生成化声明（DTO 首参 body 绑定 + 类型化异常 ErrorCode 映射），不再手写 minimal API；注册表是全仓唯一端点登记通道（详见 [扩展机制使用](../explanation/extensions/usage.md) §Web 扩展装配）。
 
 ## 参考
 

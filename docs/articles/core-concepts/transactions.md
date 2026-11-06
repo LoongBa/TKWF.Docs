@@ -37,7 +37,7 @@ TKWF 在三个层面提供事务支持，它们可以**嵌套协作**：
 
 三层机制通过 `UnitOfWorkManager.Begin(Propagation.Required)` 协作——有外层事务则加入（`UnitOfWorkVirtual`），无则新建（`UnitOfWorkOrginal`）。无论从哪一层进入，最终都共享同一个 UoW 实例。
 
-### 旧方案的问题
+### 设计背景（ADR26）
 
 **设计动机（ADR26）**：事务抽象**不依赖** `System.Transactions.TransactionScope`——FreeSql 不参与 `System.Transactions` 体系（经源码级验证，FreeSql 使用自有 `ConcurrentDictionary<int, Transaction2>` 管理线程局部事务，**从不调用** `Transaction.Current`、`EnlistTransaction` 或不实现 `IPromotableSinglePhaseNotification`）。若依赖 `TransactionScope`，多连接场景会触发**分布式事务升级（MSDTC）**，在 Linux/Docker 无协调器环境下崩溃：
 
