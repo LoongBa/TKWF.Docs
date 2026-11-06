@@ -7,7 +7,7 @@ _layout: landing
 <div class="hero-section">
   <div class="hero-badges">
     <img src="https://img.shields.io/badge/.NET-10-blue" alt=".NET 10" />
-    <img src="https://img.shields.io/badge/version-4.10.87-green" alt="Version 4.10.87" />
+    <img src="https://img.shields.io/badge/version-4.10.113-green" alt="Version 4.10.113" />
     <img src="https://img.shields.io/badge/Agentic-Engineering-purple" alt="Agentic Engineering" />
   </div>
 <h1>TKW.Framework — 让 Agentic Engineering 更可控、更可靠的软件开发框架</h1>
@@ -524,9 +524,9 @@ tkwf-tsclient-mock → Mock 数据生成
 
 | 版本 | 日期 | 核心内容 |
 |:-----|:-----|:---------|
-| **4.10.87** | 2026-10-27 | SG2 ApiMetadata 暴露面口径修正：SG3 客户端代理不再生成未暴露方法（ADR113，响应 DMP 项目组转达 Track B） |
-| **4.10.86** | 2026-10-27 | Web 异常边界：DevPage 框架头注册 + 未知异常环境分流（ADR111，响应项目组改进提议） |
-| **4.10.85** | 2026-10-25 | 扩展端点装配前缀显式空串语义 + 配套测试与跨仓文档同步 |
+| **4.10.113** | 2026-11-07 | SG1b 扩展 DataService「TUser 推断失败 fallback」过滤链单源修复 |
+| **4.10.112** | 2026-11-06 | VEntity 根字段与服务 resolver 同名静默合并根治 |
+| **4.10.111** | 2026-11-06 | CTRB001/PAGE001 判据修正退役 |
 
 > 完整变更历史见 [TKWF CHANGELOG](https://github.com/LoongBa/TKW.Framework/blob/master/docs/CHANGELOG.md)
 

@@ -4,7 +4,7 @@
 
 [![Build and Deploy Docs](https://github.com/LoongBa/TKWF.Docs/actions/workflows/docfx.yml/badge.svg)](https://github.com/LoongBa/TKWF.Docs/actions/workflows/docfx.yml)
 
-**当前同步版本：V4.10.87**（文档与框架 [LoongBa/TKW.Framework](https://github.com/LoongBa/TKW.Framework) 保持同步）
+**当前同步版本：V4.10.113**（文档与框架 [LoongBa/TKW.Framework](https://github.com/LoongBa/TKW.Framework) 保持同步）
 
 ---
 
@@ -12,6 +12,29 @@
 
 | 版本 | 日期 | 核心内容 |
 |:-----|:-----|:---------|
+| **4.10.113** | 2026-11-07 | SG1b 扩展 DataService fallback 过滤链单源修复（ADR129）——ExcludeMethods/IncludeMethods 在非泛型 DataService fallback 路径生效 |
+| **4.10.112** | 2026-11-06 | VEntity 根字段与服务 resolver 同名静默合并根治（ADR128）+ 字段消歧诊断（WARN012/013/ERR005）+ skill 版本同步 |
+| **4.10.111** | 2026-11-06 | CTRB001/PAGE001 判据修正退役——贡献者「无归属扩展声明」告警退役 |
+| **4.10.110** | 2026-11-06 | 遗留问题清理批次——ADR115 后果兑现 + 宿主 EventLog 闭环 + 构建基建 |
+| **4.10.109** | 2026-11-06 | ApiMetadata 结构化演进（ADR127：枚举真实数值 `EnumValueNumbers` + 嵌套元素可空）+ 部署脚本 local-feed 双包 |
+| **4.10.108** | 2026-11-06 | SG3 C# 客户端可空真实化（ADR125 P3）+ GraphQL Schema 可空性真实化（ADR125 P2）+ `UpdateWhereAsync` SET 时间精度（ADR124）+ 域用户获取边界（ADR126） |
+| **4.10.107** | 2026-11-05 | CS0592 枚举桩编译断路根治（v4.10.103 regression 修复） |
+| **4.10.106** | 2026-11-05 | Tier1.5 测试间歇竞态根修（xUnit 集合定义须同程序集）+ xCodeGen DtoEmpty 模板重复 using 修复 |
+| **4.10.105** | 2026-11-05 | SG2 DTO 未物化显式诊断（P7 静默失效清理）+ 跨实体基表回溯裸 `[Table]` 漏检修复 |
+| **4.10.104** | 2026-11-05 | 全仓编译警告清零（132+ → 0）+ `SymmetricKeyProviderKeys.WeChatChannels` 键并入主框架 |
+| **4.10.103** | 2026-11-05 | SG3 枚举桩完整成员与枚举参数序列化契约（含 v4.10.101 SG3 递归 DTO 选择集展开 + v4.10.102 Wasm UI 扩展装配机制 `IWasmUIExtension`） |
+| **4.10.100** | 2026-11-01 | TABLE002 对裸 `[Table]` 实体误报修复（`GetTableName` 返回 null → 补 ClassName 兜底） |
+| **4.10.99** | 2026-10-30 | 控制台宿主移除 EventLog 默认注册（非管理员崩溃根治） |
+| **4.10.97** | 2026-10-28 | 扩展无手写门面三件套闭包与 SG3 桩命名空间修复（ADR121/122） |
+| **4.10.96** | 2026-10-28 | 门面排除集缺陷与端点静默缺失修复（ADR120） |
+| **4.10.95** | 2026-10-28 | 能力清单假名与级联 TUSER001 修复（ADR119） |
+| **4.10.94** | 2026-10-28 | 扩展门面装饰器契约方法名不匹配 CS0535 修复（ADR118 链路） |
+| **4.10.93** | 2026-10-28 | ControllerGenerator 数组特性参数 CS8785 崩溃修复（ADR118 链路） |
+| **4.10.92** | 2026-10-28 | 扩展端点暴露机制根治（ADR118）——扩展产契约接口 + 消费方产控制器 + TUser 宿主声明单一权威 |
+| **4.10.91** | 2026-10-28 | SG1b 能力清单 InterfaceNames 契约口径修正（ADR117）——扩展门面符号回填真名 + SG2 解析失败显式诊断 |
+| **4.10.90** | 2026-10-28 | GeneratedJsonContext 编译阻塞修复（ADR116 设计修订）——RestTypeInfoRegistry 编译期闭集注册表 |
+| **4.10.89** | 2026-10-28 | SG2 让路守卫精细化（ADR114）+ REST 路由元数据契约（ADR115）+ SG3 REST 传输分支（ADR116） |
+| **4.10.88** | 2026-10-27 | SG2 让路守卫精细化：REST 挂载 / GraphQL resolver / ApiMetadata 三关注点分离（ADR114） |
 | **4.10.87** | 2026-10-27 | SG2 ApiMetadata 暴露面口径修正（ADR113）——`IsExposed` 联动 Expose 标记（可映射 && 至少一条通道开启，与 SG2 端点发射条件逐项对齐）→ **SG3 不再为未暴露方法生成客户端代理**（升级后代理方法可能减少，编译期可见、无运行期风险） |
 | **4.10.86** | 2026-10-27 | Web 异常边界（ADR111）——DevPage 框架头注册（Development + `UseWebExceptionMiddleware` 自动挂载，消费方移除手挂）+ `DevRethrowUnknownExceptions` 未知异常环境分流（默认 `true`）+ 脚手架移除手挂配方 |
 | **4.10.85** | 2026-10-25 | 扩展端点装配前缀显式空串语义——`ResolveBasePath`/`ResolveModulePrefix` 三态判定（缺省/脏值回退，显式 `""` 跳过第一级/清除模块前缀）+ 8 前缀用例 + skill V2.1 |
