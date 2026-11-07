@@ -1,5 +1,10 @@
 [
   {
+    "version": "4.10.116",
+    "date": "2026-11-07",
+    "description": "AOP 过滤器异常语义单源 + Inbox 跨租户复合键"
+  },
+  {
     "version": "4.10.113",
     "date": "2026-11-07",
     "description": "SG1b 扩展 DataService「TUser 推断失败 fallback」过滤链单源修复"
@@ -8,10 +13,5 @@
     "version": "4.10.112",
     "date": "2026-11-06",
     "description": "VEntity 根字段与服务 resolver 同名静默合并根治"
-  },
-  {
-    "version": "4.10.111",
-    "date": "2026-11-06",
-    "description": "CTRB001/PAGE001 判据修正退役"
   }
 ]

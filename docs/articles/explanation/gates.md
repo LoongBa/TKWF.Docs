@@ -178,7 +178,7 @@ TKWF_SG1a_DI001: 'OrderService' 请求服务接口 'ICacheService' 但无框架�
 
 | 诊断码 | 级别 | 场景 | 说明 |
 |:--|:--|:--|:--|
-| `TKWF0020` | Error | 领域项目启用了未 `[TKWFEnabledExtension]` 声明的扩展 | SG2 消费端拦截（ADR46） |
+| `TKWF0020` | Error | ~~领域项目启用了未 `[TKWFEnabledExtension]` 声明的扩展~~（**已退役**——v4.9.85 ADR47 门控上提 SG1b 后现行生成器零调用点，Guard.cs 仅保留定义防复活；替代码 `TKWF0021`/`TKWF0032`） | SG2 消费端拦截（ADR46，被 ADR47 取代） |
 | `TKWF0021` | Warning | 领域项目白名单过滤 | SG1b 聚合层（ADR47） |
 | `TKWF0022` | Error | 扩展项目引用扩展实现项目 | 源头禁令（ADR48/50） |
 | `TKWF0030` | Error | 普通项目直接引用扩展程序集 | L1 门控（ADR50） |

@@ -4,7 +4,7 @@
 
 [![Build and Deploy Docs](https://github.com/LoongBa/TKWF.Docs/actions/workflows/docfx.yml/badge.svg)](https://github.com/LoongBa/TKWF.Docs/actions/workflows/docfx.yml)
 
-**当前同步版本：V4.10.113**（文档与框架 [LoongBa/TKW.Framework](https://github.com/LoongBa/TKW.Framework) 保持同步）
+**当前同步版本：V4.10.116**（文档与框架 [LoongBa/TKW.Framework](https://github.com/LoongBa/TKW.Framework) 保持同步）
 
 ---
 
@@ -12,6 +12,7 @@
 
 | 版本 | 日期 | 核心内容 |
 |:-----|:-----|:---------|
+| **4.10.116** | 2026-11-07 | AOP 过滤器异常语义单源（ADR130）——限流 429 单源（`EnforceAsync` 直抛 `RateLimitedException`，四通道统一 429）+ 配置缺失 fail-fast（503）+ 幂等重复 409（`IdempotencyConflictException`）+ Inbox 跨租户复合键（`(MessageId, TenantId)`） |
 | **4.10.113** | 2026-11-07 | SG1b 扩展 DataService fallback 过滤链单源修复（ADR129）——ExcludeMethods/IncludeMethods 在非泛型 DataService fallback 路径生效 |
 | **4.10.112** | 2026-11-06 | VEntity 根字段与服务 resolver 同名静默合并根治（ADR128）+ 字段消歧诊断（WARN012/013/ERR005）+ skill 版本同步 |
 | **4.10.111** | 2026-11-06 | CTRB001/PAGE001 判据修正退役——贡献者「无归属扩展声明」告警退役 |

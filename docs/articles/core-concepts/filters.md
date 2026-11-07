@@ -172,9 +172,9 @@ public Task<byte[]> ExportLargeReportAsync(string reportId, ...)
 | `RateLimitFilterAttribute<TUserInfo>` | 过滤器：Pre 阶段 `GetLimiter` + `EnforceAsync(partitionKey)` |
 
 **行为说明**：
-- 被限流抛 `AuthenticationException`（复用 EnforceAsync 既有语义）→ Web 中间件统一映射 401
-- 策略未注册抛 `InvalidOperationException`（fail-loud，捕获配置错误）
-- `IRateLimitPolicyRegistry` 未注册时安全跳过
+- 被限流直抛 `RateLimitedException`（`RetryAfter` 元数据折算整数秒 + `Scope`）→ REST / GraphQL / AOP / 协议端点四通道统一映射 429（v4.10.116 ADR130 后，`EnforceAsync` 不再包装 `AuthenticationException` 401）
+- 策略未注册或 `IRateLimitPolicyRegistry` 未注册 → fail-fast 抛 `ServiceNotConfiguredException`（503），不静默跳过（v4.10.116 ADR130 配置缺失 fail-fast）
+- 幂等重复请求（`[IdempotentFilter]`）→ `IdempotencyConflictException`（409，v4.10.116 新增；此前为 plain `InvalidOperationException` 500）
 
 ---
 
@@ -304,7 +304,7 @@ public class AuthorityFilterAttribute<TUserInfo> : DomainFilterAttribute<TUserIn
 2. **短接安全靠 Bag 标记**：短接路径下 PostProceed 仍会执行，过滤器要用 `Invocation.Bag` 标记"Pre 是否执行过"（如 `__Logging_Stopwatch`、`__AuditLog_Start`、`__CacheInvalidate_Pending`）——不要在实例字段存状态，过滤器实例跨调用复用会被污染
 3. **CacheInvalidation 与 ContentCacheFilter 语义互斥**：读方法标 ContentCache，写方法标 InvalidateCache，不要标错
 4. **审计脱敏前置**：敏感 DTO 尽量用黑名单字段名（`password`/`token` 等），或考虑后续版本引入 `[SensitiveData]` 整参数排除
-5. **RateLimit 语义提醒**：被限流当前返回 `AuthenticationException`（401）——限流严格意义上是 429，专用 `RateLimitException` 在后续版本规划中
+5. **RateLimit 语义**：被限流返回 `RateLimitedException`（429，含 `Retry-After`）——认证挑战路径限流响应已从 401 统一为 429（v4.10.116 ADR130），前端须按 `RATE_LIMITED` + `Retry-After` 退避
 6. **fail-closed 优先**：功能开关、权限校验等安全类过滤器，宁可 fail loud 也不要静默放行
 
 ---

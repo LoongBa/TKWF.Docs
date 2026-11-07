@@ -150,7 +150,7 @@ public class MyDomainInitializer : DomainHostInitializerBase<MyUserInfo> { ... }
 
 `typeof(XxxExtensionInitializer<>)` 用**开放泛型**——SG1 从 `ContainingAssembly.Name` 推导扩展程序集名，运行时由框架填充具体的 `TUserInfo`。声明后扩展的能力清单（`GeneratedControllerCatalog`）被聚合进领域权威注册，三钩子才真正接线。
 
-> 只引用扩展包但未声明白名单：扩展的 DI 注册、过滤器、种子数据都不会生效。这是编译期门控（ADR46 `TKWF0020`/ADR50 `TKWF0032`），非运行时配置。
+> 只引用扩展包但未声明白名单：扩展的 DI 注册、过滤器、种子数据都不会生效。这是编译期门控（ADR47 `TKWF0021`/ADR50 `TKWF0032`；旧 `TKWF0020` 已被 ADR47 取代退役），非运行时配置。
 
 ### Web 扩展装配（IWebExtension，v4.10.45+ / F13 v4.10.82）
 

@@ -7,7 +7,7 @@ _layout: landing
 <div class="hero-section">
   <div class="hero-badges">
     <img src="https://img.shields.io/badge/.NET-10-blue" alt=".NET 10" />
-    <img src="https://img.shields.io/badge/version-4.10.113-green" alt="Version 4.10.113" />
+    <img src="https://img.shields.io/badge/version-4.10.116-green" alt="Version 4.10.116" />
     <img src="https://img.shields.io/badge/Agentic-Engineering-purple" alt="Agentic Engineering" />
   </div>
 <h1>TKW.Framework — 让 Agentic Engineering 更可控、更可靠的软件开发框架</h1>
@@ -524,9 +524,9 @@ tkwf-tsclient-mock → Mock 数据生成
 
 | 版本 | 日期 | 核心内容 |
 |:-----|:-----|:---------|
+| **4.10.116** | 2026-11-07 | AOP 过滤器异常语义单源 + Inbox 跨租户复合键 |
 | **4.10.113** | 2026-11-07 | SG1b 扩展 DataService「TUser 推断失败 fallback」过滤链单源修复 |
 | **4.10.112** | 2026-11-06 | VEntity 根字段与服务 resolver 同名静默合并根治 |
-| **4.10.111** | 2026-11-06 | CTRB001/PAGE001 判据修正退役 |
 
 > 完整变更历史见 [TKWF CHANGELOG](https://github.com/LoongBa/TKW.Framework/blob/master/docs/CHANGELOG.md)
 

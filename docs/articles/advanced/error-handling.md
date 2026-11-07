@@ -18,7 +18,8 @@ TKWF 提供统一的异常处理机制，领域异常自动映射为 HTTP 响应
 | `UnauthorizedAccessException` | 未认证（GraphQL 侧映射 `FORBIDDEN`） | 401 / GraphQL 403 |
 | `EntityNotFound` | 实体不存在 | 404 |
 | `EntityDuplicated` | 重复实体 | 409 Conflict |
-| `RateLimited` | 被限流 | 429 |
+| `IdempotencyConflictException` | 幂等冲突（重复请求，v4.10.116 起 `[IdempotentFilter]` 直抛；与 `EntityDuplicated` 共享 `CONFLICT` 码，细粒度靠 MessageKey `Exception_IdempotencyConflict`） | 409 Conflict |
+| `RateLimited` | 被限流（四通道统一 429，v4.10.116 起直抛 `RateLimitedException` 含 `Retry-After`） | 429 |
 | `UpstreamService` | 上游服务异常 | 502 |
 | `ServiceNotConfigured` | 服务未配置 | 503 |
 | 其他 `DomainException` | 未显式映射 | 400 |
