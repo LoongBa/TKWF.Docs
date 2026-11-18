@@ -203,3 +203,40 @@ GitHub Actions 自动部署到 `gh-pages` 分支。每次推送 `main` 时自动
 **代码示例**（`docs/articles/` 中的 C#/TS 代码片段）为 TKWF 框架使用演示，框架本身遵循 TKW.Framework 仓库的许可条款。
 
 © LoongBa / TKWF 团队
+---
+
+## 快速开始（消费方）
+
+> 只需一条命令：下载部署包 → 解压 → 设置环境变量 → 验证。
+
+```powershell
+irm https://tkwf.loongba.cn/install.ps1 | iex
+```
+
+离线安装（已下载 zip）：
+
+```powershell
+.\install.ps1 -FromZip F:\downloads\TKWF-v4.10.122.zip
+```
+
+指定目录/版本：
+
+```powershell
+.\install.ps1 -Version v4.10.122 -Destination D:\Tools\TKWF
+```
+
+安装脚本会：
+1. 检查 .NET SDK 10+（缺失提示下载页）
+2. 解压部署包到 `%LOCALAPPDATA%\TKWF\<版本>`（可指定）
+3. 写入 **User 级** `TKWFDeployPath`（无需管理员，新终端生效）
+4. 校验四大件（refs / props+targets / xCodeGen / scaffolding）
+5. 打印 new-solution 下一步命令
+
+安装完成后新建项目：
+
+```powershell
+& "$env:TKWFDeployPath\xCodeGen\xCodeGen.Cli.exe" new-solution -n MyApp -m WebApi -t InMemory -r Dll
+```
+
+> **架构说明**：项目只依赖 `TKWFDeployPath`，**不需要**框架源码仓。`Directory.Build.props` 的
+> `TKWFSourceRoot` 优先取 `$(TKWFDeployPath)`，仅当未设置时才回退同级 `_TKWF`（框架开发者形态）。
