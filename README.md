@@ -4,7 +4,7 @@
 
 [![Build and Deploy Docs](https://github.com/LoongBa/TKWF.Docs/actions/workflows/docfx.yml/badge.svg)](https://github.com/LoongBa/TKWF.Docs/actions/workflows/docfx.yml)
 
-**当前同步版本：V4.10.116**（文档与框架 [LoongBa/TKW.Framework](https://github.com/LoongBa/TKW.Framework) 保持同步）
+**当前同步版本：V4.10.121**（文档与框架 [LoongBa/TKW.Framework](https://github.com/LoongBa/TKW.Framework) 保持同步）
 
 ---
 
@@ -12,6 +12,9 @@
 
 | 版本 | 日期 | 核心内容 |
 |:-----|:-----|:---------|
+| **4.10.121** | 2026-11-17 | `GroupByAsync` 整键排序（`orderBy: g => g.Key`）复合键 NRE 修复——匿名复合键按 keySelector 成员书写顺序展开为逐列 ORDER BY（FreeSql ORDER BY 不翻译 MemberInit/ValueTuple → 硬失败可操作异常） |
+| **4.10.119** | 2026-11-14 | SG2a 收集面 expose 承诺门控——全关方法不再收集 DTO（WARN009 噪音消除）+ 覆盖率自检分母同步 |
+| **4.10.118** | 2026-11-11 | 类型化守卫异常 `DomainGuardException`——消除字符串匹配判异常（DMP 转达 F1 闭环）；ADR111 文档残留清理 |
 | **4.10.116** | 2026-11-07 | AOP 过滤器异常语义单源（ADR130）——限流 429 单源（`EnforceAsync` 直抛 `RateLimitedException`，四通道统一 429）+ 配置缺失 fail-fast（503）+ 幂等重复 409（`IdempotencyConflictException`）+ Inbox 跨租户复合键（`(MessageId, TenantId)`） |
 | **4.10.113** | 2026-11-07 | SG1b 扩展 DataService fallback 过滤链单源修复（ADR129）——ExcludeMethods/IncludeMethods 在非泛型 DataService fallback 路径生效 |
 | **4.10.112** | 2026-11-06 | VEntity 根字段与服务 resolver 同名静默合并根治（ADR128）+ 字段消歧诊断（WARN012/013/ERR005）+ skill 版本同步 |

@@ -224,23 +224,23 @@ public class MyHostInitializer : DomainHostInitializerBase<MyUserInfo>
 | Permissions（权限） | V0.7.0-0.9.9 | 权限定义 / fail-closed 检查 / 编译期权限名校验（PERM001）+ 领域自治整改 + 暴露面收敛（V0.9.8/0.9.9：ADR129） |
 | Identity（身份） | V0.3.0-0.5.3 | 用户 / 角色 / 用户角色分配 + 凭据验证 + VEntity 跨表 JOIN + REST 直接暴露 + 领域自治整改 + 表名前缀批次 |
 | Account（账户） | V0.3.0-0.5.0 | 账户锁定 + 密码重置 + 登录历史与异常检测 + 依赖倒置 |
-| AuthCenter（认证中心） | V0.1.0-0.13.0 | 认证中心（2026-10-06 由 Authentication 归层改名）——令牌体系（RS256 JWT + Refresh rotation + 黑名单）/ 认证矩阵 Provider（短信/微信/密码）/ 身份适配层 / 平台凭证 + 归层内建端点（V0.6.0）+ E4 密钥管理（V0.7.0）+ 认证 API 补全（V0.8.0）+ 密码策略（V0.9.0）+ 外部 IdP 桥接（V0.9.2/0.9.3）+ 外部身份联邦 Phase1 适配（V0.9.4，ADR107）+ 票据 SPA 兑现（V0.10.0/0.10.1）+ 端点契约化（V0.12.0：MapGenerated + ProblemDetails） |
-| AuthSurface（授权面） | V0.1.0-0.2.0 | 授权面（AuthCenter 集成）——跨扩展授权组合面 + 表名对齐 TKWF_AuthGrant + UserCenter DTO 归主包（V0.2.0） |
+| AuthCenter（认证中心） | V0.1.0-0.14.2 | 认证中心（2026-10-06 由 Authentication 归层改名）——令牌体系（RS256 JWT + Refresh rotation + 黑名单）/ 认证矩阵 Provider（短信/微信/密码）/ 身份适配层 / 平台凭证 + 归层内建端点（V0.6.0）+ E4 密钥管理（V0.7.0）+ 认证 API 补全（V0.8.0）+ 密码策略（V0.9.0）+ 外部 IdP 桥接（V0.9.2/0.9.3）+ 外部身份联邦 Phase1 适配（V0.9.4，ADR107）+ 票据 SPA 兑现（V0.10.0/0.10.1）+ 端点契约化（V0.12.0：MapGenerated + ProblemDetails）+ 业务兑票端点（V0.14.0：`/login/ticket/redeem`） |
+| AuthSurface（授权面） | V0.1.0-0.3.1 | 授权面（AuthCenter 集成）——跨扩展授权组合面 + 表名对齐 TKWF_AuthGrant + UserCenter DTO 归主包（V0.2.0）+ 软禁用（V0.2.1）+ 批次管理端与码侧契约（V0.3.0，T-0~T-8） |
 | TrustCenter（信任中心） | V0.1.0-0.3.3 | 认证体系信任中枢（2026-10-09 自 Federation 剥离）——应用注册 + token2 ES256 + accesscode + 安全数据投递；契约在 `TrustCenter.Abstractions`；外部身份联邦 Phase1 适配（V0.2.1，ADR107） |
-| Federation（联邦互联） | V0.1.0-0.18.0 | 认证体系对外连接层壳（TrustCenter 剥离后重定位）——平台 IdP 连接 + `/feberation/*` 路由（V0.7.0 破坏性变更自 `/sso/*`）+ 多通道设施（IChannelRegistry）+ 外部 IdP 桥接借道 + 外部身份联邦 Phase1 适配（V0.7.1，ADR107）+ 渠道关注关系域（V0.11.0） |
-| Federation.{平台}（Oidc/Google/Microsoft/DingTalk/WeCom/WeChat/QQ/Alipay） | V0.1.0-0.18.0 | 平台网关库 8 个——通用 OIDC 基座（M1）/ Google·Microsoft（M2）/ 钉钉·企业微信（M3/M4）/ 微信公众平台（V0.3.1 验签纵深 + V0.17.1 sub_button 双形状修复）/ QQ 互联（出站-only）/ 支付宝（RSA2 双向签名） |
-| MFA（多因素认证） | V0.1.0-0.2.1 | 第二因素验证服务——TOTP + SMS 双方法 + 挑战票据 + 恢复码（独立扩展零依赖）+ 原子消费 ADR89 + E4 密钥管理（V0.2.0）+ IRateLimitCheck 迁移（V0.2.1） |
+| Federation（联邦互联） | V0.1.0-0.19.0 | 认证体系对外连接层壳（TrustCenter 剥离后重定位）——平台 IdP 连接 + `/feberation/*` 路由（V0.7.0 破坏性变更自 `/sso/*`）+ 多通道设施（IChannelRegistry）+ 外部 IdP 桥接借道 + 外部身份联邦 Phase1 适配（V0.7.1，ADR107）+ 渠道关注关系域（V0.11.0）+ oauth 装配层修复（V0.19.0） |
+| Federation.{平台}（Oidc/Google/Microsoft/DingTalk/WeCom/WeChat/QQ/Alipay） | V0.1.0-0.18.0 | 平台网关库 8 个——通用 OIDC 基座（M1）/ Google·Microsoft（M2）/ 钉钉·企业微信（M3/M4，V0.4.2 I2-2 契约跟进）/ 微信公众平台（V0.3.1 验签纵深 + V0.17.1 sub_button 双形状修复）/ QQ 互联（出站-only）/ 支付宝（RSA2 双向签名） |
+| MFA（多因素认证） | V0.1.0-0.3.0 | 第二因素验证服务——TOTP + SMS 双方法 + 挑战票据 + 恢复码（独立扩展零依赖）+ 原子消费 ADR89 + E4 密钥管理（V0.2.0）+ IRateLimitCheck 迁移（V0.2.1）+ 安全加固（V0.3.0） |
 | Navigation（导航/菜单） | V0.1.0-0.1.2 | 菜单数据模型 / 贡献机制 / 权限过滤 |
 | AuditLogging（审计日志） | V0.3.0-0.5.1 | 审计日志 FreeSql 存储 + 统计聚合 + 保留天数清理 + 管理 API + 聚合 SQL 下推 + 领域自治整改 |
 | Settings（设置） | V0.2.0-0.3.1 | 全局/用户级配置持久化 + 分层读取 + 领域自治整改（删伪 Store）+ 配置分层倒查删死字段（V0.3.1） |
-| BlobStoring（二进制存储） | V0.2.0-0.3.0 | 大对象本地文件系统存储 + 流式下载 + 领域自治整改 |
+| BlobStoring（二进制存储） | V0.2.0-0.3.1 | 大对象本地文件系统存储 + 流式下载 + 路径穿越修复（V0.3.1）+ 领域自治整改 |
 | Emailing（邮件） | V0.2.0-0.3.0 | SMTP/MailKit 邮件发送 + 指数退避重试 + 领域自治整改 |
 | DataDictionary（数据字典） | V0.2.0-0.3.0 | 字典定义 + 项 + 按编码查询 + VEntity 读模型联邦 + 领域自治整改 |
 | Tagging（标签存储） | V0.4.0-0.4.6 | 标签存储扩展（算法已回归 `TKW.Framework.Utility.Tags`；AC 自动机批量匹配 + 聚合 SQL 下推 + 领域自治整改） |
 | PrintTemplates（打印模板） | V0.1.0-0.3.0 | 打印模板引擎与版本化（Scriban + Draft/Active/Archived 生命周期）+ VEntity 化 |
 | Metrics（指标引擎） | V0.2.1 | 业务指标计算引擎（规格文档驱动复合指标 + 指标结果持久化） |
 | Analytics（分析服务） | V0.1.0 | 业务分析服务（spec 文件驱动 + flint 单一真相 JsonDocument，D20 Stage 1） |
-| Dashboard / DataPort | V0.1.0-0.1.4 | 仪表盘 / 导入导出 |
+| Dashboard / DataPort | V0.1.0-0.1.5 | 仪表盘 / 导入导出（V0.1.5 幂等与锁死治理） |
 | Notifications（通知中心） | V0.2.0-0.6.3 | 通知中心——多通道路由 + SignalR 通道 + 通知本地化 + REST 直接暴露 + 领域自治整改 + 表名前缀批次 |
 | BackgroundJobs（+Quartz） | V0.1.0-0.4.1 | 后台任务持久化 + 周期调度（IRecurringBackgroundJobManager，ADR91）+ 领域自治整改 |
 | HealthCheck / RateLimiting | V0.1.0-0.3.0 | 健康检查 / 限流（含点检查原语 SqlCountRateLimitCheck V0.3.0） |

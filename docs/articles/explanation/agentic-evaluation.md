@@ -56,10 +56,10 @@ description: 以业界 10 维准则评估 TKWF / ABP / Axon 三框架的 Agentic
 |:--|:--|:--:|:--:|:--:|:--|
 | 1 | 代码可预测性 | 2 | 3 | **5** | ABP DynamicProxy IL Emit——源码≠执行码；Axon 注解可见但运行时反射；TKWF SG 生成 `.g.cs` 可见、零运行时反射 |
 | 2 | 样板代码比 | 2 | 3 | **5** | ABP 每 AppService 需 Interface+实现+多 DTO+仓储接口；Axon 注解即声明但 Command/Event/Query 类多；TKWF `[GenerateController]` 一行→Controller+AOP+GraphQL+REST+Client 全生成 + AutoQuery 消除 80% 手写查询 Service |
-| 3 | 约定显式性 | 3 | 3 | **5** | ABP `.cursorrules`+命名约定但文档级非工具强制；Axon Spring 自动配置隐式；TKWF 7 个可部署 SKILL.md + AC01-06 速查卡 + AC-Kit 守则 + llms.txt |
+| 3 | 约定显式性 | 3 | 3 | **5** | ABP `.cursorrules`+命名约定但文档级非工具强制；Axon Spring 自动配置隐式；TKWF 12 个可部署 SKILL.md + AC01-06 速查卡 + AE-Kit 守则 + llms.txt |
 | 4 | 上下文窗口友好 | 2 | 3 | **5** | ABP 分层方案触 5+ 项目；Axon 单聚合集中但跨 Saga 需多模块；TKWF AC 系列 ≤400 行/文件 + 每 skill 只读自己域 + 三端统一 `User.Query<T>()` 减少上下文切换 |
 | 5 | 确定性构建/验证 | 4 | 3 | **5** | ABP `dotnet build/test` 标准但动态代理构建期不可见；Axon Maven/Gradle 但注解运行时处理；TKWF SG 20+ 诊断 fail build + ViewSql 编译期列名校验 + ts-client-mock 两级 mock + Contract 测试 |
-| 6 | LLM 上下文面 | 2 | 3 | **5** | ABP 700+ 页人工文档无 llms.txt；Axon 有版本化文档但无 llms.txt；TKWF llms.txt + 7 skills + AC-Kit references + 活文档 + AC01-06 速查卡 |
+| 6 | LLM 上下文面 | 2 | 3 | **5** | ABP 700+ 页人工文档无 llms.txt；Axon 有版本化文档但无 llms.txt；TKWF llms.txt + 12 skills + AE-Kit references + 活文档 + AC01-06 速查卡 |
 | 7 | 声明优于魔法 | 2 | 2 | **5** | ABP DI 自动注册+模块生命周期+动态代理=大量运行时魔法；Axon Spring 自动配置+Axon Server 自动路由；TKWF 编译期 SG+零反射+DI-free 领域层 |
 | 8 | 入口点可发现性 | 3 | 3 | **5** | ABP `AbpModule` 入口但需理解依赖图；Axon `@SpringBootApplication` 但 Spring 自动配置魔法；TKWF `TKWF_Rules.md` 路由中枢 + Business.md 门控 + MUST/MUST NOT + llms.txt |
 | 9 | 架构模式适配 | 3 | 4 | **5** | ABP 模块化单体好但分层方案触多文件；Axon CQRS 天然垂直切片；**TKWF 领域自治 + 垂直 Service 切片 + 框架级 CQRS（Entity 写模型 / VEntity 读模型 + EQR 统一入口 + AutoQuery + 三端统一查询 API）** |
@@ -86,7 +86,7 @@ description: 以业界 10 维准则评估 TKWF / ABP / Axon 三框架的 Agentic
 
 - 7 个框架级 Skills（OpenCode 技能格式），部署到 `~/.config/opencode/skills/`
 - AC01-AC06 速查卡（每张 ≤400 行）
-- AC-Kit 守则 + TKWF_Rules.md 路由中枢 + 20+ 编译期诊断将约定变为硬约束
+- AE-Kit（含守则/路由） + 20+ 编译期诊断将约定变为硬约束
 
 ### 维度 4：上下文窗口友好 — 5/5
 
@@ -106,7 +106,7 @@ description: 以业界 10 维准则评估 TKWF / ABP / Axon 三框架的 Agentic
 
 - llms.txt（87 行，框架全貌 → API 速查 → 文档链接）
 - 7 个 SKILL.md（每个自带参考文档）
-- AC-Kit references（5 文件 47KB）
+- AE-Kit references（自包含速查内联至各 skill）
 - 活文档自动同步 + prebuild.ps1 自动版本同步
 
 ### 维度 7：声明优于魔法 — 5/5
@@ -119,7 +119,7 @@ description: 以业界 10 维准则评估 TKWF / ABP / Axon 三框架的 Agentic
 
 - TKWF_Rules.md 路由中枢（94 行，分类变更信号 → 加载匹配 skill）
 - Business.md 门控（`tkwf-service` Step 0 检查）
-- llms.txt（AI 入口）+ AC-Kit README（人类入口）
+- llms.txt（AI 入口） + AE-Kit README（人类入口）
 - 每个 skill 有明确 MUST / MUST NOT
 
 ### 维度 9：架构模式适配 — 5/5

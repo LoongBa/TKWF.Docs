@@ -6,7 +6,7 @@ description: TKWF 源文档 D/G/T/xCodeGen 系列与公开文章的完整映射�
 
 > 本文档建立 TKWF 源文档（`_TKWF/docs/`）与公开文档站文章的对应关系，
 > 便于 Agent 与贡献者定位权威来源。
-> 源文档体系以 `_TKWF/docs/00-文档体系说明.md` 为准（v4.37，D 系列含 D06D/D17A/D17B/D18A/D19/D19A/D20/D20B/D21/D22/D23/D071，G 系列含 G18/G19，另设 Introduce 系列=介绍/现状），D 系列全量一致性审核收官（v4.10.114，50 份）。
+> 源文档体系以 `_TKWF/docs/00-文档体系说明.md` 为准（v4.38，D 系列含 D06D/D17A/D17B/D18A/D19/D19A/D20/D20B/D21/D22/D23/D071，G 系列含 G18/G19，另设 Introduce 系列=介绍/现状），D 系列全量一致性审核收官（v4.10.114，50 份）+ G 系列全量一致性审核收官（v4.10.117，26 份）。
 > V4.9.80 起扩展独立仓库：扩展代码/指南迁至公开仓库 [`TKWF.Extensions`](https://github.com/LoongBa/TKWF.Extensions)，扩展模块文档（开发方案/ADR/总览）留在主框架 `03_扩展模块/`（私有）。
 
 ---
@@ -17,7 +17,7 @@ description: TKWF 源文档 D/G/T/xCodeGen 系列与公开文章的完整映射�
 
 | 源文档 | 公开文章 | 说明 |
 |:-------|:---------|:-----|
-| `Introduce01-TKWF框架能力现状基线-Capability-Baseline.md` | — | 框架能力现状基线（v4.10.115，2026-11-07，原 D25 改名）：17 能力域矩阵（实施状态 ✅生产可用/⚠️部分/🚧未落地/❌设计有实施无 × 测试验证 × 消费方可达性 × 已知边界）+ 22 测试项目覆盖矩阵（含已知零覆盖）+ 实施状态判定标准（代码存在+测试覆盖+消费方可达三件套）+ 已知边界与设计取舍 + 维护规则 |
+| `Introduce01-TKWF框架能力现状基线-Capability-Baseline.md` | — | 框架能力现状基线（v4.10.115，2026-11-07，原 D25 改名）：17 能力域矩阵（实施状态 ✅生产可用/⚠️部分/🚧未落地/❌设计有实施无 × 测试验证 × 消费方可达性 × 已知边界）+ 22 测试项目覆盖矩阵（含已知零覆盖）+ 实施状态判定标准（代码存在+测试覆盖+消费方可达三件套）+ 已知边界与设计取舍 + 维护规则（v4.10.116 快照刷新） |
 
 ## 核心概念
 
@@ -73,7 +73,7 @@ description: TKWF 源文档 D/G/T/xCodeGen 系列与公开文章的完整映射�
 | `D11-系统角色-SystemActor-设计方案.md` | [SystemActor 体系](../explanation/system-actor-explained.md) | 系统角色：BeginSystemScopeAsync、scope.System/scope.IsSystem、IEntityActorAuditable、[DenySystemActor]、StandaloneDomainUserAccessor（ADR 14/15/16） |
 | `D13-多租户：加字段与分库双模式设计方案.md` | [多租户](../explanation/multi-tenancy.md) · [门控机制](../explanation/gates.md) | 多租户架构（v2.2）：加字段（共享库行级隔离）与分库（Database-per-Tenant）双模式、租户识别与授权（ITenantContext/ITenantAuthorization）、身份租户（A）与目标租户（B）双场景、跨租户作用域（ExecuteInTenantAsync）、运行时门控 |
 | `D18-TKWF门控机制-设计方案.md` | [门控机制](../explanation/gates.md) | 门控机制设计：三级门控（1 编译时 / 2 混合 / 3 运行时热路径）、优先级原则（尽量 1、2 不得已才用 3）、GateRules 数据驱动规则集、RuntimeGateOptions 严重级别、SG1 特征门控生成、12 缺口全景、与扩展机制门控衔接。V4.10.41 缺口 #2 已实现（OutboxSenderRegistered 规则）+ #5/#9/#11 触发式候选 |
-| `D18A-TKWF诊断码总表.md` | — | TKWF 诊断码总表（以 Guard.cs 实测为准：123 属性/54E/60W/9I，去重子 ID 114）：D18/ADR47/50 各诊断码汇总（`VIEW003`/`DI001`/`DI002`/`DI003`/`TKWF0034` 双级别）+ CTRB001-003 贡献者诊断（V4.10.32 已实施）+ v4.10.33 错误码收拢刷新（`TKWF_SG1a_ERR_002`/`TKWF_SG2a_MULTI_DS`）+ Guard.cs 双向漂移门禁 + v4.10.34 登记 `TKWF_I18N_001`（i18n 键集一致性门禁）+ v4.10.44 登记 `TKWF_SG1a_SESS001-004`（会话 JSON 注册表 SG 生成诊断）+ v4.10.45 新增 `TKWF_SG1b_WEBEXT_001`（Web 装配钩子领域自治边界门控）+ v4.10.66 新增 TABLE 门控族 `TKWF_SG1a_TABLE001-004`（表名别名机制 ADR100）+ v4.10.73 新增 PAGE 门控族 `TKWF_SG1b_PAGE001-004`（表现层页面装配 ADR106：页面贡献者归属/可实例化/路由冲突/资源声明）+ **v4.10.111 CTRB001/PAGE001 判据修正退役**（贡献者「无归属扩展声明」必误报，删除检查分支，Guard.cs 补退役注记）+ **v4.10.111-113 退役/无触发点注记**（GEN013 补 v4.10.92 无触发点标注，TKWF0020 退役实证——ADR47 门控上提后生成器零调用点）+ v4.10.116 登记 ADR130 相关码（`TKWCTRL007` fallback 扩展 DataService 过滤链诊断可见性 + 限流 429 单源） |
+| `D18A-TKWF诊断码总表.md` | — | TKWF 诊断码总表（以 Guard.cs 实测为准：**v4.10.120 查重处置后 121 属性**/54E/60W/9I 収拢，去重子 ID 114）：D18/ADR47/50 各诊断码汇总（`VIEW003`/`DI001`/`DI002`/`DI003`/`TKWF0034` 双级别）+ CTRB001-003 贡献者诊断（V4.10.32 已实施）+ v4.10.33 错误码收拢刷新（`TKWF_SG1a_ERR_002`/`TKWF_SG2a_MULTI_DS`）+ Guard.cs 双向漂移门禁 + v4.10.34 登记 `TKWF_I18N_001`（i18n 键集一致性门禁）+ v4.10.44 登记 `TKWF_SG1a_SESS001-004`（会话 JSON 注册表 SG 生成诊断）+ v4.10.45 新增 `TKWF_SG1b_WEBEXT_001`（Web 装配钩子领域自治边界门控）+ v4.10.66 新增 TABLE 门控族 `TKWF_SG1a_TABLE001-004`（表名别名机制 ADR100）+ v4.10.73 新增 PAGE 门控族 `TKWF_SG1b_PAGE001-004`（表现层页面装配 ADR106：页面贡献者归属/可实例化/路由冲突/资源声明）+ **v4.10.111 CTRB001/PAGE001 判据修正退役**（贡献者「无归属扩展声明」必误报，删除检查分支，Guard.cs 补退役注记）+ **v4.10.111-113 退役/无触发点注记**（GEN013 补 v4.10.92 无触发点标注，TKWF0020 退役实证——ADR47 门控上提后生成器零调用点）+ v4.10.116 登记 ADR130 相关码（`TKWCTRL007` fallback 扩展 DataService 过滤链诊断可见性 + 限流 429 单源）+ **v4.10.120 诊断码查重**（8 处内联工厂收拢至 Guard 属性、`CLI_ERR` 并入 `GUARD_005`、`ERR003` 并入 `ERR002`，123→121 码） |
 | `G13-多租户使用指南.md` | [多租户](../explanation/multi-tenancy.md) | 多租户消费方实操手册：双模式选型决策树、加字段/分库/混合快速开始、跨租户操作、安全要点、测试要点 |
 
 ## 数据与查询
@@ -139,28 +139,28 @@ description: TKWF 源文档 D/G/T/xCodeGen 系列与公开文章的完整映射�
 | `AC-Docs/AC04-TS前端开发简明指南.md` | — | Tkwf 门面初始化 + Use/QueryBuilder 调用 + 认证 + 错误处理（对应 G07C/G07C-Query） |
 | `AC-Docs/AC05-条件表达式构建器简明指南.md` | — | （Agent 版）条件表达式构建器速查清单（原 G06B-Agentic 迁移，对应 G06B） |
 | `AC-Docs/AC06-Entity映射与查询条件配置简明指南.md` | — | （Agent 版）Entity 映射与查询条件配置速查清单（原 G06C-Agentic 迁移，对应 G06C） |
-| `AC-Kit/guides/Agent-TKWF使用行为守则.md` | [AI 快速上手](../agentic/quick-start-for-ai.md) | 框架级 Agent 行为守则（V4.9.22+） |
-| `AC-Kit/guides/契约比对测试指南.md` | — | GraphQLSchemaValidator 契约比对调试方法论 + 实战案例 + 最佳实践 |
-| `AC-Kit/references/EntityFieldList和Entity查询使用速查.md` | — | EntityFieldList 字段白名单与 Entity 查询使用速查 |
-| `AC-Kit/guides/SG架构规则.md` | [SG 管线解剖](../explanation/sg-pipeline-anatomy.md) | SG 架构规则 |
-| `AC-Kit/guides/生成代码防绕过规则.md` | [AI 快速上手](../agentic/quick-start-for-ai.md) | 生成代码防绕过 |
-| `AC-Kit/guides/设计原则手册.md` | — | 设计原则体系总纲（2026-10 新增）：Agent 设计决策五原则框架 + 开发规则索引 |
-| `AC-Kit/guides/设计原则/SG生成器.md` | — | 设计原则分篇：SG 生成器设计决策准则（V4.10.36-58 对齐） |
-| `AC-Kit/guides/设计原则/扩展模块.md` | — | 设计原则分篇：扩展模块设计决策准则（V4.10.36-58 对齐） |
-| `AC-Kit/guides/设计原则/数据访问测试.md` | — | 设计原则分篇：数据访问与测试设计决策准则 |
-| `AC-Kit/guides/设计原则/横切设计域.md` | — | 设计原则分篇：横切关注点设计决策准则 |
-| `AC-Kit/guides/设计原则/门控诊断码.md` | — | 设计原则分篇：门控与诊断码设计决策准则 |
-| `AC-Kit/skills/tkwf-design-principles/SKILL.md` | — | 设计原则 skill（tkwf-design-principles，2026-10 新增） |
+| `AE-Kit/README.md` | — | **AE-Kit（Agentic Engineering Kit）v1.0.0**：已取代 AC-Kit 成为对外知识层（2026-11 定版）——设计目的/使用流程/安装部署；旧 AC-Kit 整体归档 `docs/_Archive/AC-Kit/` |
+| `AE-Kit/使用指南.md` | — | AE-Kit 使用指南 |
+| `AE-Kit/skills/README.md` | — | Skill 索引与路由：12 技能总表（触发/参数/交付物/实测状态）+ 典型链路 + 选择规则 |
+| `AE-Kit/skills/tkwf-solution/SKILL.md` | — | 解决方案 skill（v1.8.0+）：新建/修改/增补 solution、csproj 引用模式、环境前置检查（env-check.ps1）、CLI 参数核验 |
+| `AE-Kit/skills/tkwf-specs/SKILL.md` | — | 设计编译与执行编排 skill（替代原 tkwf-design）：需求 IR → 切片 → 交接；Section/Stage 编排 |
+| `AE-Kit/skills/tkwf-entity/SKILL.md` | — | Entity/VEntity skill（含 VEntity 设计 Step A，原 tkwf-ventity-design 并入）；references/ 自包含速查（VEntity开发速查/Dto最小化-字段裁剪速查/领域开发-常见问题速查） |
+| `AE-Kit/skills/tkwf-service/SKILL.md` | — | Service/DataService/Conditions skill；references/ 补 API 契约速查（错误码权威源/DTO 可见性/端点面） |
+| `AE-Kit/skills/tkwf-extension/SKILL.md` | — | 扩展模块开发 skill（恰路线：扩展=业务领域开发）；经验版本流水见 D26B |
+| `AE-Kit/skills/tkwf-use-extension/SKILL.md` | — | 扩展消费方接入 skill（白名单 → Web 装配 → `User.Use<T>()` → 装配扩展页面）；经验版本流水见 D26C |
+| `AE-Kit/skills/tkwf-test/SKILL.md` | — | 测试编写 skill（Contract + 生产路径 + 框架测试辅助） |
+| `AE-Kit/skills/tkwf-tsclient/SKILL.md` | — | @tkwf/tsclient 前端 RPC skill；references/ 长文下沉（external-idp-jwt-session / query-builder） |
+| `AE-Kit/skills/tkwf-tsclient-mock/SKILL.md` | — | mock 数据与场景 skill（MOCK_SPEC 模板 + schema） |
+| `AE-Kit/skills/tkwf-analytics-view/SKILL.md` | — | 分析/图表意图 → 视图定义 skill（data-contract / chart_spec / manifest） |
+| `AE-Kit/skills/tkwf-business/SKILL.md` | — | 业务规则物化 skill（`.TKWF/{Domain}/Business.md` + 编号双模式 IR registry） |
+| `AE-Kit/skills/tkwf-design-principles/SKILL.md` | — | 框架自身设计原则 skill（元原则 + P1-P15 + 错误模式清单）；references/ 内联全部 guides（ADR编写/Agent 行为守则/契约比对测试/SG架构规则/生成代码防绕过/设计原则手册+分篇/迭代与发布纪律/浏览器走查/服务组合与禁止构造注入/文档操作/预存问题修复）— 2026-11 引导-自包含-收尾 |
 | `D26A-规则与Skill优化方法论.md` | — | 方法论（非设计原则）：如何优化规则类文档（`guides/*.md`、`skills/*/SKILL.md`）——三层结构、判据化、冷启动防线、反馈闭环、载体门禁（由 v4.10.116~117「设计原则 v2 优化」实践提炼） |
 | `D26B-tkwf-extension-设计与经验.md` | — | tkwf-extension skill 唯一版本流水与踩坑记录（2026-11-07 自 SKILL.md frontmatter 迁出）：V2.6（v4.10.113 ADR129 fallback 过滤链生效）V2.5（v4.10.112 ADR128 三码）V2.3（v4.10.92 ADR118 TUser 单一权威）等；方法论见 D26A |
 | `D26C-tkwf-use-extension-设计与经验.md` | — | tkwf-use-extension skill 唯一版本流水与踩坑记录（2026-11-07 自 SKILL.md frontmatter 迁出）：V1.8（v4.10.112 ADR128）V1.7（ADR118/TUSER001）V1.6（v4.10.73 页面装配）等；方法论见 D26A |
-| `AC-Kit/skills/tkwf-tsclient/references/external-idp-jwt-session.md` | — | 长文下沉（2026-11-07 自 SKILL.md 迁出）：外部 IdP 登录与 JWT 会话深入参考 |
-| `AC-Kit/skills/tkwf-tsclient/references/query-builder.md` | — | 长文下沉（2026-11-07 自 SKILL.md 迁出）：QueryBuilder 链接式查询深入参考 |
-| `AC-Kit/skills/tkwf-use-extension/references/page-assembly.md` | — | 长文下沉（2026-11-07 自 SKILL.md 迁出）：装配扩展页面（PageAssemblyWebExtension/Tkwf.Page）深入参考 |
 
 ---
 
-> 对齐 TKWF：V4.10.116 · 2026-11-08
+> 对齐 TKWF：V4.10.121 · 2026-11-19
 
 
 

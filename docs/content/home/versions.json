@@ -1,17 +1,17 @@
 [
   {
-    "version": "4.10.116",
-    "date": "2026-11-07",
-    "description": "AOP 过滤器异常语义单源 + Inbox 跨租户复合键"
+    "version": "4.10.121",
+    "date": "2026-11-17",
+    "description": "`GroupByAsync` 整键排序（`orderBy: g => g.Key`）复合键 NRE 修复"
   },
   {
-    "version": "4.10.113",
-    "date": "2026-11-07",
-    "description": "SG1b 扩展 DataService「TUser 推断失败 fallback」过滤链单源修复"
+    "version": "4.10.119",
+    "date": "2026-11-14",
+    "description": "SG2a 收集面 expose 承诺门控"
   },
   {
-    "version": "4.10.112",
-    "date": "2026-11-06",
-    "description": "VEntity 根字段与服务 resolver 同名静默合并根治"
+    "version": "4.10.118",
+    "date": "2026-11-11",
+    "description": "类型化守卫异常 `DomainGuardException`（v4.10.118，响应 DMP 转达 F1——消除字符串匹配判异常）："
   }
 ]

@@ -239,7 +239,7 @@ public interface ITkExtensionContainer
 // [assembly: TKWFEnabledExtension(typeof(PermissionExtensionInitializer<>))]
 ```
 
-> 旧 `ConfigureExtensions(registry)` 写法仅保留为兼容钩子，新代码不应依赖其启停语义（见 `docs/AC-Kit/guides/迭代与发布纪律.md`）。
+> 旧 `ConfigureExtensions(registry)` 写法仅保留为兼容钩子，新代码不应依赖其启停语义（见 `docs/AE-Kit/skills/tkwf-design-principles/references/guides/迭代与发布纪律.md`）。
 
 ---
 
