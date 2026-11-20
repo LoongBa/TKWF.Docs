@@ -1,17 +1,17 @@
 [
   {
-    "version": "4.10.134",
+    "version": "4.10.137",
     "date": "2026-11-20",
-    "description": "feat(sg): 跨程序集门面自注册诊断 CTRL009 + G17A 红线 + 注册表消息可操作化 + 设计原则复审闭环 (v4.10.134)"
+    "description": "AE-Kit 对外载荷随版本产出"
   },
   {
-    "version": "4.10.133",
+    "version": "4.10.136",
     "date": "2026-11-20",
-    "description": "fix(client+web): WARN004 抑制改 .globalconfig 勘误 + 初始化异常 503/500 映射 + REST 业务码保真 (v4.10.133)"
+    "description": "AC-Kit → AE-Kit 路径残留全量收口"
   },
   {
-    "version": "4.10.132",
+    "version": "4.10.135",
     "date": "2026-11-20",
-    "description": "`DomainException.HttpStatus`：业务异常可声明 REST 状态"
+    "description": "xCodeGen 活态文档输出三处缺陷"
   }
 ]

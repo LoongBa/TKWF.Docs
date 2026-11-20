@@ -7,7 +7,7 @@ _layout: landing
 <div class="hero-section">
   <div class="hero-badges">
     <img src="https://img.shields.io/badge/.NET-10-blue" alt=".NET 10" />
-    <img src="https://img.shields.io/badge/version-4.10.134-green" alt="Version 4.10.134" />
+    <img src="https://img.shields.io/badge/version-4.10.137-green" alt="Version 4.10.137" />
     <img src="https://img.shields.io/badge/Agentic-Engineering-purple" alt="Agentic Engineering" />
   </div>
 <h1>TKW.Framework — 让 Agentic Engineering 更可控、更可靠的软件开发框架</h1>
@@ -524,9 +524,9 @@ tkwf-tsclient-mock → Mock 数据生成
 
 | 版本 | 日期 | 核心内容 |
 |:-----|:-----|:---------|
-| **4.10.134** | 2026-11-20 | feat(sg): 跨程序集门面自注册诊断 CTRL009 + G17A 红线 + 注册表消息可操作化 + 设计原则复审闭环 (v4.10.134) |
-| **4.10.133** | 2026-11-20 | fix(client+web): WARN004 抑制改 .globalconfig 勘误 + 初始化异常 503/500 映射 + REST 业务码保真 (v… |
-| **4.10.132** | 2026-11-20 | `DomainException.HttpStatus`：业务异常可声明 REST 状态 |
+| **4.10.137** | 2026-11-20 | AE-Kit 对外载荷随版本产出 |
+| **4.10.136** | 2026-11-20 | AC-Kit → AE-Kit 路径残留全量收口 |
+| **4.10.135** | 2026-11-20 | xCodeGen 活态文档输出三处缺陷 |
 
 > 完整变更历史见 [TKWF CHANGELOG](https://github.com/LoongBa/TKW.Framework/blob/master/docs/CHANGELOG.md)
 

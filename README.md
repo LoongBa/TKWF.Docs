@@ -4,7 +4,7 @@
 
 [![Build and Deploy Docs](https://github.com/LoongBa/TKWF.Docs/actions/workflows/docfx.yml/badge.svg)](https://github.com/LoongBa/TKWF.Docs/actions/workflows/docfx.yml)
 
-**当前同步版本：V4.10.121**（文档与框架 [LoongBa/TKW.Framework](https://github.com/LoongBa/TKW.Framework) 保持同步）
+**当前同步版本：V4.10.137**（文档与框架 [LoongBa/TKW.Framework](https://github.com/LoongBa/TKW.Framework) 保持同步）
 
 ---
 
@@ -12,6 +12,12 @@
 
 | 版本 | 日期 | 核心内容 |
 |:-----|:-----|:---------|
+| **4.10.137** | 2026-11-20 | AE-Kit 对外载荷随版本产出——skills 内容变更配套 bump（tkwf-test/service/extension/solution/design-principles 版本递增，AC-Kit→AE-Kit 换代收尾） |
+| **4.10.136** | 2026-11-20 | AC-Kit → AE-Kit 路径残留全量收口（D-26/D-27 闭环）——`create-new-solution.ps1` 知识根失效修复（部署包 `docs/` 仅 AE-Kit）、部署脚本/verify-skills 门禁同步 |
+| **4.10.135** | 2026-11-20 | D18A 诊断码计数校正（123=53E/60W/10I/去重114）+ `DocCounts_HeaderAndGroupRows_MatchGuard` CI 门禁 + 源码 `UseApi<T>()` 注释清理 + xCodeGen 活态文档三缺陷修复 |
+| **4.10.134** | 2026-11-20 | 设计原则复审 122–133 + 跨程序集门面缺口显式化——新增 `TKWF_SG1b_CTRL009`（扩展 REST 门面契约在 `*.Abstractions` → 宿主启动 fail-closed），G17A §7.8 红线 |
+| **4.10.133** | 2026-11-20 | 消费方三条反馈 + N2/N3 闭环——WARN004 抑制通道勘误（`.editorconfig` 无效 → `.globalconfig`）、初始化异常 503/500 映射、客户端 403/400 业务码保真 |
+| **4.10.132** | 2026-11-20 | `DomainException.HttpStatus` 业务异常可声明 REST 状态（加性字段）——优先级 类型映射 > HttpStatus > 400，协议耦合类型忽略声明并告警，仅 REST 消费 |
 | **4.10.121** | 2026-11-17 | `GroupByAsync` 整键排序（`orderBy: g => g.Key`）复合键 NRE 修复——匿名复合键按 keySelector 成员书写顺序展开为逐列 ORDER BY（FreeSql ORDER BY 不翻译 MemberInit/ValueTuple → 硬失败可操作异常） |
 | **4.10.119** | 2026-11-14 | SG2a 收集面 expose 承诺门控——全关方法不再收集 DTO（WARN009 噪音消除）+ 覆盖率自检分母同步 |
 | **4.10.118** | 2026-11-11 | 类型化守卫异常 `DomainGuardException`——消除字符串匹配判异常（DMP 转达 F1 闭环）；ADR111 文档残留清理 |
