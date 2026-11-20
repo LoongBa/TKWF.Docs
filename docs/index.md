@@ -7,7 +7,7 @@ _layout: landing
 <div class="hero-section">
   <div class="hero-badges">
     <img src="https://img.shields.io/badge/.NET-10-blue" alt=".NET 10" />
-    <img src="https://img.shields.io/badge/version-4.10.121-green" alt="Version 4.10.121" />
+    <img src="https://img.shields.io/badge/version-4.10.134-green" alt="Version 4.10.134" />
     <img src="https://img.shields.io/badge/Agentic-Engineering-purple" alt="Agentic Engineering" />
   </div>
 <h1>TKW.Framework — 让 Agentic Engineering 更可控、更可靠的软件开发框架</h1>
@@ -524,9 +524,9 @@ tkwf-tsclient-mock → Mock 数据生成
 
 | 版本 | 日期 | 核心内容 |
 |:-----|:-----|:---------|
-| **4.10.121** | 2026-11-17 | `GroupByAsync` 整键排序（`orderBy: g => g.Key`）复合键 NRE 修复 |
-| **4.10.119** | 2026-11-14 | SG2a 收集面 expose 承诺门控 |
-| **4.10.118** | 2026-11-11 | 类型化守卫异常 `DomainGuardException`（v4.10.118，响应 DMP 转达 F1——消除字符串匹配判异常）： |
+| **4.10.134** | 2026-11-20 | feat(sg): 跨程序集门面自注册诊断 CTRL009 + G17A 红线 + 注册表消息可操作化 + 设计原则复审闭环 (v4.10.134) |
+| **4.10.133** | 2026-11-20 | fix(client+web): WARN004 抑制改 .globalconfig 勘误 + 初始化异常 503/500 映射 + REST 业务码保真 (v… |
+| **4.10.132** | 2026-11-20 | `DomainException.HttpStatus`：业务异常可声明 REST 状态 |
 
 > 完整变更历史见 [TKWF CHANGELOG](https://github.com/LoongBa/TKW.Framework/blob/master/docs/CHANGELOG.md)
 

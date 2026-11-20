@@ -1,17 +1,17 @@
 [
   {
-    "version": "4.10.121",
-    "date": "2026-11-17",
-    "description": "`GroupByAsync` 整键排序（`orderBy: g => g.Key`）复合键 NRE 修复"
+    "version": "4.10.134",
+    "date": "2026-11-20",
+    "description": "feat(sg): 跨程序集门面自注册诊断 CTRL009 + G17A 红线 + 注册表消息可操作化 + 设计原则复审闭环 (v4.10.134)"
   },
   {
-    "version": "4.10.119",
-    "date": "2026-11-14",
-    "description": "SG2a 收集面 expose 承诺门控"
+    "version": "4.10.133",
+    "date": "2026-11-20",
+    "description": "fix(client+web): WARN004 抑制改 .globalconfig 勘误 + 初始化异常 503/500 映射 + REST 业务码保真 (v4.10.133)"
   },
   {
-    "version": "4.10.118",
-    "date": "2026-11-11",
-    "description": "类型化守卫异常 `DomainGuardException`（v4.10.118，响应 DMP 转达 F1——消除字符串匹配判异常）："
+    "version": "4.10.132",
+    "date": "2026-11-20",
+    "description": "`DomainException.HttpStatus`：业务异常可声明 REST 状态"
   }
 ]
