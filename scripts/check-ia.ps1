@@ -30,7 +30,7 @@ foreach ($d in $dead) { Write-Host ("   缺: {0}" -f $d) }
 # ---------- 3. 全量文章读入（一次） ----------
 $content = @{}
 foreach ($f in Get-ChildItem -LiteralPath $artRoot -Recurse -File -Filter '*.md') {
-    $rel = $f.FullName.Substring($artRoot.Length + 1)
+    $rel = ($f.FullName.Substring($artRoot.Length + 1) -replace '\\', '/')
     $content[$rel] = Get-Content -LiteralPath $f.FullName -Encoding utf8 -Raw
 }
 Write-Host ("=== articles .md 总数: {0} ===" -f $content.Count)
@@ -38,14 +38,14 @@ Write-Host ("=== articles .md 总数: {0} ===" -f $content.Count)
 # ---------- 4. toc 引用集合 ----------
 $tocRel = New-Object 'System.Collections.Generic.HashSet[string]'
 foreach ($h in $tocHrefs) {
-    if ($h -like 'articles/*') { [void]$tocRel.Add(($h.Substring('articles/'.Length) -replace '/', '\')) }
+    if ($h -like 'articles/*') { [void]$tocRel.Add($h.Substring('articles/'.Length)) }
 }
 
 # ---------- 5. 孤儿 + 入链 ----------
 $realOrphan = @(); $softOrphan = @()
 $orphans = New-Object 'System.Collections.Generic.List[string]'
 foreach ($rel in $content.Keys) {
-    if ($rel -match '(^|\\)(index\.md|toc\.yml)$') { continue }
+    if ($rel -match '(^|/)(index\.md|toc\.yml)$') { continue }
     if (-not $tocRel.Contains($rel)) { $orphans.Add($rel) }
 }
 $orphans.Sort()

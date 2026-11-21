@@ -34,12 +34,12 @@ if (-not (Test-Path -LiteralPath $siteJson)) {
     $base = (Get-Content -LiteralPath $siteJson -Encoding utf8 -Raw | ConvertFrom-Json).version
     $verFiles = @(
         'README.md',
-        'docs\index.md',
-        'docs\llms.txt',
-        'docs\articles\agentic\source-doc-map.md',
-        'docs\content\site.json',
-        'docs\content\home\versions.json',
-        'docs\content\home\hero.json'
+        'docs/index.md',
+        'docs/llms.txt',
+        'docs/articles/agentic/source-doc-map.md',
+        'docs/content/site.json',
+        'docs/content/home/versions.json',
+        'docs/content/home/hero.json'
     )
     $miss = @()
     foreach ($k in $verFiles) {
@@ -69,17 +69,17 @@ else { Fail 'SC-02' 'toc 死链' ("死链: " + ($dead -join ', ')) }
 $artRoot = Join-Path $docs 'articles'
 $content = @{}
 foreach ($f in Get-ChildItem -LiteralPath $artRoot -Recurse -File -Filter '*.md') {
-    $content[$f.FullName.Substring($artRoot.Length + 1)] = Get-Content -LiteralPath $f.FullName -Encoding utf8 -Raw
+    $content[($f.FullName.Substring($artRoot.Length + 1) -replace '\\', '/')] = Get-Content -LiteralPath $f.FullName -Encoding utf8 -Raw
 }
 $tocRel = New-Object 'System.Collections.Generic.HashSet[string]'
-foreach ($h in $tocHrefs) { if ($h -like 'articles/*') { [void]$tocRel.Add(($h.Substring('articles/'.Length) -replace '/', '\')) } }
+foreach ($h in $tocHrefs) { if ($h -like 'articles/*') { [void]$tocRel.Add($h.Substring('articles/'.Length)) } }
 
 # ---------- SC-03 真孤儿（入链按链接形态判定，非子串） ----------
 Write-Host "SC-03 真孤儿"
 $realOrphan = @()
 $softOrphan = @()
 foreach ($rel in $content.Keys) {
-    if ($rel -match '(^|\\)(index\.md|toc\.yml)$') { continue }
+    if ($rel -match '(^|/)(index\.md|toc\.yml)$') { continue }
     if ($tocRel.Contains($rel)) { continue }
     $name = [System.IO.Path]::GetFileNameWithoutExtension($rel)
     $linkPat = '\]\(([^)]*/)?' + [regex]::Escape($name) + '(\.md)?([#\)])'
@@ -106,7 +106,7 @@ foreach ($f in Get-ChildItem -LiteralPath $artRoot -Recurse -File -Filter '*.md'
             $t = [uri]::UnescapeDataString($t).Trim()
             if ([string]::IsNullOrWhiteSpace($t)) { continue }
             if ($t -match '\s+"') { $t = ($t -split '\s+"')[0] }
-            $cand = ($t -replace '/', '\') -replace '\.html$', '.md'
+            $cand = $t -replace '\.html$', '.md'
             if (-not (Test-Path -LiteralPath (Join-Path $f.DirectoryName $cand)) -and
                 -not (Test-Path -LiteralPath (Join-Path $docs $cand))) {
                 $broken += ("{0}:{1}->{2}" -f $f.FullName.Substring($artRoot.Length + 1), ($i + 1), $t)
@@ -128,7 +128,7 @@ $contentDir = Join-Path $docs 'content'
 $noSchema = @()
 if (Test-Path -LiteralPath $contentDir) {
     foreach ($c in Get-ChildItem -LiteralPath $contentDir -Recurse -File -Filter '*.json') {
-        $key = $c.FullName.Substring($contentDir.Length + 1) -replace '\\', '-' -replace '\.json$', ''
+        $key = $c.FullName.Substring($contentDir.Length + 1) -replace '[\\/]', '-' -replace '\.json$', ''
         if (-not $schemaSet.ContainsKey($key)) { $noSchema += $key }
     }
 }
@@ -137,7 +137,7 @@ else { Fail 'SC-05' 'content 缺 schema' ("缺: " + ($noSchema -join ', ')) }
 
 # ---------- SC-07 脚手架齐备 ----------
 Write-Host "SC-07 脚手架"
-$need = @('docs\prebuild.ps1', 'scripts\tag.ps1', 'scripts\check-ia.ps1', '.github\workflows\docfx.yml')
+$need = @('docs/prebuild.ps1', 'scripts/tag.ps1', 'scripts/check-ia.ps1', '.github/workflows/docfx.yml')
 $missScaffold = @($need | Where-Object { -not (Test-Path -LiteralPath (Join-Path $root $_)) })
 if ($missScaffold.Count -eq 0) { Pass 'SC-07' '关键脚手架齐备' '' }
 else { Fail 'SC-07' '脚手架缺失' ("缺: " + ($missScaffold -join ', ')) }
