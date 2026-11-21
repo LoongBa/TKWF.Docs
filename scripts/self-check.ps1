@@ -159,6 +159,22 @@ if (-not (Test-Path -LiteralPath $cmapPath)) {
     else { Warn 'SC-17' 'CONTENT_MAP 未登记项' ("未登记: " + ($unreg -join ', ')) }
 }
 
+# ---------- SC-09 教程头注版本锚点（L2 提示：源文档溯源，人工判定是否内容基准） ----------
+Write-Host "SC-09 教程版本锚点"
+$sitePath = Join-Path $docs 'content/site.json'
+$baseVer = if (Test-Path -LiteralPath $sitePath) { (Get-Content -LiteralPath $sitePath -Encoding utf8 -Raw | ConvertFrom-Json).version } else { '' }
+$tutorialDir = Join-Path $artRoot 'tutorials'
+if (Test-Path -LiteralPath $tutorialDir) {
+    $staleAnchor = @()
+    foreach ($t in Get-ChildItem -LiteralPath $tutorialDir -File -Filter '*.md') {
+        $head = (Get-Content -LiteralPath $t.FullName -Encoding utf8 -TotalCount 10) -join "`n"
+        $m = [regex]::Match($head, 'V(\d+\.\d+\.\d+)')
+        if ($m.Success -and $m.Groups[1].Value -ne $baseVer) { $staleAnchor += "$($t.Name)=V$($m.Groups[1].Value)" }
+    }
+    if ($staleAnchor.Count -eq 0) { Pass 'SC-09' '教程头注版本均与基准一致' '' }
+    else { Warn 'SC-09' '教程头注版本≠站点基准（源文档溯源，人工判定）' ("差异: " + ($staleAnchor -join ', ')) }
+}
+
 # ---------- 汇总 ----------
 Write-Host ""
 if ($fails.Count -gt 0) {

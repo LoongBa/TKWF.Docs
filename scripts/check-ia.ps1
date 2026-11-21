@@ -74,7 +74,10 @@ if (Test-Path -LiteralPath $navPath) {
             $ok = Test-Path -LiteralPath (Join-Path $docs ($lk.href -replace '\.html$', '.md'))
             Write-Host ("   [{0}] {1} -> {2}" -f $(if ($ok) { 'OK' } else { '缺' }), $lk.label, $lk.href)
         } else {
-            Write-Host ("   [SPA] {0} -> {1}" -f $lk.label, $lk.href)
+            $route = if ($lk.href -eq '/') { 'index.tsx' } else { ($lk.href.TrimStart('/') + '.tsx') }
+            $routePath = Join-Path (Split-Path $docs -Parent) ('webui/src/routes/' + $route)
+            $ok = Test-Path -LiteralPath $routePath
+            Write-Host ("   [SPA {0}] {1} -> {2} ({3})" -f $(if ($ok) { 'OK' } else { '缺' }), $lk.label, $lk.href, $route)
         }
     }
 }
