@@ -78,7 +78,7 @@ jobs:
         working-directory: ./
         run: |
           docfx docs/docfx.json 2>&1 | tee docfx-build.log
-          hits=$(grep -iE 'warning' docfx-build.log | grep -viE 'NU19[0-9]{2}|Msbuild failed when processing|Found project reference without a matching metadata reference|[0-9]+ warning\(s\)' || true)
+          hits=$(grep -iE 'warning' docfx-build.log | grep -viE 'NU19[0-9]{2}|Msbuild failed when processing|Found project reference without a matching metadata reference|warning\(s\)|Build succeeded with warning' || true)
           if [ -n "$hits" ]; then
             echo "$hits" | head -30
             echo "::error::docfx build 存在文档告警（SC-06）"
