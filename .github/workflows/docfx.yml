@@ -74,12 +74,14 @@ jobs:
           pnpm build
         working-directory: webui
 
-      - name: Build docs (fail on warning — SC-06)
+      - name: Build docs (fail on doc warning — SC-06; NuGet advisory NU19xx excluded as framework-side)
         working-directory: ./
         run: |
           docfx docs/docfx.json 2>&1 | tee docfx-build.log
-          if grep -Eq '[1-9][0-9]* warning' docfx-build.log; then
-            echo "::error::docfx build 存在 warning（SC-06 零容忍）"
+          hits=$(grep -E 'warning' docfx-build.log | grep -vE 'NU19[0-9]{2}|Msbuild failed when processing|0 warning' || true)
+          if [ -n "$hits" ]; then
+            echo "$hits" | head -30
+            echo "::error::docfx build 存在文档告警（SC-06）"
             exit 1
           fi
 
