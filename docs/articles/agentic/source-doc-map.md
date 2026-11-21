@@ -65,7 +65,7 @@ description: TKWF 源文档 D/G/T/xCodeGen 系列与公开文章的完整映射�
 
 | 源文档 | 公开文章 | 说明 |
 |:-------|:---------|:-----|
-| `D10-TKWF框架异常处理机制-设计方案.md` | [异常处理](../advanced/error-handling.md) | 全栈异常处理：FrameworkErrorCodes 8 码统一、IErrorFilter（GraphQL）/ ProblemDetails RFC 9457（REST）、5 平台处理矩阵 |
+| `D10-TKWF框架异常处理机制-设计方案.md` | [异常处理](../advanced/error-handling.md) | 全栈异常处理：`DomainException.ErrorCodes` 16 码统一、IErrorFilter（GraphQL）/ ProblemDetails RFC 9457（REST）、5 平台处理矩阵 |
 | `D10A-Wasm客户端异常处理机制-设计方案.md` | — | （D10 子方案）Blazor Wasm 客户端三层错误处理模型、DomainClientUser 事件、SendWithAuthGuardAsync |
 | `D10B-ts-client异常处理机制-设计方案.md` | — | （D10 子方案）TS 前端异常处理：@tkwf/tsclient 错误映射、静态事件、重试策略 |
 | `D10C-Web服务端错误处理机制-设计方案.md` | — | （D10 子方案）ASP.NET Core 服务端错误输出：DomainErrorFilter、WebExceptionMiddleware、IErrorScope |
