@@ -1,5 +1,10 @@
 [
   {
+    "version": "4.10.138",
+    "date": "2026-11-21",
+    "description": "EduPlatform《框架组-优化建议汇总》复核处置：VEntity 只读链路口径校正 + 模板策略单源收口 + 脚手架修复立项"
+  },
+  {
     "version": "4.10.137",
     "date": "2026-11-20",
     "description": "AE-Kit 对外载荷随版本产出"
@@ -8,10 +13,5 @@
     "version": "4.10.136",
     "date": "2026-11-20",
     "description": "AC-Kit → AE-Kit 路径残留全量收口"
-  },
-  {
-    "version": "4.10.135",
-    "date": "2026-11-20",
-    "description": "xCodeGen 活态文档输出三处缺陷"
   }
 ]

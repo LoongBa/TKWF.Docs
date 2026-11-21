@@ -165,6 +165,16 @@ if (Test-Path $llms) {
     Write-Host "  ✅ llms.txt  → V$newestVer"
 }
 
+# ---- 2.5 更新仓库根 README.md 当前同步版本行 ----
+$repoRoot = (Resolve-Path (Join-Path $DocsRoot '..')).Path
+$readme = Join-Path $repoRoot 'README.md'
+if (Test-Path $readme) {
+    $readmeContent = Get-Content $readme -Raw
+    $readmeContent = $readmeContent -replace '当前同步版本：V[\d\.]+', "当前同步版本：V$newestVer"
+    Write-FileVerbatim $readme $readmeContent
+    Write-Host "  ✅ README.md  → V$newestVer"
+}
+
 # ---- 3. 更新 index.md 版本动态区块 ----
 $index = Join-Path $DocsRoot "index.md"
 if (Test-Path $index) {

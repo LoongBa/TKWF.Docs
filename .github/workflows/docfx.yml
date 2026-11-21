@@ -47,6 +47,15 @@ jobs:
       - name: Sync version numbers
         run: pwsh docs/prebuild.ps1 -TKWFSourceRoot src/TKW.Framework
 
+      - name: Verify prebuild produced no version drift (SC-01 — prebuild must be idempotent; a diff means version sync was missed before commit)
+        run: git diff --exit-code -- docs/llms.txt docs/index.md docs/articles/agentic/source-doc-map.md
+
+      - name: Self-check L1 gate
+        run: pwsh scripts/self-check.ps1
+
+      - name: Information architecture gate
+        run: pwsh scripts/check-ia.ps1
+
       - name: Setup pnpm
         uses: pnpm/action-setup@v4
         with:
@@ -65,9 +74,23 @@ jobs:
           pnpm build
         working-directory: webui
 
-      - name: Build docs
-        run: docfx docs/docfx.json
+      - name: Build docs (fail on warning — SC-06)
         working-directory: ./
+        run: |
+          docfx docs/docfx.json 2>&1 | tee docfx-build.log
+          if grep -Eq '[1-9][0-9]* warning' docfx-build.log; then
+            echo "::error::docfx build 存在 warning（SC-06 零容忍）"
+            exit 1
+          fi
+
+      - name: API coverage gate (SC-16 — guards metadata glob drift that silently empties /api)
+        run: |
+          n=$(find docs/_site/api -type f 2>/dev/null | wc -l)
+          echo "API files: $n (baseline ~845)"
+          if [ "$n" -lt 700 ]; then
+            echo "::error::API 产物仅 $n 个，疑似 metadata glob 与框架顶层目录失配（线上 /api 将 404）"
+            exit 1
+          fi
 
       - name: Merge SPA into _site
         run: |
