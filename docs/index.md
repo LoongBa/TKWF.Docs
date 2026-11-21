@@ -7,7 +7,7 @@ _layout: landing
 <div class="hero-section">
   <div class="hero-badges">
     <img src="https://img.shields.io/badge/.NET-10-blue" alt=".NET 10" />
-    <img src="https://img.shields.io/badge/version-4.10.138-green" alt="Version 4.10.138" />
+    <img src="https://img.shields.io/badge/version-4.10.139-green" alt="Version 4.10.139" />
     <img src="https://img.shields.io/badge/Agentic-Engineering-purple" alt="Agentic Engineering" />
   </div>
 <h1>TKW.Framework — 让 Agentic Engineering 更可控、更可靠的软件开发框架</h1>
@@ -524,9 +524,9 @@ tkwf-tsclient-mock → Mock 数据生成
 
 | 版本 | 日期 | 核心内容 |
 |:-----|:-----|:---------|
+| **4.10.139** | 2026-11-21 | chore(deps): 依赖升级到正式版最新 + NuGet 漏洞清零 |
 | **4.10.138** | 2026-11-21 | EduPlatform《框架组-优化建议汇总》复核处置：VEntity 只读链路口径校正 + 模板策略单源收口 + 脚手架修复立项 |
 | **4.10.137** | 2026-11-20 | AE-Kit 对外载荷随版本产出 |
-| **4.10.136** | 2026-11-20 | AC-Kit → AE-Kit 路径残留全量收口 |
 
 > 完整变更历史见 [TKWF CHANGELOG](https://github.com/LoongBa/TKW.Framework/blob/master/docs/CHANGELOG.md)
 
