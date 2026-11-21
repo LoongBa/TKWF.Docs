@@ -94,7 +94,7 @@ _TKWF（源码 + docs/ 源文档）  ←——— 唯一事实来源 ———  
 ### 2.1 构建与发布规则
 
 - 文档站基于 DocFX（`docs/docfx.json`），构建 `articles/**`、`api/**`、`toc.yml`、`index.md`
-- **API 参考由 `metadata` 段在构建期生成，不入库**（`docs/api/` 已 gitignore；`toc.yml` 也不再跟踪）——`metadata.src.files` 的 glob 与框架仓目录结构强耦合，现行口径是**四个顶层目录通配**：`_Framework/**`、`_Domain.Api/**`、`_Domain.ApiService/**`、`_Domain.Infrastructure/**`（另加 `_Domain.SG/CodeGeneration.Abstractions/**` 以补齐项目引用解析）。框架侧若改动**顶层目录名**必须同步改 glob，否则静默退化为"零项目匹配 → API 文档全空（线上 `/api/` 404）"。自检：`docfx metadata docs/docfx.json` 应产出 ≈845 个 yml、`docfx build` 为 0 warning / 0 error
+- **API 参考由 `metadata` 段在构建期生成，不入库**（`docs/api/` 已 gitignore；`toc.yml` 也不再跟踪）——`metadata.src.files` 的 glob 与框架仓目录结构强耦合，现行口径是**四个顶层目录通配**：`_Framework/**`、`_Domain.Api/**`、`_Domain.ApiService/**`、`_Domain.Infrastructure/**`（另加 `_Domain.SG/CodeGeneration.Abstractions/**` 以补齐项目引用解析）。框架侧若改动**顶层目录名**必须同步改 glob，否则静默退化为"零项目匹配 → API 文档全空（线上 `/api/` 404）"。自检：`docfx metadata docs/docfx.json` 应产出 ≈845 个 yml（CI SC-16 门禁 ≥700，glob 失配即暴跌）、`docfx build` **0 error**；warning 仅允许 DocFX 固有的 `Found project reference without a matching metadata reference` 与框架侧 NuGet 漏洞（NU19xx），其余告警由 CI SC-06 阻断
 - **禁止在 `metadata` 段设置 `"properties": { "TargetFramework": ... }`**——会强制覆盖所有项目 TFM，导致同名程序集重复导入（`CS1704`）而 metadata 整体失败
 - **`docs/` 根目录下的新 `.md` 文件不会出现在网页上，但会进公开仓库**——内部内容勿放此处
 - 文档站内容修改提交前需确认无敏感信息
